@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Documentos App | Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        .sidebar-item:hover { background-color: #1e293b; }
+        .active-nav { background-color: #2563eb; color: white; }
+    </style>
+</head>
+<body class="bg-slate-50 font-sans text-slate-900 overflow-hidden h-screen flex">
+
+    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl">
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg">
+                    <i data-lucide="package"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-black tracking-tighter uppercase leading-none">Mis Documentos</h1>
+                    <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Portal PYME AI</span>
+                </div>
+            </div>
+
+            <nav class="space-y-1">
+                <button onclick="showView('dashboard')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all active-nav" id="nav-dashboard">
+                    <i data-lucide="layout-dashboard"></i> Dashboard
+                </button>
+                <button onclick="showView('perfil')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400" id="nav-perfil">
+                    <i data-lucide="building-2"></i> Perfil Empresa
+                </button>
+                <button onclick="showView('docuflow')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400" id="nav-docuflow">
+                    <i data-lucide="cpu"></i> DocuFlow AI
+                </button>
+                <button onclick="showView('catalogo')" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all text-slate-400" id="nav-catalogo">
+                    <i data-lucide="database"></i> Catálogo Pro
+                </button>
+            </nav>
+        </div>
+
+        <div class="mt-auto p-6 bg-slate-950/50 text-[10px] text-slate-500 font-bold uppercase">
+            Soporte: microempresasaunclick@gmail.com
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0">
+            <h2 id="view-title" class="font-bold text-slate-400 uppercase text-xs tracking-widest">Dashboard</h2>
+            <button class="bg-blue-600 text-white px-6 py-2 rounded-full text-xs font-black uppercase shadow-md hover:scale-105 transition-transform">Acceso</button>
+        </header>
+
+        <div class="flex-1 overflow-auto p-8" id="content-area">
+            <div id="view-dashboard" class="animate-in fade-in">
+                <div class="bg-blue-600 rounded-[3rem] p-16 text-white shadow-2xl relative overflow-hidden">
+                    <h2 class="text-5xl font-black mb-4 tracking-tighter">Hola, SERVICIOS MAPUE SPA</h2>
+                    <p class="text-blue-100 max-w-md text-lg font-medium">Automatiza tus documentos y gestiona tu catálogo en un solo lugar.</p>
+                </div>
+            </div>
+
+            <div id="view-perfil" class="hidden">
+                <div class="max-w-4xl bg-white p-12 rounded-[2.5rem] shadow-xl border border-slate-100">
+                    <h3 class="text-2xl font-black mb-8 uppercase flex items-center gap-3 text-blue-600">
+                        <i data-lucide="building-2"></i> Datos Corporativos
+                    </h3>
+                    <div class="grid grid-cols-2 gap-8 text-sm">
+                        <div><p class="font-black text-slate-400 uppercase text-[10px]">RUT</p><p class="font-bold">77.802.554-1</p></div>
+                        <div><p class="font-black text-slate-400 uppercase text-[10px]">Banco</p><p class="font-bold">Banco Chile</p></div>
+                        <div><p class="font-black text-slate-400 uppercase text-[10px]">Cuenta</p><p class="font-bold">Cta. Corriente 1596524800</p></div>
+                        <div><p class="font-black text-slate-400 uppercase text-[10px]">Email</p><p class="font-bold">recaudacion@mapue.cl</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Inicializar Iconos
+        lucide.createIcons();
+
+        // Navegación Básica
+        function showView(view) {
+            const views = ['dashboard', 'perfil', 'docuflow', 'catalogo'];
+            views.forEach(v => {
+                document.getElementById('view-' + v)?.classList.add('hidden');
+                document.getElementById('nav-' + v).classList.remove('active-nav', 'text-white');
+                document.getElementById('nav-' + v).classList.add('text-slate-400');
+            });
+            
+            document.getElementById('view-' + view)?.classList.remove('hidden');
+            document.getElementById('nav-' + view).classList.add('active-nav', 'text-white');
+            document.getElementById('view-title').innerText = view;
+            lucide.createIcons();
+        }
+    </script>
+</body>
+</html>
