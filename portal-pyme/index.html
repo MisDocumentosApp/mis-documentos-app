@@ -3,143 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Documentos App | Panel Admin</title>
+    <title>Mis Documentos | Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        .active-nav { background-color: #2563eb !important; color: white !important; }
-        .sidebar-item { transition: all 0.2s ease; cursor: pointer; }
+        .active-nav { background-color: #2563eb !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 14px; }
         .sidebar-item:hover:not(.active-nav) { background-color: #1e293b; color: white; }
-        .view-content { animation: fadeIn 0.3s ease-in-out; }
+        .view-content { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900 overflow-hidden h-screen flex">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col shadow-2xl shrink-0">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg">
-                    <i data-lucide="shield-check"></i>
+    <aside class="w-64 bg-slate-950 text-white flex flex-col shrink-0 border-r border-white/5">
+        <div class="p-8">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="bg-blue-600 p-2 rounded-xl text-white">
+                    <i data-lucide="layout-grid" size="20"></i>
                 </div>
                 <div>
-                    <h1 class="text-sm font-black tracking-tighter uppercase leading-none">Mis Documentos</h1>
-                    <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">Admin Panel</span>
+                    <h1 class="text-xs font-black uppercase tracking-widest leading-none">Mis Documentos</h1>
+                    <span class="text-[9px] text-blue-400 font-bold uppercase tracking-[0.2em]">Platform Owner</span>
                 </div>
             </div>
 
-            <nav class="space-y-1">
-                <div onclick="switchView('dashboard')" id="nav-dashboard" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold active-nav">
-                    <i data-lucide="layout-dashboard" size="18"></i> Inicio
+            <nav class="space-y-2">
+                <div onclick="switchView('dashboard')" id="nav-dashboard" class="sidebar-item active-nav">
+                    <i data-lucide="home" size="18"></i> Dashboard
                 </div>
-                <div onclick="switchView('clientes')" id="nav-clientes" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400">
-                    <i data-lucide="users" size="18"></i> Gestión Clientes
+                <div onclick="switchView('catalogo')" id="nav-catalogo" class="sidebar-item text-slate-400">
+                    <i data-lucide="package" size="18"></i> Catálogo Pro
                 </div>
-                <div onclick="switchView('catalogo')" id="nav-catalogo" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400">
-                    <i data-lucide="database" size="18"></i> Catálogo Pro
+                <div onclick="switchView('docuflow')" id="nav-docuflow" class="sidebar-item text-slate-400">
+                    <i data-lucide="zap" size="18"></i> DocuFlow AI
                 </div>
-                <div onclick="switchView('docuflow')" id="nav-docuflow" class="sidebar-item w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold text-slate-400">
-                    <i data-lucide="cpu" size="18"></i> DocuFlow AI
+                <div onclick="switchView('clientes')" id="nav-clientes" class="sidebar-item text-slate-400">
+                    <i data-lucide="users" size="18"></i> Clientes
                 </div>
             </nav>
         </div>
 
-        <div class="mt-auto p-6 bg-slate-950/50">
-            <p class="text-[10px] text-slate-500 font-bold uppercase mb-2">Administrador</p>
-            <p class="text-[11px] text-blue-400 truncate">sadelsolar@gmail.com</p>
+        <div class="mt-auto p-6 border-t border-white/5 bg-black/20 text-center">
+            <p class="text-[10px] text-slate-500 font-bold uppercase mb-1">Sesión Iniciada</p>
+            <p class="text-[11px] text-blue-400 truncate font-medium">sadelsolar@gmail.com</p>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8 shrink-0 z-10">
-            <h2 id="current-view-title" class="font-bold text-slate-400 uppercase text-xs tracking-widest text-blue-600">Inicio</h2>
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
+            <div id="view-indicator" class="flex items-center gap-2">
+                <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
+                <h2 id="current-title" class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Dashboard</h2>
+            </div>
             <div class="flex items-center gap-4">
-                <span class="text-[10px] bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold uppercase">Sistema Online</span>
+                <span class="text-[9px] bg-blue-50 text-blue-600 px-3 py-1 rounded-full font-black uppercase">v1.5 Premium</span>
                 <div class="w-8 h-8 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 border border-slate-200">
                     <i data-lucide="user" size="16"></i>
                 </div>
             </div>
         </header>
 
-        <div class="flex-1 overflow-auto p-8">
+        <div class="flex-1 overflow-auto p-10">
             
             <div id="view-dashboard" class="view-content">
-                <div class="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-[3rem] p-16 text-white shadow-2xl relative overflow-hidden">
-                    <div class="relative z-10">
-                        <h2 class="text-5xl font-black mb-4 tracking-tighter">Bienvenido al Panel Admin</h2>
-                        <p class="text-blue-100 max-w-md text-lg font-medium">Desde aquí controlas las herramientas para tus clientes como <span class="text-white underline decoration-blue-300">Servicios Mapue SPA</span>.</p>
-                    </div>
+                <div class="bg-slate-900 rounded-[3rem] p-16 text-white shadow-2xl relative overflow-hidden">
+                    <h2 class="text-5xl font-black mb-4 tracking-tighter">Bienvenido, Alejandro</h2>
+                    <p class="text-slate-400 max-w-md text-lg font-medium italic">"Gestiona el futuro de tus licitaciones desde un solo lugar."</p>
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-blue-600/20 rounded-full blur-3xl"></div>
                 </div>
                 
                 <div class="grid grid-cols-3 gap-6 mt-8">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Clientes Activos</p>
-                        <p class="text-3xl font-black text-blue-600">1</p>
+                    <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                        <i data-lucide="layers" class="text-blue-600 mb-4"></i>
+                        <p class="text-3xl font-black">4</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Módulos Activos</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Documentos AI</p>
-                        <p class="text-3xl font-black text-indigo-600">12</p>
+                    <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                        <i data-lucide="database" class="text-indigo-600 mb-4"></i>
+                        <p class="text-3xl font-black">84</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ítems Catálogo</p>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-200">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Espacio en Nube</p>
-                        <p class="text-3xl font-black text-slate-800">2.4 GB</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-clientes" class="view-content hidden">
-                <div class="bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
-                    <div class="flex justify-between items-center mb-10">
-                        <h3 class="text-2xl font-black uppercase">Ficha del Cliente</h3>
-                        <span class="bg-blue-100 text-blue-700 text-[10px] font-black px-4 py-1 rounded-full uppercase">Cliente Principal</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-8">
-                        <div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">Razón Social</p><p class="font-bold text-lg">SERVICIOS MAPUE SPA</p></div>
-                        <div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">RUT</p><p class="font-bold text-lg text-blue-600">77.802.554-1</p></div>
-                        <div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">Giro</p><p class="font-bold">Software & Periféricos</p></div>
-                        <div><p class="text-[10px] font-black text-slate-400 uppercase mb-1">Email Recaudación</p><p class="font-bold">recaudacion@mapue.cl</p></div>
+                    <div class="bg-white p-8 rounded-3xl border border-slate-200">
+                        <i data-lucide="check-circle" class="text-green-600 mb-4"></i>
+                        <p class="text-3xl font-black">100%</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Uptime del Sistema</p>
                     </div>
                 </div>
             </div>
 
             <div id="view-catalogo" class="view-content hidden">
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="text-2xl font-black uppercase">Catálogo Maestro</h3>
-                    <button class="bg-slate-900 text-white px-6 py-2 rounded-xl text-xs font-bold flex items-center gap-2">
-                        <i data-lucide="plus" size="14"></i> Agregar Insumo
-                    </button>
-                </div>
-                <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-                    <table class="w-full text-sm text-left">
-                        <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-500 border-b border-slate-200">
-                            <tr>
-                                <th class="px-6 py-4">Descripción</th>
-                                <th class="px-6 py-4">SKU Interno</th>
-                                <th class="px-6 py-4">Marca</th>
-                                <th class="px-6 py-4">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            <tr>
-                                <td class="px-6 py-4 font-bold">FUSIBLE HIGH SPEED 1000A</td>
-                                <td class="px-6 py-4 text-blue-600 font-mono font-bold uppercase">CL52-ENG</td>
-                                <td class="px-6 py-4 text-slate-500">Eaton Bussmann</td>
-                                <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded text-[9px] font-black">EN STOCK</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-2xl font-black uppercase">Inventario Maestro</h3>
+                        <button class="bg-blue-600 text-white px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-blue-600/20">Cargar Excel</button>
+                    </div>
+                    <div class="overflow-hidden rounded-2xl border border-slate-100">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[9px] font-black uppercase text-slate-400">
+                                <tr><th class="p-6">Insumo</th><th class="p-6">SKU</th><th class="p-6">Estado</th></tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 italic">
+                                <tr><td class="p-6 font-bold">Fusible High Speed 1000A</td><td class="p-6">CL52-ENG</td><td><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-[9px] font-black uppercase">En Stock</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <div id="view-docuflow" class="view-content hidden h-full flex flex-col items-center justify-center text-center py-20">
-                <div class="bg-indigo-100 p-8 rounded-full text-indigo-600 mb-6">
-                    <i data-lucide="cpu" size="48"></i>
+            <div id="view-docuflow" class="view-content hidden flex flex-col items-center justify-center py-20 text-center">
+                <div class="bg-blue-600/10 p-10 rounded-full mb-8 text-blue-600">
+                    <i data-lucide="file-text" size="48"></i>
                 </div>
-                <h3 class="text-2xl font-black uppercase mb-2">DocuFlow AI</h3>
-                <p class="text-slate-500 max-w-sm mb-8 font-medium">Sube tus licitaciones Word para procesarlas con la inteligencia del catálogo.</p>
-                <div class="border-4 border-dashed border-slate-200 rounded-[3rem] p-16 w-full max-w-md bg-white hover:border-indigo-400 transition-colors cursor-pointer group">
-                    <i data-lucide="upload-cloud" class="mx-auto text-slate-300 group-hover:text-indigo-500 mb-4 transition-colors" size="48"></i>
-                    <p class="text-slate-400 text-xs font-black uppercase tracking-widest">Arrastra archivo Word aquí</p>
+                <h3 class="text-3xl font-black uppercase mb-4 tracking-tighter">Inyector de Licitaciones</h3>
+                <p class="text-slate-500 mb-10 max-w-sm">Arrastra tu archivo **Word** para que la IA complete automáticamente las especificaciones técnicas usando tu catálogo.</p>
+                <div class="w-full max-w-lg h-64 border-4 border-dashed border-slate-200 rounded-[3rem] flex flex-col items-center justify-center bg-white hover:border-blue-400 transition-all cursor-pointer">
+                    <i data-lucide="plus-circle" size="32" class="text-slate-300 mb-2"></i>
+                    <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Soltar archivo aquí</span>
+                </div>
+            </div>
+
+            <div id="view-clientes" class="view-content hidden">
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="bg-white p-10 rounded-[3rem] border border-slate-200 flex justify-between items-center">
+                        <div>
+                            <h4 class="text-2xl font-black">Servicios Mapue SPA</h4>
+                            <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest mt-1">RUT: 77.802.554-1</p>
+                        </div>
+                        <button class="bg-slate-900 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest">Abrir Ficha</button>
+                    </div>
                 </div>
             </div>
 
@@ -147,52 +140,44 @@
     </main>
 
     <script>
-        // Función principal de cambio de vista
-        function switchView(viewId) {
-            console.log("Cambiando a vista:", viewId); // Para debugear en consola
-            
-            // 1. Ocultar todas las secciones
-            const views = document.querySelectorAll('.view-content');
-            views.forEach(v => v.classList.add('hidden'));
+        // MOTOR DE NAVEGACIÓN SPA (Single Page Application)
+        function switchView(targetId) {
+            console.log("Activando vista:", targetId);
 
-            // 2. Resetear estilos de todos los botones del sidebar
-            const navButtons = document.querySelectorAll('.sidebar-item');
-            navButtons.forEach(btn => {
+            // Ocultar todas las vistas
+            document.querySelectorAll('.view-content').forEach(view => {
+                view.classList.add('hidden');
+            });
+
+            // Mostrar la vista deseada
+            const activeView = document.getElementById('view-' + targetId);
+            if (activeView) {
+                activeView.classList.remove('hidden');
+            }
+
+            // Cambiar estilos en el Sidebar
+            document.querySelectorAll('.sidebar-item').forEach(btn => {
                 btn.classList.remove('active-nav', 'text-white');
                 btn.classList.add('text-slate-400');
             });
 
-            // 3. Mostrar la vista seleccionada
-            const targetView = document.getElementById('view-' + viewId);
-            if (targetView) {
-                targetView.classList.remove('hidden');
+            const activeBtn = document.getElementById('nav-' + targetId);
+            if (activeBtn) {
+                activeBtn.classList.add('active-nav', 'text-white');
+                activeBtn.classList.remove('text-slate-400');
             }
 
-            // 4. Activar el botón correspondiente
-            const targetBtn = document.getElementById('nav-' + viewId);
-            if (targetBtn) {
-                targetBtn.classList.add('active-nav', 'text-white');
-                targetBtn.classList.remove('text-slate-400');
-            }
-
-            // 5. Actualizar título superior
-            const titleMap = {
-                'dashboard': 'Inicio',
-                'clientes': 'Gestión de Clientes',
-                'catalogo': 'Catálogo Maestro Pro',
-                'docuflow': 'DocuFlow AI'
-            };
-            document.getElementById('current-view-title').innerText = titleMap[viewId] || 'Panel';
-
-            // Re-inicializar iconos de Lucide
+            // Actualizar título e iconos
+            const titles = { 'dashboard': 'Dashboard', 'catalogo': 'Catálogo Pro', 'docuflow': 'DocuFlow AI', 'clientes': 'Clientes' };
+            document.getElementById('current-title').innerText = titles[targetId];
             lucide.createIcons();
         }
 
-        // Inicializar iconos al cargar la página
-        document.addEventListener('DOMContentLoaded', () => {
+        // Inicializar al cargar
+        window.onload = () => {
             lucide.createIcons();
-            console.log("App cargada y lista.");
-        });
+            console.log("Sistema Mis Documentos listo.");
+        };
     </script>
 </body>
 </html>
