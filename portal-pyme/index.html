@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Documentos | Fix Total</title>
+    <title>Mis Documentos | Herramientas Completas</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,8 +12,9 @@
         .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 14px; color: #94a3b8; }
         .sidebar-item:hover:not(.active-nav) { background-color: #1e293b; color: white; }
         .view-content { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
         .hidden { display: none !important; }
+        .input-pro { width: 100%; padding: 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 500; }
     </style>
 </head>
 <body class="bg-slate-50 font-sans text-slate-900 overflow-hidden h-screen flex">
@@ -42,108 +43,133 @@
         </header>
 
         <div class="flex-1 overflow-auto p-10">
+            
             <div id="view-dashboard" class="view-content">
                 <div class="bg-blue-600 rounded-[2.5rem] p-16 text-white shadow-xl">
-                    <h2 class="text-5xl font-black mb-4 tracking-tighter">Hola, MAPUE SPA</h2>
-                    <p class="text-blue-100 font-medium">Sistema restaurado. El error de "Already Declared" ha sido eliminado.</p>
+                    <h2 class="text-5xl font-black mb-4 tracking-tighter">Panel de Control</h2>
+                    <p class="text-blue-100 font-medium">Bienvenido Alejandro. Tu ecosistema digital está listo.</p>
+                </div>
+            </div>
+
+            <div id="view-perfil" class="view-content hidden">
+                <div class="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm max-w-4xl">
+                    <div class="flex justify-between items-center mb-10">
+                        <h3 class="text-xl font-black text-blue-600 uppercase italic">Ficha Corporativa</h3>
+                        <button onclick="guardarPerfil()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">Actualizar Datos</button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Razón Social</label><input id="p-social" class="input-pro" placeholder="MAPUE SPA"></div>
+                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">RUT Empresa</label><input id="p-rut" class="input-pro" placeholder="77.xxx.xxx-x"></div>
+                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Banco</label><input id="p-banco" class="input-pro" placeholder="Ej: Banco Chile"></div>
+                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">N° Cuenta Corriente</label><input id="p-cuenta" class="input-pro" placeholder="000-xxxx-xx"></div>
+                        <div class="col-span-2"><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Email de Contacto</label><input id="p-email" class="input-pro" placeholder="correo@empresa.cl"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-docuflow" class="view-content hidden text-center py-20">
+                <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-indigo-600">
+                    <i data-lucide="zap" size="32"></i>
+                </div>
+                <h3 class="text-3xl font-black uppercase mb-4 tracking-tighter">Inyector de Licitaciones</h3>
+                <p class="text-slate-500 mb-12 max-w-sm mx-auto font-medium">Sube tu archivo Word para que la IA inyecte tus productos del catálogo automáticamente.</p>
+                
+                <div class="border-4 border-dashed border-slate-200 rounded-[3rem] p-20 max-w-2xl mx-auto bg-white hover:border-blue-400 transition-all group cursor-pointer relative">
+                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="alert('Archivo detectado. Procesando...')">
+                    <i data-lucide="upload-cloud" class="mx-auto text-slate-300 mb-4 group-hover:text-blue-500 transition-colors" size="48"></i>
+                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Arrastra tu archivo aquí</p>
                 </div>
             </div>
 
             <div id="view-catalogo" class="view-content hidden">
                 <div class="grid grid-cols-3 gap-8">
                     <div class="col-span-1 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm h-fit">
-                        <h3 class="font-black uppercase text-xs mb-6 text-blue-600 italic">Nuevo Producto</h3>
+                        <h3 class="font-black uppercase text-xs mb-6 text-blue-600 italic">Nuevo Item</h3>
                         <div class="space-y-4">
-                            <input id="prod-nombre" type="text" placeholder="Nombre (ej: Fusible 1000A)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium">
-                            <input id="prod-sku" type="text" placeholder="SKU (ej: CL52)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium uppercase">
-                            <input id="prod-marca" type="text" placeholder="Marca (ej: Eaton)" class="w-full p-3 bg-slate-50 border rounded-xl text-sm font-medium">
-                            <button onclick="guardarProducto()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Guardar en Base de Datos</button>
+                            <input id="prod-nombre" type="text" placeholder="Producto" class="input-pro">
+                            <input id="prod-sku" type="text" placeholder="SKU" class="input-pro uppercase">
+                            <input id="prod-marca" type="text" placeholder="Marca" class="input-pro">
+                            <button onclick="guardarProducto()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Añadir a Catálogo</button>
                         </div>
                     </div>
                     <div class="col-span-2 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
-                        <h3 class="font-black uppercase text-xs mb-6">Inventario Real</h3>
+                        <h3 class="font-black uppercase text-xs mb-6">Inventario Maestro</h3>
                         <table class="w-full text-left">
                             <thead class="text-[9px] font-black uppercase text-slate-400 border-b">
                                 <tr><th class="pb-4">Descripción</th><th class="pb-4">SKU</th><th class="pb-4">Marca</th></tr>
                             </thead>
-                            <tbody id="tabla-productos" class="divide-y text-sm"></tbody>
+                            <tbody id="tabla-productos" class="divide-y text-sm italic"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <div id="view-perfil" class="view-content hidden p-20 text-center font-bold">Módulo Perfil Empresa</div>
-            <div id="view-docuflow" class="view-content hidden p-20 text-center font-bold">Módulo DocuFlow AI</div>
         </div>
     </main>
 
     <script>
-        // --- CONFIGURACIÓN ÚNICA ---
+        // --- CONFIGURACIÓN SUPABASE ---
         const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co"; 
         const SB_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+        const client = window.supabase.createClient(SB_URL, SB_KEY);
 
-        // Usamos un nombre que no choque con nada
-        const clienteSupabase = window.supabase.createClient(SB_URL, SB_KEY);
-
-        // FUNCIÓN DE NAVEGACIÓN
+        // NAVEGACIÓN
         function switchView(viewId) {
-            // Ocultar todas las vistas
-            const allViews = document.querySelectorAll('.view-content');
-            allViews.forEach(v => v.classList.add('hidden'));
-
-            // Quitar estilo activo de botones
-            const allBtns = document.querySelectorAll('.sidebar-item');
-            allBtns.forEach(b => b.classList.remove('active-nav', 'text-white'));
-
-            // Mostrar la seleccionada
-            const target = document.getElementById('view-' + viewId);
-            if (target) {
-                target.classList.remove('hidden');
-                document.getElementById('nav-' + viewId).classList.add('active-nav', 'text-white');
-                document.getElementById('current-title').innerText = viewId.toUpperCase();
-            }
-
+            document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active-nav', 'text-white'));
+            document.getElementById('view-' + viewId).classList.remove('hidden');
+            document.getElementById('nav-' + viewId).classList.add('active-nav', 'text-white');
+            document.getElementById('current-title').innerText = viewId.replace('-', ' ').toUpperCase();
+            
             if(viewId === 'catalogo') cargarProductos();
+            if(viewId === 'perfil') cargarPerfil();
             lucide.createIcons();
         }
 
-        async function cargarProductos() {
-            const { data, error } = await clienteSupabase.from('productos').select('*');
-            if (error) {
-                console.error("Error al cargar:", error.message);
-                return;
+        // FUNCIONES PERFIL
+        async function cargarPerfil() {
+            const { data } = await client.from('perfil').select('*').limit(1).single();
+            if(data) {
+                document.getElementById('p-social').value = data.razon_social;
+                document.getElementById('p-rut').value = data.rut;
+                document.getElementById('p-banco').value = data.banco;
+                document.getElementById('p-cuenta').value = data.n_cuenta;
+                document.getElementById('p-email').value = data.email;
             }
+        }
+
+        async function guardarPerfil() {
+            const updates = {
+                id: 1, // Usaremos un ID fijo para que siempre se sobrescriba el mismo perfil
+                razon_social: document.getElementById('p-social').value,
+                rut: document.getElementById('p-rut').value,
+                banco: document.getElementById('p-banco').value,
+                n_cuenta: document.getElementById('p-cuenta').value,
+                email: document.getElementById('p-email').value
+            };
+            const { error } = await client.from('perfil').upsert(updates);
+            if(error) alert("Error: " + error.message);
+            else alert("¡Perfil Corporativo Actualizado!");
+        }
+
+        // FUNCIONES CATÁLOGO
+        async function cargarProductos() {
+            const { data } = await client.from('productos').select('*');
             const tabla = document.getElementById('tabla-productos');
-            tabla.innerHTML = data.map(p => `
-                <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-4 font-bold">${p.nombre}</td>
-                    <td class="py-4 font-mono text-blue-600">${p.sku}</td>
-                    <td class="py-4 text-slate-500">${p.marca}</td>
-                </tr>
-            `).join('');
+            tabla.innerHTML = data.map(p => `<tr class="hover:bg-slate-50"><td class="py-4 font-bold">${p.nombre}</td><td class="py-4 font-mono text-blue-600">${p.sku}</td><td class="py-4 text-slate-400">${p.marca}</td></tr>`).join('');
         }
 
         async function guardarProducto() {
-            const nombre = document.getElementById('prod-nombre').value;
-            const sku = document.getElementById('prod-sku').value;
-            const marca = document.getElementById('prod-marca').value;
-
-            if(!nombre || !sku) return alert("Nombre y SKU son obligatorios");
-
-            const { error } = await clienteSupabase.from('productos').insert([{ nombre, sku, marca }]);
-            
-            if (error) {
-                alert("Error: " + error.message);
-            } else {
-                alert("¡Guardado con éxito!");
-                document.getElementById('prod-nombre').value = "";
-                document.getElementById('prod-sku').value = "";
-                document.getElementById('prod-marca').value = "";
-                cargarProductos();
-            }
+            const { error } = await client.from('productos').insert([{ 
+                nombre: document.getElementById('prod-nombre').value,
+                sku: document.getElementById('prod-sku').value,
+                marca: document.getElementById('prod-marca').value
+            }]);
+            if(error) alert(error.message);
+            else { alert("Producto añadido"); cargarProductos(); }
         }
 
-        window.onload = () => { lucide.createIcons(); };
+        window.onload = () => lucide.createIcons();
     </script>
 </body>
 </html>
