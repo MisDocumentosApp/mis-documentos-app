@@ -26,36 +26,28 @@
                 <a href="perfil.html" class="flex items-center gap-3 p-4 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg text-decoration-none"><i data-lucide="building-2" size="18"></i> Perfil Empresa</a>
             </nav>
         </div>
-        <div class="mt-auto p-6 bg-black/20 text-[10px] text-slate-500 font-bold uppercase tracking-widest text-center">
-            <p>Servicios Mapue SPA</p>
-            <p class="text-blue-500 mt-1">+569 7790 5977</p>
-        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
         <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
-            <h2 class="italic font-black text-xl tracking-tighter uppercase">Información <span class="text-blue-600">Comercial</span></h2>
-            
-            <button onclick="generarPDF()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 hover:bg-emerald-700 hover:-translate-y-0.5 transition-all shadow-lg shadow-emerald-600/20">
+            <h2 class="italic font-black text-xl tracking-tighter uppercase">Perfil <span class="text-blue-600">Empresa</span></h2>
+            <button onclick="generarPDF()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 hover:bg-emerald-700 transition-all shadow-lg">
                 <i data-lucide="file-text" size="16"></i> Generar Ficha PDF
             </button>
         </header>
 
         <div class="flex-1 overflow-auto p-10">
             <div class="max-w-4xl mx-auto space-y-8 pb-10">
-                
                 <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
-                    <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-[0.2em] mb-8 flex items-center gap-2 italic">
-                        <i data-lucide="briefcase" size="14"></i> Antecedentes de la Empresa
-                    </h3>
+                    <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-[0.2em] mb-8 flex items-center gap-2 italic">Antecedentes de la Empresa</h3>
                     <div class="grid grid-cols-2 gap-6">
-                        <div class="col-span-2"><label>Razón Social</label><input id="razon_social" class="input-box"></div>
-                        <div><label>RUT Empresa</label><input id="rut" class="input-box font-mono"></div>
-                        <div><label>Giro/Actividad</label><input id="giro" class="input-box"></div>
-                        <div class="col-span-2"><label>Dirección</label><input id="direccion" class="input-box"></div>
-                        <div><label>Teléfono</label><input id="telefono" class="input-box"></div>
-                        <div><label>Correo</label><input id="correo" class="input-box"></div>
-                        <div><label>Sitio Web</label><input id="web" class="input-box"></div>
+                        <div class="col-span-2"><label>Razón Social</label><input id="razon_social" placeholder="Nombre completo de la empresa" class="input-box"></div>
+                        <div><label>RUT Empresa</label><input id="rut" placeholder="12.345.678-9" class="input-box"></div>
+                        <div><label>Giro o Actividad</label><input id="giro" placeholder="Actividad comercial" class="input-box"></div>
+                        <div class="col-span-2"><label>Dirección</label><input id="direccion" placeholder="Calle, Número, Oficina, Ciudad" class="input-box"></div>
+                        <div><label>Teléfono</label><input id="telefono" placeholder="+569 ..." class="input-box"></div>
+                        <div><label>Correo Electrónico</label><input id="correo" placeholder="ejemplo@correo.cl" class="input-box"></div>
+                        <div><label>Sitio Web</label><input id="web" placeholder="www.tusitio.cl" class="input-box"></div>
                     </div>
                 </div>
 
@@ -63,30 +55,28 @@
                     <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
                         <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-widest mb-6 italic">Contacto</h3>
                         <div class="space-y-4">
-                            <div><label>Nombre Representante</label><input id="nombre_contacto" class="input-box"></div>
-                            <div><label>RUT Representante</label><input id="rut_contacto" class="input-box"></div>
+                            <div><label>Nombre de Contacto</label><input id="nombre_contacto" class="input-box"></div>
+                            <div><label>RUT Contacto</label><input id="rut_contacto" class="input-box"></div>
                         </div>
                     </div>
                     <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
-                        <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-widest mb-6 italic">Datos Bancarios</h3>
+                        <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-widest mb-6 italic">Instrucciones de Pago</h3>
                         <div class="space-y-4">
                             <div><label>Banco</label><input id="banco" class="input-box"></div>
-                            <div><label>Tipo y N° Cuenta</label><input id="num_cuenta" placeholder="Ej: Corriente / 123456" class="input-box"></div>
-                            <div><label>Email para Pagos</label><input id="email_pago" class="input-box"></div>
+                            <div><label>Tipo y N° de Cuenta</label><input id="num_cuenta" placeholder="Corriente / 12345678" class="input-box"></div>
+                            <div><label>Email Comprobante</label><input id="email_pago" class="input-box"></div>
                         </div>
                     </div>
                 </div>
-
-                <button onclick="guardar()" id="btn-save" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:bg-black transition-all shadow-xl">Actualizar Datos Maestros</button>
+                <button onclick="guardar()" id="btn-save" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:bg-black transition-all shadow-xl">Actualizar Información</button>
             </div>
         </div>
     </main>
 
     <script>
-        // *** CONFIGURACIÓN - PEGA TUS LLAVES AQUÍ ***
-        const URL_SUPA = "https://xnarwetyjeijkitzivno.supabase.co"; 
-        const KEY_SUPA = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-        const db = window.supabase.createClient(URL_SUPA, KEY_SUPA);
+        const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co"; // URL del Proyecto
+        const SB_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W"; // Tu Key de Supabase
+        const db = window.supabase.createClient(SB_URL, SB_KEY);
 
         async function cargar() {
             const { data } = await db.from('perfil').select('*').limit(1).single();
@@ -102,14 +92,12 @@
         async function guardar() {
             const btn = document.getElementById('btn-save');
             btn.innerText = "PROCESANDO...";
-            
             const campos = ['razon_social','rut','giro','direccion','telefono','correo','web','nombre_contacto','rut_contacto','banco','num_cuenta','email_pago'];
             const valores = {};
-            campos.forEach(c => { valores[c] = document.getElementById(c).value; });
+            campos.forEach(c => valores[c] = document.getElementById(c).value);
 
             const { data: exist } = await db.from('perfil').select('id');
             let error;
-            
             if (exist && exist.length > 0) {
                 const { error: err } = await db.from('perfil').update(valores).eq('id', exist[0].id);
                 error = err;
@@ -118,9 +106,9 @@
                 error = err;
             }
 
-            if (error) alert("Error al guardar: " + error.message);
-            else alert("¡Información actualizada!");
-            btn.innerText = "ACTUALIZAR DATOS MAESTROS";
+            if (error) alert("Error: " + error.message);
+            else alert("¡Información guardada!");
+            btn.innerText = "ACTUALIZAR INFORMACIÓN";
         }
 
         function generarPDF() {
@@ -128,21 +116,16 @@
             const doc = new jsPDF();
             const val = (id) => document.getElementById(id).value.toUpperCase();
 
-            // 1. CABECERA CORPORATIVA (FONDO OSCURO)
             doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
             doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text(val('razon_social'), 20, 25);
+            doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text(val('razon_social'), 20, 25);
             doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("INFORMACIÓN COMERCIAL Y BANCARIA", 20, 35);
-            doc.setFontSize(8); doc.text(`Documento generado el: ${new Date().toLocaleDateString()}`, 160, 15);
 
-            // 2. SECCIÓN: ANTECEDENTES
             doc.setTextColor(37, 99, 235); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("ANTECEDENTES DE LA EMPRESA", 20, 65);
-            
             doc.autoTable({
                 startY: 70, margin: { left: 20, right: 20 },
                 theme: 'grid',
-                headStyles: { fillColor: [248, 250, 252], textColor: [71, 85, 105], fontSize: 8, fontStyle: 'bold' },
-                bodyStyles: { fontSize: 9, textColor: [15, 23, 42] },
+                headStyles: { fillColor: [248, 250, 252], textColor: [71, 85, 105], fontSize: 8 },
                 head: [['RAZÓN SOCIAL', 'RUT/NIF']],
                 body: [[val('razon_social'), val('rut')]]
             });
@@ -150,52 +133,28 @@
             doc.autoTable({
                 startY: doc.lastAutoTable.finalY + 5, margin: { left: 20, right: 20 },
                 theme: 'plain',
-                bodyStyles: { fontSize: 9, cellPadding: 2 },
-                body: [
-                    ['GIRO/ACTIVIDAD:', val('giro')],
-                    ['CONTACTO TELEFÓNICO:', val('telefono')],
-                    ['DIRECCIÓN:', val('direccion')],
-                    ['CORREO ELECTRÓNICO:', val('correo')],
-                    ['SITIO WEB:', val('web')]
-                ],
+                bodyStyles: { fontSize: 9 },
+                body: [['GIRO:', val('giro')], ['TELÉFONO:', val('telefono')], ['DIRECCIÓN:', val('direccion')], ['CORREO:', val('correo')], ['WEB:', val('web')]],
                 columnStyles: { 0: { fontStyle: 'bold', width: 60, textColor: [100, 116, 139] } }
             });
 
-            // 3. SECCIÓN: CONTACTO
             doc.autoTable({
                 startY: doc.lastAutoTable.finalY + 10, margin: { left: 20, right: 20 },
                 theme: 'grid',
-                headStyles: { fillColor: [248, 250, 252], textColor: [71, 85, 105], fontSize: 8 },
-                head: [['NOMBRE DE CONTACTO', 'RUT CONTACTO']],
+                head: [['NOMBRE CONTACTO', 'RUT CONTACTO']],
                 body: [[val('nombre_contacto'), val('rut_contacto')]]
             });
 
-            // 4. SECCIÓN: DATOS BANCARIOS
-            doc.setTextColor(37, 99, 235); doc.setFontSize(11); doc.text("INSTRUCCIONES PARA PAGO", 20, doc.lastAutoTable.finalY + 20);
+            doc.setTextColor(37, 99, 235); doc.setFontSize(11); doc.text("INSTRUCCIONES PARA PAGO", 20, doc.lastAutoTable.finalY + 15);
             doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 25, margin: { left: 20, right: 20 },
+                startY: doc.lastAutoTable.finalY + 20, margin: { left: 20, right: 20 },
                 theme: 'grid',
-                bodyStyles: { fontSize: 9, cellPadding: 4 },
-                body: [
-                    ['BANCO', val('banco')],
-                    ['TIPO Y N° DE CUENTA', val('num_cuenta')],
-                    ['NOMBRE TITULAR', val('razon_social')],
-                    ['RUT/ID TITULAR', val('rut')],
-                    ['EMAIL COMPROBANTE', val('email_pago')]
-                ],
+                body: [['BANCO', val('banco')], ['N° CUENTA', val('num_cuenta')], ['TITULAR', val('razon_social')], ['RUT', val('rut')], ['EMAIL', val('email_pago')]],
                 columnStyles: { 0: { fillColor: [248, 250, 252], fontStyle: 'bold', width: 60 } }
             });
 
-            // 5. NOTA FINAL (RECUADRO AMARILLO)
-            const posY = doc.lastAutoTable.finalY + 15;
-            doc.setFillColor(254, 243, 199); doc.rect(20, posY, 170, 25, 'F');
-            doc.setTextColor(146, 64, 14); doc.setFontSize(9); doc.setFont("helvetica", "bold"); doc.text("NOTA IMPORTANTE", 25, posY + 10);
-            doc.setFont("helvetica", "normal"); doc.text("Por favor, enviar siempre el comprobante de transferencia al correo indicado haciendo", 25, posY + 16);
-            doc.text("referencia al número de Nota de Venta o Factura para procesar su despacho rápidamente.", 25, posY + 21);
-
             doc.save(`Ficha_Comercial_${val('razon_social')}.pdf`);
         }
-
         window.onload = cargar;
     </script>
 </body>
