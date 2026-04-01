@@ -107,9 +107,11 @@
 
     <script>
         // CONFIGURACIÓN (RECUERDA PONER TUS LLAVES AQUÍ)
-        const URL = "https://xnarwetyjeijkitzivno.supabase.co";
-        const KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-        const db = window.supabase.createClient(URL, KEY);
+        const supabaseUrl = "https://xnarwetyjeijkitzivno.supabase.co"; 
+const supabaseKey = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+
+// Esta es la línea que "conecta" todo:
+const db = supabase.createClient(supabaseUrl, supabaseKey);
 
         async function cargar() {
             const { data } = await db.from('productos').select('*').order('created_at', { ascending: false });
