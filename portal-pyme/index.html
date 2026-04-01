@@ -3,104 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Documentos | Herramientas Completas</title>
+    <title>Catálogo Pro | Gestión de Productos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         .active-nav { background-color: #2563eb !important; color: white !important; }
-        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 700; font-size: 14px; color: #94a3b8; }
-        .sidebar-item:hover:not(.active-nav) { background-color: #1e293b; color: white; }
-        .view-content { animation: fadeIn 0.3s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        .sidebar-item { transition: all 0.2s ease; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 10px; font-weight: 600; font-size: 14px; color: #94a3b8; }
         .hidden { display: none !important; }
-        .input-pro { width: 100%; padding: 12px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; font-weight: 500; }
     </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-900 overflow-hidden h-screen flex">
+<body class="bg-[#f8fafc] font-sans flex h-screen overflow-hidden">
 
-    <aside class="w-64 bg-[#0f172a] text-white flex flex-col shrink-0">
-        <div class="p-6">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="box" size="20"></i></div>
-                <div>
-                    <h1 class="text-sm font-black uppercase leading-none">Mis Documentos</h1>
-                    <span class="text-[9px] text-blue-400 font-bold uppercase tracking-widest">Portal Pyme AI</span>
-                </div>
+    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0 border-r border-white/5">
+        <div class="p-8">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="package" size="24"></i></div>
+                <h1 class="text-xl font-black tracking-tighter">Catálogo<span class="text-blue-500">Pro</span></h1>
             </div>
-            <nav class="space-y-1">
-                <div onclick="switchView('dashboard')" id="nav-dashboard" class="sidebar-item active-nav"><i data-lucide="layout-grid" size="18"></i> Dashboard</div>
-                <div onclick="switchView('perfil')" id="nav-perfil" class="sidebar-item"><i data-lucide="building-2" size="18"></i> Perfil Empresa</div>
-                <div onclick="switchView('docuflow')" id="nav-docuflow" class="sidebar-item"><i data-lucide="cpu" size="18"></i> DocuFlow AI</div>
-                <div onclick="switchView('catalogo')" id="nav-catalogo" class="sidebar-item"><i data-lucide="database" size="18"></i> Catálogo Pro</div>
+
+            <div class="mb-8">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-4">Empresa Actual</p>
+                <select class="w-full bg-slate-800 border-none rounded-lg p-3 text-sm font-bold">
+                    <option>Empresa Principal</option>
+                </select>
+            </div>
+
+            <nav class="space-y-2">
+                <div onclick="switchView('catalogo')" id="nav-catalogo" class="sidebar-item active-nav"><i data-lucide="list"></i> Inventario</div>
+                <div onclick="switchView('nuevo')" id="nav-nuevo" class="sidebar-item"><i data-lucide="plus-circle"></i> Nuevo Producto</div>
             </nav>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-8">
-            <h2 id="current-title" class="text-[10px] font-black uppercase tracking-widest text-slate-400">Dashboard</h2>
+    <main class="flex-1 flex flex-col">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-10">
+            <h2 class="text-xl font-bold text-slate-800" id="view-title">Lista de Productos</h2>
+            <div class="flex items-center gap-4">
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-2.5 text-slate-400" size="18"></i>
+                    <input type="text" placeholder="Buscar por SKU o Item..." class="pl-10 pr-4 py-2 bg-slate-100 border-none rounded-lg text-sm w-64">
+                </div>
+            </div>
         </header>
 
         <div class="flex-1 overflow-auto p-10">
             
-            <div id="view-dashboard" class="view-content">
-                <div class="bg-blue-600 rounded-[2.5rem] p-16 text-white shadow-xl">
-                    <h2 class="text-5xl font-black mb-4 tracking-tighter">Panel de Control</h2>
-                    <p class="text-blue-100 font-medium">Bienvenido Alejandro. Tu ecosistema digital está listo.</p>
+            <div id="view-catalogo" class="view-content">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-50 border-b border-slate-200">
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th class="p-6">Foto</th>
+                                <th class="p-6">SKU / ENGIE</th>
+                                <th class="p-6">Item</th>
+                                <th class="p-6">Marca/Fabricante</th>
+                                <th class="p-6">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-productos" class="divide-y divide-slate-100 text-sm">
+                            </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div id="view-perfil" class="view-content hidden">
-                <div class="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-sm max-w-4xl">
-                    <div class="flex justify-between items-center mb-10">
-                        <h3 class="text-xl font-black text-blue-600 uppercase italic">Ficha Corporativa</h3>
-                        <button onclick="guardarPerfil()" class="bg-blue-600 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest">Actualizar Datos</button>
-                    </div>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Razón Social</label><input id="p-social" class="input-pro" placeholder="MAPUE SPA"></div>
-                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">RUT Empresa</label><input id="p-rut" class="input-pro" placeholder="77.xxx.xxx-x"></div>
-                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Banco</label><input id="p-banco" class="input-pro" placeholder="Ej: Banco Chile"></div>
-                        <div><label class="text-[9px] font-black uppercase text-slate-400 ml-2">N° Cuenta Corriente</label><input id="p-cuenta" class="input-pro" placeholder="000-xxxx-xx"></div>
-                        <div class="col-span-2"><label class="text-[9px] font-black uppercase text-slate-400 ml-2">Email de Contacto</label><input id="p-email" class="input-pro" placeholder="correo@empresa.cl"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="view-docuflow" class="view-content hidden text-center py-20">
-                <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-8 text-indigo-600">
-                    <i data-lucide="zap" size="32"></i>
-                </div>
-                <h3 class="text-3xl font-black uppercase mb-4 tracking-tighter">Inyector de Licitaciones</h3>
-                <p class="text-slate-500 mb-12 max-w-sm mx-auto font-medium">Sube tu archivo Word para que la IA inyecte tus productos del catálogo automáticamente.</p>
-                
-                <div class="border-4 border-dashed border-slate-200 rounded-[3rem] p-20 max-w-2xl mx-auto bg-white hover:border-blue-400 transition-all group cursor-pointer relative">
-                    <input type="file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="alert('Archivo detectado. Procesando...')">
-                    <i data-lucide="upload-cloud" class="mx-auto text-slate-300 mb-4 group-hover:text-blue-500 transition-colors" size="48"></i>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Arrastra tu archivo aquí</p>
-                </div>
-            </div>
-
-            <div id="view-catalogo" class="view-content hidden">
-                <div class="grid grid-cols-3 gap-8">
-                    <div class="col-span-1 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm h-fit">
-                        <h3 class="font-black uppercase text-xs mb-6 text-blue-600 italic">Nuevo Item</h3>
+            <div id="view-nuevo" class="view-content hidden">
+                <div class="max-w-4xl bg-white p-10 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <div class="grid grid-cols-2 gap-8 mb-8">
                         <div class="space-y-4">
-                            <input id="prod-nombre" type="text" placeholder="Producto" class="input-pro">
-                            <input id="prod-sku" type="text" placeholder="SKU" class="input-pro uppercase">
-                            <input id="prod-marca" type="text" placeholder="Marca" class="input-pro">
-                            <button onclick="guardarProducto()" class="w-full bg-blue-600 text-white p-4 rounded-xl font-black uppercase text-[10px] tracking-widest">Añadir a Catálogo</button>
+                            <label class="text-xs font-bold text-slate-400 uppercase">Datos Generales</label>
+                            <input id="in-item" type="text" placeholder="Nombre del Producto" class="w-full p-4 bg-slate-50 border rounded-xl font-bold text-sm">
+                            <input id="in-sku" type="text" placeholder="SKU Único" class="w-full p-4 bg-slate-50 border rounded-xl font-bold text-sm uppercase">
+                            <input id="in-marca" type="text" placeholder="Marca o Fabricante" class="w-full p-4 bg-slate-50 border rounded-xl font-bold text-sm">
+                        </div>
+                        <div class="space-y-4">
+                            <label class="text-xs font-bold text-slate-400 uppercase">Archivos Técnicos</label>
+                            <div class="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center hover:border-blue-400 cursor-pointer">
+                                <input type="file" id="in-ficha" class="hidden" onchange="actualizarNombreArchivo(this)">
+                                <label for="in-ficha" class="cursor-pointer">
+                                    <i data-lucide="file-up" class="mx-auto text-slate-300 mb-2"></i>
+                                    <p id="label-archivo" class="text-[10px] font-black text-slate-400 uppercase">Subir Ficha Técnica (PDF)</p>
+                                </label>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-span-2 bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm">
-                        <h3 class="font-black uppercase text-xs mb-6">Inventario Maestro</h3>
-                        <table class="w-full text-left">
-                            <thead class="text-[9px] font-black uppercase text-slate-400 border-b">
-                                <tr><th class="pb-4">Descripción</th><th class="pb-4">SKU</th><th class="pb-4">Marca</th></tr>
-                            </thead>
-                            <tbody id="tabla-productos" class="divide-y text-sm italic"></tbody>
-                        </table>
-                    </div>
+                    <button onclick="procesarGuardado()" class="bg-blue-600 text-white w-full py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-lg shadow-blue-600/20">Registrar en Catálogo</button>
                 </div>
             </div>
 
@@ -108,68 +96,80 @@
     </main>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
-        const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co"; 
+        const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co";
         const SB_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-        const client = window.supabase.createClient(SB_URL, SB_KEY);
+        const supabase = window.supabase.createClient(SB_URL, SB_KEY);
 
-        // NAVEGACIÓN
-        function switchView(viewId) {
+        function switchView(id) {
             document.querySelectorAll('.view-content').forEach(v => v.classList.add('hidden'));
             document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active-nav', 'text-white'));
-            document.getElementById('view-' + viewId).classList.remove('hidden');
-            document.getElementById('nav-' + viewId).classList.add('active-nav', 'text-white');
-            document.getElementById('current-title').innerText = viewId.replace('-', ' ').toUpperCase();
-            
-            if(viewId === 'catalogo') cargarProductos();
-            if(viewId === 'perfil') cargarPerfil();
+            document.getElementById('view-' + id).classList.remove('hidden');
+            document.getElementById('nav-' + id).classList.add('active-nav', 'text-white');
+            if(id === 'catalogo') cargarData();
             lucide.createIcons();
         }
 
-        // FUNCIONES PERFIL
-        async function cargarPerfil() {
-            const { data } = await client.from('perfil').select('*').limit(1).single();
-            if(data) {
-                document.getElementById('p-social').value = data.razon_social;
-                document.getElementById('p-rut').value = data.rut;
-                document.getElementById('p-banco').value = data.banco;
-                document.getElementById('p-cuenta').value = data.n_cuenta;
-                document.getElementById('p-email').value = data.email;
-            }
-        }
-
-        async function guardarPerfil() {
-            const updates = {
-                id: 1, // Usaremos un ID fijo para que siempre se sobrescriba el mismo perfil
-                razon_social: document.getElementById('p-social').value,
-                rut: document.getElementById('p-rut').value,
-                banco: document.getElementById('p-banco').value,
-                n_cuenta: document.getElementById('p-cuenta').value,
-                email: document.getElementById('p-email').value
-            };
-            const { error } = await client.from('perfil').upsert(updates);
-            if(error) alert("Error: " + error.message);
-            else alert("¡Perfil Corporativo Actualizado!");
-        }
-
-        // FUNCIONES CATÁLOGO
-        async function cargarProductos() {
-            const { data } = await client.from('productos').select('*');
+        async function cargarData() {
+            const { data } = await supabase.from('productos').select('*');
             const tabla = document.getElementById('tabla-productos');
-            tabla.innerHTML = data.map(p => `<tr class="hover:bg-slate-50"><td class="py-4 font-bold">${p.nombre}</td><td class="py-4 font-mono text-blue-600">${p.sku}</td><td class="py-4 text-slate-400">${p.marca}</td></tr>`).join('');
+            tabla.innerHTML = data.map(p => `
+                <tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-6"><div class="w-10 h-10 bg-slate-100 rounded-lg flex items-center justify-center text-slate-400"><i data-lucide="image" size="16"></i></div></td>
+                    <td class="p-6 font-bold text-slate-900">${p.sku}</td>
+                    <td class="p-6 font-medium text-slate-500">${p.nombre}</td>
+                    <td class="p-6 text-slate-400 italic">${p.marca}</td>
+                    <td class="p-6">
+                        <div class="flex gap-2">
+                            <button onclick="generarPDF('${p.nombre}', '${p.sku}', '${p.marca}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><i data-lucide="file-text" size="18"></i></button>
+                            <a href="${p.url_ficha}" target="_blank" class="p-2 text-slate-400 hover:bg-slate-100 rounded-lg ${p.url_ficha ? '' : 'opacity-0 pointer-events-none'}"><i data-lucide="eye" size="18"></i></a>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
         }
 
-        async function guardarProducto() {
-            const { error } = await client.from('productos').insert([{ 
-                nombre: document.getElementById('prod-nombre').value,
-                sku: document.getElementById('prod-sku').value,
-                marca: document.getElementById('prod-marca').value
+        async function procesarGuardado() {
+            const file = document.getElementById('in-ficha').files[0];
+            let urlFicha = "";
+
+            if(file) {
+                const fileName = `${Date.now()}_${file.name}`;
+                const { data, error } = await supabase.storage.from('fichas').upload(fileName, file);
+                if(data) {
+                    const { data: urlData } = supabase.storage.from('fichas').getPublicUrl(fileName);
+                    urlFicha = urlData.publicUrl;
+                }
+            }
+
+            const { error } = await supabase.from('productos').insert([{
+                nombre: document.getElementById('in-item').value,
+                sku: document.getElementById('in-sku').value,
+                marca: document.getElementById('in-marca').value,
+                url_ficha: urlFicha
             }]);
-            if(error) alert(error.message);
-            else { alert("Producto añadido"); cargarProductos(); }
+
+            if(!error) { alert("¡Producto y Ficha guardados!"); switchView('catalogo'); }
         }
 
-        window.onload = () => lucide.createIcons();
+        function generarPDF(nombre, sku, marca) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.setFont("helvetica", "bold");
+            doc.text("FICHA TÉCNICA DE PRODUCTO", 20, 20);
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Producto: ${nombre}`, 20, 40);
+            doc.text(`SKU: ${sku}`, 20, 50);
+            doc.text(`Marca: ${marca}`, 20, 60);
+            doc.save(`Ficha_${sku}.pdf`);
+        }
+
+        function actualizarNombreArchivo(input) {
+            if(input.files[0]) document.getElementById('label-archivo').innerText = input.files[0].name;
+        }
+
+        window.onload = () => { lucide.createIcons(); cargarData(); };
     </script>
 </body>
 </html>
