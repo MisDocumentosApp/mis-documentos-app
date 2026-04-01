@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Ficha Comercial Pro</title>
+    <title>Ficha Comercial - Tamaño Oficio</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -13,36 +13,39 @@
             --border: #e2e8f0;
         }
 
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #334155; }
-        .container { max-width: 850px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-
-        /* HEADER CON LOGO EDITABLE */
-        .header-pro { border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 10px; color: #334155; }
         
-        .logo-container { width: 120px; height: 120px; border: 2px dashed #cbd5e1; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: #f8fafc; }
+        /* Ajuste de contenedor para aprovechar el largo del Oficio */
+        .container { max-width: 800px; margin: 0 auto; padding: 15px; background: white; border-radius: 4px; }
+
+        /* Header más compacto */
+        .header-pro { border-bottom: 3px solid var(--primary); padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-container { width: 100px; height: 100px; border: 1px dashed #cbd5e1; border-radius: 4px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; background: #f8fafc; }
         .logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
-        .logo-placeholder { font-size: 0.7rem; color: #94a3b8; text-align: center; padding: 5px; }
+        .logo-placeholder { font-size: 0.6rem; color: #94a3b8; text-align: center; }
 
-        .title-area { text-align: right; flex-grow: 1; }
-        .header-pro h1 { color: var(--primary); text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
-        .header-pro p { margin: 5px 0 0; color: #64748b; font-weight: 500; }
+        .title-area { text-align: right; }
+        .header-pro h1 { color: var(--primary); text-transform: uppercase; margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+        .header-pro p { margin: 2px 0 0; color: #64748b; font-size: 0.85rem; font-weight: 500; }
 
-        /* SECCIONES */
-        .card { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
-        .card-header { background: #f8fafc; padding: 12px 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; }
-        .card-header::before { content: ""; width: 4px; height: 16px; background: var(--accent); margin-right: 12px; border-radius: 2px; }
+        /* Tarjetas con menos margen para evitar el salto de página */
+        .card { border: 1px solid var(--border); border-radius: 4px; margin-bottom: 12px; overflow: hidden; }
+        .card-header { background: #f8fafc; padding: 8px 15px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+        .card-header::before { content: ""; width: 3px; height: 12px; background: var(--accent); margin-right: 8px; border-radius: 1px; }
 
-        .grid-form { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 20px; align-items: center; }
-        .label { font-weight: 600; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
+        .grid-form { display: grid; grid-template-columns: 180px 1fr; gap: 8px; padding: 12px 15px; align-items: center; }
+        .label { font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
 
-        input.pro-field { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; box-sizing: border-box; transition: 0.2s; }
-        input.pro-field:focus { outline: none; border-color: var(--accent); background: #f0fdfa; }
+        input.pro-field { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 3px; font-size: 0.9rem; box-sizing: border-box; }
+        
+        .btn-pdf { width: 100%; padding: 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; text-transform: uppercase; background: var(--accent); color: white; font-size: 0.9rem; margin-top: 5px; }
 
-        /* BOTÓN ÚNICO PDF */
-        .btn-pdf { width: 100%; padding: 18px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; background: var(--accent); color: white; font-size: 1rem; margin-top: 10px; }
-        .btn-pdf:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); }
-
-        @media print { .btn-pdf, .logo-placeholder { display: none; } .container { box-shadow: none; } }
+        @media print { 
+            .btn-pdf, .logo-placeholder { display: none !important; } 
+            .container { box-shadow: none; border: none; padding: 0; }
+            body { background: white; padding: 0; }
+        }
     </style>
 </head>
 <body>
@@ -51,7 +54,7 @@
     <div class="header-pro">
         <div class="logo-container" onclick="document.getElementById('input-logo').click()">
             <img id="logo-preview" src="" style="display:none;">
-            <div id="placeholder-text" class="logo-placeholder">Haz clic para<br>subir tu logo</div>
+            <div id="placeholder-text" class="logo-placeholder">SUBIR LOGO</div>
         </div>
         <input type="file" id="input-logo" hidden accept="image/*" onchange="cargarLogo(event)">
 
@@ -91,64 +94,5 @@
         </div>
     </div>
 
-    <div class="card" style="border-left: 6px solid var(--accent);">
+    <div class="card" style="border-left: 5px solid var(--accent);">
         <div class="card-header" style="color: var(--accent);">Instrucciones para Pago</div>
-        <div class="grid-form">
-            <div class="label">Banco:</div>
-            <input type="text" class="pro-field">
-            <div class="label">Tipo de Cuenta:</div>
-            <input type="text" class="pro-field">
-            <div class="label">N° de Cuenta:</div>
-            <input type="text" class="pro-field">
-            <div class="label">Titular:</div>
-            <input type="text" class="pro-field">
-            <div class="label">RUT Titular:</div>
-            <input type="text" class="pro-field">
-            <div class="label">Email Comprobante:</div>
-            <input type="text" class="pro-field">
-        </div>
-    </div>
-
-    <button class="btn-pdf" id="btn-descarga" onclick="descargarPDF()">Descargar PDF Profesional</button>
-</div>
-
-<script>
-    function cargarLogo(event) {
-        const reader = new FileReader();
-        reader.onload = function(){
-            const output = document.getElementById('logo-preview');
-            const placeholder = document.getElementById('placeholder-text');
-            output.src = reader.result;
-            output.style.display = 'block';
-            placeholder.style.display = 'none';
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-
-    function actualizarTitulo(input) {
-        document.getElementById('display-razon').innerText = input.value || 'Ficha Comercial';
-    }
-
-    function descargarPDF() {
-        const element = document.getElementById('ficha-comercial');
-        const boton = document.getElementById('btn-descarga');
-        const razon = document.getElementById('razon_social').value || 'Ficha';
-        
-        boton.style.display = 'none'; // Ocultar botón en el PDF
-
-        const opt = {
-            margin: 10,
-            filename: `Ficha_Comercial_${razon}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            boton.style.display = 'block'; // Mostrar botón de nuevo
-        });
-    }
-</script>
-
-</body>
-</html>
