@@ -1,85 +1,56 @@
-<style>
-:root {
-    /* CAMBIA ESTE COLOR PARA PERSONALIZAR TODO EL SITIO */
-    --primary-color: #0f172a;    /* Azul Marino Mapue */
-    --accent-color: #0d9488;     /* Verde Esmeralda para acentos */
-    --bg-light: #f8fafc;
-    --text-main: #334155;
-}
-
-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-main); }
-
-.container-ficha { max-width: 900px; margin: 40px auto; padding: 20px; }
-
-/* CABECERA PROFESIONAL */
-.header-pro { border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
-.header-pro h1 { color: var(--primary-color); text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
-.header-pro span { color: var(--text-main); font-size: 0.9rem; font-weight: bold; }
-
-/* ESTILO DE TARJETAS */
-.card-comercial { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden; border: 1px solid #e2e8f0; }
-.card-comercial .card-title { background: var(--bg-light); padding: 12px 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; color: var(--primary-color); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; }
-.card-comercial .card-title::before { content: ""; width: 4px; height: 15px; background: var(--accent-color); margin-right: 10px; border-radius: 2px; }
-
-.info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 20px; }
-.label { font-weight: 600; font-size: 0.85rem; color: #64748b; text-transform: uppercase; }
-.value { font-size: 0.95rem; color: var(--text-main); }
-
-/* SECCIÓN DE PAGO (RESALTADA) */
-.pago-accent { border-left: 5px solid var(--accent-color); background-color: #f0fdfa; }
-</style>
-
 <div class="container-ficha">
     <div class="header-pro">
-        <div>
-            <h1>Del Solar Truck & Cars SpA</h1>
-            <p style="margin: 5px 0 0 0; color: #64748b;">Información Comercial y Bancaria</p>
-        </div>
-        <span>RUT: 76.779.159-3</span>
+        <h1>Configuración de Ficha Comercial</h1>
     </div>
 
     <div class="card-comercial">
         <div class="card-title">Antecedentes de la Empresa</div>
         <div class="info-grid">
             <div class="label">Razón Social:</div>
-            <div class="value">DEL SOLAR TRUCK & CARS SPA</div>
+            <input type="text" id="razon_social" class="input-pro" placeholder="Ej: Del Solar Truck & Cars SpA">
             
+            <div class="label">RUT Empresa:</div>
+            <input type="text" id="rut_empresa" class="input-pro" placeholder="76.XXX.XXX-X">
+
             <div class="label">Giro:</div>
-            <div class="value">VENTA POR INTERNET</div>
-
-            <div class="label">Dirección:</div>
-            <div class="value">Av. Manquehue Sur #520 Of. 205, Las Condes, Santiago</div>
-        </div>
-    </div>
-
-    <div class="card-comercial">
-        <div class="card-title">Información de Contacto</div>
-        <div class="info-grid">
-            <div class="label">Teléfono:</div>
-            <div class="value">+569 4743 6919</div>
-
-            <div class="label">Web:</div>
-            <div class="value">www.truckcars.cl</div>
-
-            <div class="label">Nombre Contacto:</div>
-            <div class="value">Alejandro Del Solar</div>
+            <input type="text" id="giro" class="input-pro">
         </div>
     </div>
 
     <div class="card-comercial pago-accent">
-        <div class="card-title" style="color: var(--accent-color);">Instrucciones para Pago</div>
+        <div class="card-title" style="color: var(--accent-color);">Datos Bancarios</div>
         <div class="info-grid">
             <div class="label">Banco:</div>
-            <div class="value">SANTANDER</div>
+            <input type="text" id="banco" class="input-pro">
 
-            <div class="label">Tipo y N° Cuenta:</div>
-            <div class="value">Cuenta Corriente / FSFDASDFSA</div>
-
-            <div class="label">Titular:</div>
-            <div class="value">DEL SOLAR TRUCK & CARS SPA</div>
-
-            <div class="label">Email Comprobante:</div>
-            <div class="value">sadelsolar@gmail.com</div>
+            <div class="label">N° Cuenta:</div>
+            <input type="text" id="n_cuenta" class="input-pro">
         </div>
     </div>
+
+    <button onclick="guardarPerfil()" class="btn-guardar">Guardar Cambios y Actualizar Ficha</button>
 </div>
+
+<style>
+/* Estilos adicionales para que los inputs no rompan el diseño pro */
+.input-pro {
+    border: 1px solid #cbd5e1;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    width: 100%;
+    color: var(--text-main);
+}
+.btn-guardar {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: 0.3s;
+}
+.btn-guardar:hover { opacity: 0.9; transform: translateY(-2px); }
+</style>
