@@ -2,28 +2,32 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha Comercial Pro</title>
+    <title>Generador de Ficha Comercial Pro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --primary: #0f172a; /* Azul Marino */
-            --accent: #0d9488;  /* Verde Mapue */
+            --primary: #0f172a;
+            --accent: #0d9488;
             --bg: #f8fafc;
             --white: #ffffff;
             --border: #e2e8f0;
         }
 
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #334155; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 20px; color: #334155; }
         .container { max-width: 850px; margin: 0 auto; padding: 20px; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
 
-        /* Estilo para el PDF */
-        #ficha-contenido { padding: 20px; }
+        /* HEADER CON LOGO EDITABLE */
+        .header-pro { border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; }
+        
+        .logo-container { width: 120px; height: 120px; border: 2px dashed #cbd5e1; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; position: relative; background: #f8fafc; }
+        .logo-container img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .logo-placeholder { font-size: 0.7rem; color: #94a3b8; text-align: center; padding: 5px; }
 
-        .header-pro { border-bottom: 4px solid var(--primary); padding-bottom: 15px; margin-bottom: 30px; }
+        .title-area { text-align: right; flex-grow: 1; }
         .header-pro h1 { color: var(--primary); text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
         .header-pro p { margin: 5px 0 0; color: #64748b; font-weight: 500; }
 
+        /* SECCIONES */
         .card { border: 1px solid var(--border); border-radius: 6px; margin-bottom: 25px; overflow: hidden; }
         .card-header { background: #f8fafc; padding: 12px 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; color: var(--primary); border-bottom: 1px solid var(--border); display: flex; align-items: center; }
         .card-header::before { content: ""; width: 4px; height: 16px; background: var(--accent); margin-right: 12px; border-radius: 2px; }
@@ -31,98 +35,118 @@
         .grid-form { display: grid; grid-template-columns: 200px 1fr; gap: 12px; padding: 20px; align-items: center; }
         .label { font-weight: 600; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
 
-        /* Inputs invisibles para que el PDF se vea limpio */
-        input.pro-field { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; box-sizing: border-box; }
+        input.pro-field { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.95rem; box-sizing: border-box; transition: 0.2s; }
         input.pro-field:focus { outline: none; border-color: var(--accent); background: #f0fdfa; }
 
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
-        .btn-save { background: var(--primary); color: white; }
-        .btn-pdf { background: var(--accent); color: white; }
-        .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+        /* BOTÓN ÚNICO PDF */
+        .btn-pdf { width: 100%; padding: 18px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; background: var(--accent); color: white; font-size: 1rem; margin-top: 10px; }
+        .btn-pdf:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(13, 148, 136, 0.2); }
 
-        /* Estilo especial para PDF al imprimir */
-        @media print {
-            .btn-group { display: none; }
-            input.pro-field { border: none; padding: 0; }
-        }
+        @media print { .btn-pdf, .logo-placeholder { display: none; } .container { box-shadow: none; } }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div id="ficha-contenido">
-        <div class="header-pro">
+<div class="container" id="ficha-comercial">
+    <div class="header-pro">
+        <div class="logo-container" onclick="document.getElementById('input-logo').click()">
+            <img id="logo-preview" src="" style="display:none;">
+            <div id="placeholder-text" class="logo-placeholder">Haz clic para<br>subir tu logo</div>
+        </div>
+        <input type="file" id="input-logo" hidden accept="image/*" onchange="cargarLogo(event)">
+
+        <div class="title-area">
             <h1 id="display-razon">Ficha Comercial</h1>
             <p>Información Bancaria y de Contacto</p>
         </div>
+    </div>
 
-        <div class="card">
-            <div class="card-header">Antecedentes de la Empresa</div>
-            <div class="grid-form">
-                <div class="label">Razón Social:</div>
-                <input type="text" id="razon_social" class="pro-field" oninput="document.getElementById('display-razon').innerText = this.value || 'Ficha Comercial'">
-                <div class="label">RUT Empresa:</div>
-                <input type="text" id="rut_empresa" class="pro-field">
-                <div class="label">Giro / Actividad:</div>
-                <input type="text" id="giro" class="pro-field">
-                <div class="label">Dirección:</div>
-                <input type="text" id="direccion" class="pro-field">
-                <div class="label">Sitio Web:</div>
-                <input type="text" id="web" class="pro-field">
-            </div>
-        </div>
-
-        <div class="card">
-            <div class="card-header">Información de Contacto</div>
-            <div class="grid-form">
-                <div class="label">Nombre Contacto:</div>
-                <input type="text" id="nombre_contacto" class="pro-field">
-                <div class="label">RUT Contacto:</div>
-                <input type="text" id="rut_contacto" class="pro-field">
-                <div class="label">Teléfono:</div>
-                <input type="text" id="telefono" class="pro-field">
-                <div class="label">Email Corporativo:</div>
-                <input type="text" id="email_corp" class="pro-field">
-            </div>
-        </div>
-
-        <div class="card" style="border-left: 6px solid var(--accent);">
-            <div class="card-header" style="color: var(--accent);">Instrucciones para Pago</div>
-            <div class="grid-form">
-                <div class="label">Banco:</div>
-                <input type="text" id="banco" class="pro-field">
-                <div class="label">Tipo de Cuenta:</div>
-                <input type="text" id="tipo_cuenta" class="pro-field">
-                <div class="label">N° de Cuenta:</div>
-                <input type="text" id="n_cuenta" class="pro-field">
-                <div class="label">Titular:</div>
-                <input type="text" id="titular" class="pro-field">
-                <div class="label">RUT Titular:</div>
-                <input type="text" id="rut_titular" class="pro-field">
-                <div class="label">Email Comprobante:</div>
-                <input type="text" id="email_pago" class="pro-field">
-            </div>
+    <div class="card">
+        <div class="card-header">Antecedentes de la Empresa</div>
+        <div class="grid-form">
+            <div class="label">Razón Social:</div>
+            <input type="text" id="razon_social" class="pro-field" oninput="actualizarTitulo(this)">
+            <div class="label">RUT Empresa:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Giro / Actividad:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Dirección:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Sitio Web:</div>
+            <input type="text" class="pro-field">
         </div>
     </div>
 
-    <div class="btn-group">
-        <button class="btn btn-save" onclick="alert('Datos listos para Supabase')">Guardar en Sistema</button>
-        <button class="btn btn-pdf" onclick="generarPDF()">Descargar PDF Profesional</button>
+    <div class="card">
+        <div class="card-header">Información de Contacto</div>
+        <div class="grid-form">
+            <div class="label">Nombre Contacto:</div>
+            <input type="text" class="pro-field">
+            <div class="label">RUT Contacto:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Teléfono:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Email Corporativo:</div>
+            <input type="text" class="pro-field">
+        </div>
     </div>
+
+    <div class="card" style="border-left: 6px solid var(--accent);">
+        <div class="card-header" style="color: var(--accent);">Instrucciones para Pago</div>
+        <div class="grid-form">
+            <div class="label">Banco:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Tipo de Cuenta:</div>
+            <input type="text" class="pro-field">
+            <div class="label">N° de Cuenta:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Titular:</div>
+            <input type="text" class="pro-field">
+            <div class="label">RUT Titular:</div>
+            <input type="text" class="pro-field">
+            <div class="label">Email Comprobante:</div>
+            <input type="text" class="pro-field">
+        </div>
+    </div>
+
+    <button class="btn-pdf" id="btn-descarga" onclick="descargarPDF()">Descargar PDF Profesional</button>
 </div>
 
 <script>
-    function generarPDF() {
-        const elemento = document.getElementById('ficha-contenido');
+    function cargarLogo(event) {
+        const reader = new FileReader();
+        reader.onload = function(){
+            const output = document.getElementById('logo-preview');
+            const placeholder = document.getElementById('placeholder-text');
+            output.src = reader.result;
+            output.style.display = 'block';
+            placeholder.style.display = 'none';
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+    function actualizarTitulo(input) {
+        document.getElementById('display-razon').innerText = input.value || 'Ficha Comercial';
+    }
+
+    function descargarPDF() {
+        const element = document.getElementById('ficha-comercial');
+        const boton = document.getElementById('btn-descarga');
+        const razon = document.getElementById('razon_social').value || 'Ficha';
+        
+        boton.style.display = 'none'; // Ocultar botón en el PDF
+
         const opt = {
             margin: 10,
-            filename: 'Ficha_Comercial_' + document.getElementById('razon_social').value + '.pdf',
+            filename: `Ficha_Comercial_${razon}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
-        html2pdf().set(opt).from(elemento).save();
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            boton.style.display = 'block'; // Mostrar botón de nuevo
+        });
     }
 </script>
 
