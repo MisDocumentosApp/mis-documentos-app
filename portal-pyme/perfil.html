@@ -1,161 +1,85 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil Empresa | Generador de Ficha Comercial</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <style>
-        .input-box { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; transition: 0.3s; font-weight: 600; }
-        .input-box:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 6px; display: block; }
-    </style>
-</head>
-<body class="bg-[#f1f5f9] font-sans h-screen flex overflow-hidden">
+<style>
+:root {
+    /* CAMBIA ESTE COLOR PARA PERSONALIZAR TODO EL SITIO */
+    --primary-color: #0f172a;    /* Azul Marino Mapue */
+    --accent-color: #0d9488;     /* Verde Esmeralda para acentos */
+    --bg-light: #f8fafc;
+    --text-main: #334155;
+}
 
-    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0">
-        <div class="p-8">
-            <h1 class="text-xs font-black uppercase tracking-[0.3em] text-blue-400 mb-10 italic text-center">Mis Documentos</h1>
-            <nav class="space-y-2">
-                <a href="index.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none"><i data-lucide="home" size="18"></i> Dashboard</a>
-                <a href="catalogo.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
-                <a href="perfil.html" class="flex items-center gap-3 p-4 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg text-decoration-none"><i data-lucide="building-2" size="18"></i> Perfil Empresa</a>
-            </nav>
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-light); color: var(--text-main); }
+
+.container-ficha { max-width: 900px; margin: 40px auto; padding: 20px; }
+
+/* CABECERA PROFESIONAL */
+.header-pro { border-bottom: 3px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+.header-pro h1 { color: var(--primary-color); text-transform: uppercase; margin: 0; font-size: 1.8rem; letter-spacing: 1px; }
+.header-pro span { color: var(--text-main); font-size: 0.9rem; font-weight: bold; }
+
+/* ESTILO DE TARJETAS */
+.card-comercial { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 25px; overflow: hidden; border: 1px solid #e2e8f0; }
+.card-comercial .card-title { background: var(--bg-light); padding: 12px 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; color: var(--primary-color); border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; }
+.card-comercial .card-title::before { content: ""; width: 4px; height: 15px; background: var(--accent-color); margin-right: 10px; border-radius: 2px; }
+
+.info-grid { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 20px; }
+.label { font-weight: 600; font-size: 0.85rem; color: #64748b; text-transform: uppercase; }
+.value { font-size: 0.95rem; color: var(--text-main); }
+
+/* SECCIÓN DE PAGO (RESALTADA) */
+.pago-accent { border-left: 5px solid var(--accent-color); background-color: #f0fdfa; }
+</style>
+
+<div class="container-ficha">
+    <div class="header-pro">
+        <div>
+            <h1>Del Solar Truck & Cars SpA</h1>
+            <p style="margin: 5px 0 0 0; color: #64748b;">Información Comercial y Bancaria</p>
         </div>
-    </aside>
+        <span>RUT: 76.779.159-3</span>
+    </div>
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
-            <h2 class="italic font-black text-xl tracking-tighter uppercase">Perfil <span class="text-blue-600">Empresa</span></h2>
-            <button onclick="generarPDF()" class="bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black text-[10px] uppercase tracking-widest flex items-center gap-3 hover:bg-emerald-700 transition-all shadow-lg">
-                <i data-lucide="file-text" size="16"></i> Generar Ficha PDF
-            </button>
-        </header>
+    <div class="card-comercial">
+        <div class="card-title">Antecedentes de la Empresa</div>
+        <div class="info-grid">
+            <div class="label">Razón Social:</div>
+            <div class="value">DEL SOLAR TRUCK & CARS SPA</div>
+            
+            <div class="label">Giro:</div>
+            <div class="value">VENTA POR INTERNET</div>
 
-        <div class="flex-1 overflow-auto p-10">
-            <div class="max-w-4xl mx-auto space-y-8 pb-10">
-                <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
-                    <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-[0.2em] mb-8 flex items-center gap-2 italic">Antecedentes de la Empresa</h3>
-                    <div class="grid grid-cols-2 gap-6">
-                        <div class="col-span-2"><label>Razón Social</label><input id="razon_social" placeholder="Nombre completo de la empresa" class="input-box"></div>
-                        <div><label>RUT Empresa</label><input id="rut" placeholder="12.345.678-9" class="input-box"></div>
-                        <div><label>Giro o Actividad</label><input id="giro" placeholder="Actividad comercial" class="input-box"></div>
-                        <div class="col-span-2"><label>Dirección</label><input id="direccion" placeholder="Calle, Número, Oficina, Ciudad" class="input-box"></div>
-                        <div><label>Teléfono</label><input id="telefono" placeholder="+569 ..." class="input-box"></div>
-                        <div><label>Correo Electrónico</label><input id="correo" placeholder="ejemplo@correo.cl" class="input-box"></div>
-                        <div><label>Sitio Web</label><input id="web" placeholder="www.tusitio.cl" class="input-box"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-8">
-                    <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
-                        <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-widest mb-6 italic">Contacto</h3>
-                        <div class="space-y-4">
-                            <div><label>Nombre de Contacto</label><input id="nombre_contacto" class="input-box"></div>
-                            <div><label>RUT Contacto</label><input id="rut_contacto" class="input-box"></div>
-                        </div>
-                    </div>
-                    <div class="bg-white p-10 rounded-[3rem] border border-slate-200 shadow-sm">
-                        <h3 class="text-blue-600 font-black text-[11px] uppercase tracking-widest mb-6 italic">Instrucciones de Pago</h3>
-                        <div class="space-y-4">
-                            <div><label>Banco</label><input id="banco" class="input-box"></div>
-                            <div><label>Tipo y N° de Cuenta</label><input id="num_cuenta" placeholder="Corriente / 12345678" class="input-box"></div>
-                            <div><label>Email Comprobante</label><input id="email_pago" class="input-box"></div>
-                        </div>
-                    </div>
-                </div>
-                <button onclick="guardar()" id="btn-save" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xs uppercase tracking-[0.3em] hover:bg-black transition-all shadow-xl">Actualizar Información</button>
-            </div>
+            <div class="label">Dirección:</div>
+            <div class="value">Av. Manquehue Sur #520 Of. 205, Las Condes, Santiago</div>
         </div>
-    </main>
+    </div>
 
-    <script>
-        const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co"; // URL del Proyecto
-        const SB_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W"; // Tu Key de Supabase
-        const db = window.supabase.createClient(SB_URL, SB_KEY);
+    <div class="card-comercial">
+        <div class="card-title">Información de Contacto</div>
+        <div class="info-grid">
+            <div class="label">Teléfono:</div>
+            <div class="value">+569 4743 6919</div>
 
-        async function cargar() {
-            const { data } = await db.from('perfil').select('*').limit(1).single();
-            if (data) {
-                Object.keys(data).forEach(key => {
-                    const input = document.getElementById(key);
-                    if (input) input.value = data[key];
-                });
-            }
-            lucide.createIcons();
-        }
+            <div class="label">Web:</div>
+            <div class="value">www.truckcars.cl</div>
 
-        async function guardar() {
-            const btn = document.getElementById('btn-save');
-            btn.innerText = "PROCESANDO...";
-            const campos = ['razon_social','rut','giro','direccion','telefono','correo','web','nombre_contacto','rut_contacto','banco','num_cuenta','email_pago'];
-            const valores = {};
-            campos.forEach(c => valores[c] = document.getElementById(c).value);
+            <div class="label">Nombre Contacto:</div>
+            <div class="value">Alejandro Del Solar</div>
+        </div>
+    </div>
 
-            const { data: exist } = await db.from('perfil').select('id');
-            let error;
-            if (exist && exist.length > 0) {
-                const { error: err } = await db.from('perfil').update(valores).eq('id', exist[0].id);
-                error = err;
-            } else {
-                const { error: err } = await db.from('perfil').insert([valores]);
-                error = err;
-            }
+    <div class="card-comercial pago-accent">
+        <div class="card-title" style="color: var(--accent-color);">Instrucciones para Pago</div>
+        <div class="info-grid">
+            <div class="label">Banco:</div>
+            <div class="value">SANTANDER</div>
 
-            if (error) alert("Error: " + error.message);
-            else alert("¡Información guardada!");
-            btn.innerText = "ACTUALIZAR INFORMACIÓN";
-        }
+            <div class="label">Tipo y N° Cuenta:</div>
+            <div class="value">Cuenta Corriente / FSFDASDFSA</div>
 
-        function generarPDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const val = (id) => document.getElementById(id).value.toUpperCase();
+            <div class="label">Titular:</div>
+            <div class="value">DEL SOLAR TRUCK & CARS SPA</div>
 
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22); doc.setFont("helvetica", "bold"); doc.text(val('razon_social'), 20, 25);
-            doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("INFORMACIÓN COMERCIAL Y BANCARIA", 20, 35);
-
-            doc.setTextColor(37, 99, 235); doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("ANTECEDENTES DE LA EMPRESA", 20, 65);
-            doc.autoTable({
-                startY: 70, margin: { left: 20, right: 20 },
-                theme: 'grid',
-                headStyles: { fillColor: [248, 250, 252], textColor: [71, 85, 105], fontSize: 8 },
-                head: [['RAZÓN SOCIAL', 'RUT/NIF']],
-                body: [[val('razon_social'), val('rut')]]
-            });
-
-            doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 5, margin: { left: 20, right: 20 },
-                theme: 'plain',
-                bodyStyles: { fontSize: 9 },
-                body: [['GIRO:', val('giro')], ['TELÉFONO:', val('telefono')], ['DIRECCIÓN:', val('direccion')], ['CORREO:', val('correo')], ['WEB:', val('web')]],
-                columnStyles: { 0: { fontStyle: 'bold', width: 60, textColor: [100, 116, 139] } }
-            });
-
-            doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 10, margin: { left: 20, right: 20 },
-                theme: 'grid',
-                head: [['NOMBRE CONTACTO', 'RUT CONTACTO']],
-                body: [[val('nombre_contacto'), val('rut_contacto')]]
-            });
-
-            doc.setTextColor(37, 99, 235); doc.setFontSize(11); doc.text("INSTRUCCIONES PARA PAGO", 20, doc.lastAutoTable.finalY + 15);
-            doc.autoTable({
-                startY: doc.lastAutoTable.finalY + 20, margin: { left: 20, right: 20 },
-                theme: 'grid',
-                body: [['BANCO', val('banco')], ['N° CUENTA', val('num_cuenta')], ['TITULAR', val('razon_social')], ['RUT', val('rut')], ['EMAIL', val('email_pago')]],
-                columnStyles: { 0: { fillColor: [248, 250, 252], fontStyle: 'bold', width: 60 } }
-            });
-
-            doc.save(`Ficha_Comercial_${val('razon_social')}.pdf`);
-        }
-        window.onload = cargar;
-    </script>
-</body>
-</html>
+            <div class="label">Email Comprobante:</div>
+            <div class="value">sadelsolar@gmail.com</div>
+        </div>
+    </div>
+</div>
