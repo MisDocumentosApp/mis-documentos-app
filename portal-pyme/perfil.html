@@ -8,89 +8,58 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; }
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
-        input { border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; width: 100%; font-size: 0.9rem; }
-        .card { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        .card-header::before { content: ""; width: 4px; height: 14px; background: #0d9488; border-radius: 2px; }
+        
+        /* Estilos de la Ficha */
+        input.pro-field { width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.9rem; transition: 0.2s; }
+        input.pro-field:focus { outline: none; border-color: #0d9488; background-color: #f0fdfa; }
+        .card { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; overflow: hidden; background: white; }
+        .card-header { background: #f8fafc; padding: 8px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        .card-header::before { content: ""; width: 3px; height: 14px; background: #0d9488; border-radius: 1px; }
+        .grid-row { display: grid; grid-template-columns: 180px 1fr; gap: 8px; padding: 10px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .grid-row:last-child { border-bottom: none; }
+        .label { font-weight: 600; font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
+
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
-<body class="bg-slate-900 flex h-screen overflow-hidden">
+<body class="bg-[#0f172a] flex h-screen overflow-hidden">
 
-    <aside class="w-64 flex flex-col p-6 shrink-0">
+    <aside class="w-64 flex flex-col p-6 shrink-0 no-print">
         <div class="mb-10">
-            <h2 class="text-white font-bold text-xl tracking-tight">MIS DOCUMENTOS</h2>
+            <h2 class="text-white font-extrabold text-xl tracking-tight">MIS DOCUMENTOS</h2>
             <p class="text-blue-500 text-xs font-bold tracking-widest">ECOSISTEMA AI</p>
         </div>
         <nav class="space-y-2">
-            <a href="index.html" class="nav-item"><i data-lucide="home"></i> Inicio / Dashboard</a>
-            <a href="perfil.html" class="nav-item active"><i data-lucide="user"></i> Ficha Comercial</a>
-            <a href="#" class="nav-item"><i data-lucide="users"></i> Gestión Clientes</a>
-            <a href="catalogo.html" class="nav-item"><i data-lucide="database"></i> Catálogo Pro</a>
-            <a href="fichas.html" class="nav-item"><i data-lucide="file-text"></i> Fichas Técnicas</a>
-            <a href="#" class="nav-item"><i data-lucide="cpu"></i> DocuFlow AI</a>
+            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
+            <a href="perfil.html" class="nav-item active"><i data-lucide="user" size="18"></i> Ficha Comercial</a>
+            <a href="#" class="nav-item"><i data-lucide="users" size="18"></i> Gestión Clientes</a>
+            <a href="catalogo.html" class="nav-item"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
+            <a href="#" class="nav-item"><i data-lucide="cpu" size="18"></i> DocuFlow AI</a>
         </nav>
     </aside>
 
-    <main class="flex-1 bg-slate-50 overflow-y-auto p-10">
-        <div id="hoja-oficio" class="max-w-[816px] mx-auto bg-white p-10 shadow-xl min-h-[1248px] flex flex-col">
-            <div class="border-b-4 border-slate-900 pb-4 mb-8 flex justify-between items-center">
-                <div class="w-24 h-24 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logo-in').click()">
-                    <img id="logo-pre" class="hidden max-w-full max-h-full">
-                    <span id="logo-txt" class="text-[10px] text-slate-400 text-center">SUBIR LOGO</span>
+    <main class="flex-1 bg-slate-100 overflow-y-auto p-8">
+        
+        <div id="ficha-documento" class="max-w-[816px] mx-auto bg-white p-10 shadow-2xl min-h-[1248px] flex flex-col">
+            
+            <div class="border-b-4 border-slate-900 pb-4 mb-6 flex justify-between items-center">
+                <div class="w-28 h-28 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer overflow-hidden bg-slate-50 hover:bg-slate-100 transition" onclick="document.getElementById('logo-input').click()">
+                    <img id="preview-logo" class="hidden max-w-full max-h-full object-contain">
+                    <span id="label-logo" class="text-[10px] text-slate-400 font-bold text-center p-2 uppercase">Subir Logo</span>
                 </div>
-                <input type="file" id="logo-in" class="hidden" accept="image/*" onchange="loadLogo(event)">
+                <input type="file" id="logo-input" class="hidden" accept="image/*" onchange="previewLogo(event)">
                 <div class="text-right">
-                    <h1 id="title-rs" class="text-2xl font-black text-slate-900 uppercase">Ficha Comercial</h1>
-                    <p class="text-slate-500 font-medium">Información Bancaria y de Contacto</p>
+                    <h1 id="header-title" class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Ficha Comercial</h1>
+                    <p class="text-slate-500 font-bold text-sm">Información Bancaria y de Contacto</p>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="p-6 grid grid-cols-[150px_1fr] gap-4 items-center text-sm">
-                    <span class="font-bold text-slate-500">RAZÓN SOCIAL:</span> <input type="text" oninput="document.getElementById('title-rs').innerText = this.value || 'Ficha Comercial'">
-                    <span class="font-bold text-slate-500">RUT EMPRESA:</span> <input type="text">
-                    <span class="font-bold text-slate-500">GIRO:</span> <input type="text">
-                    <span class="font-bold text-slate-500">DIRECCIÓN:</span> <input type="text">
-                </div>
-            </div>
-
-            <div class="card border-l-8 border-teal-600">
-                <div class="card-header text-teal-700">Instrucciones para Pago</div>
-                <div class="p-6 grid grid-cols-[150px_1fr] gap-4 items-center text-sm">
-                    <span class="font-bold text-slate-500">BANCO:</span> <input type="text">
-                    <span class="font-bold text-slate-500">N° CUENTA:</span> <input type="text">
-                    <span class="font-bold text-slate-500">TITULAR:</span> <input type="text">
-                    <span class="font-bold text-slate-500">EMAIL:</span> <input type="text">
-                </div>
-            </div>
-
-            <div class="mt-auto flex gap-4 no-print">
-                <button onclick="location.reload()" class="flex-1 p-4 bg-slate-100 font-bold text-slate-500 rounded-lg uppercase">Limpiar Todo</button>
-                <button onclick="printPDF()" class="flex-1 p-4 bg-teal-600 font-bold text-white rounded-lg shadow-lg uppercase">Descargar PDF Oficio</button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        lucide.createIcons();
-        function loadLogo(e) {
-            const r = new FileReader();
-            r.onload = () => {
-                const img = document.getElementById('logo-pre');
-                img.src = r.result; img.classList.remove('hidden');
-                document.getElementById('logo-txt').classList.add('hidden');
-            };
-            r.readAsDataURL(e.target.files[0]);
-        }
-        function printPDF() {
-            const el = document.getElementById('hoja-oficio');
-            const opt = { margin: 0, filename: 'Ficha_Comercial.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } };
-            html2pdf().set(opt).from(el).save();
-        }
-    </script>
-</body>
-</html>
+                <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" id="rs-input" oninput="document.getElementById('header-title').innerText = this.value || 'Ficha Comercial'">
