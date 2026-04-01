@@ -3,18 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Pro | Gestión Total</title>
+    <title>Catálogo Pro | Diagnóstico</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        .nav-link { transition: all 0.2s; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #94a3b8; }
+        .nav-link { transition: all 0.2s; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #94a3b8; text-decoration: none; }
         .nav-link:hover { background: #1e293b; color: white; }
-        .nav-active { background: #2563eb !important; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
-        .input-field { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s; font-size: 14px; }
-        .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-        .glass-card { background: white; border: 1px solid #e2e8f0; border-radius: 2rem; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        .nav-active { background: #2563eb !important; color: white !important; }
+        .input-field { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; }
     </style>
 </head>
 <body class="bg-[#f8fafc] font-sans text-slate-900 h-screen flex overflow-hidden">
@@ -23,224 +21,112 @@
         <div class="p-8">
             <div class="flex items-center gap-3 mb-10">
                 <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="layout-grid" size="20"></i></div>
-                <div>
-                    <h1 class="text-xs font-black uppercase tracking-widest leading-none">Mis Documentos</h1>
-                    <span class="text-[9px] text-blue-400 font-bold uppercase tracking-[0.2em]">Ecosistema AI</span>
-                </div>
+                <h1 class="text-xs font-black uppercase tracking-widest leading-none">Mis Documentos</h1>
             </div>
             <nav class="space-y-2">
                 <a href="index.html" class="nav-link"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
-                <div class="h-px bg-white/5 my-4"></div>
-                <a href="perfil.html" class="nav-link"><i data-lucide="building-2" size="18"></i> Perfil Empresa</a>
-                <a href="clientes.html" class="nav-link"><i data-lucide="users" size="18"></i> Gestión Clientes</a>
                 <a href="catalogo.html" class="nav-link nav-active"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
-                <a href="docuflow.html" class="nav-link"><i data-lucide="cpu" size="18"></i> DocuFlow AI</a>
             </nav>
         </div>
-        <div class="mt-auto p-6 border-t border-white/5 bg-black/20">
-            <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 tracking-widest italic">Contacto Directo</p>
-            <p class="text-[11px] text-blue-400 font-bold mb-1">+569 4743 6919</p>
-            <p class="text-[10px] text-slate-400 font-medium leading-tight">microempresasaunclick@gmail.com</p>
-            <p class="text-[10px] text-slate-400 font-medium leading-tight">sadelsolar@gmail.com</p>
+        <div class="mt-auto p-6 border-t border-white/5 bg-black/20 text-[10px] text-slate-400">
+            <p>Soporte: +569 4743 6919</p>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
-            <div class="flex items-center gap-4">
-                <h2 class="text-xl font-black italic tracking-tighter">CATÁLOGO<span class="text-blue-600">PRO</span></h2>
-            </div>
-            <div class="relative w-80">
-                <i data-lucide="search" class="absolute left-4 top-3 text-slate-400" size="16"></i>
-                <input type="text" onkeyup="filtrar(this.value)" placeholder="Buscar producto o SKU..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border-none rounded-full text-sm font-medium outline-none">
-            </div>
+        <header class="h-20 bg-white border-b border-slate-200 flex items-center px-10 shrink-0 italic font-black">
+            CATÁLOGO PRO <span class="ml-4 text-[9px] bg-blue-100 text-blue-600 px-2 py-1 rounded">MODO DIAGNÓSTICO</span>
         </header>
 
-        <div class="flex-1 overflow-auto p-8 space-y-8">
-            
-            <div class="grid grid-cols-3 gap-6">
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 flex items-center gap-4">
-                    <div class="bg-blue-50 text-blue-600 p-4 rounded-2xl"><i data-lucide="box"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Total Items</p>
-                        <p id="stat-total" class="text-2xl font-black">0</p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 flex items-center gap-4">
-                    <div class="bg-emerald-50 text-emerald-600 p-4 rounded-2xl"><i data-lucide="file-check"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Fichas Cargadas</p>
-                        <p id="stat-fichas" class="text-2xl font-black">0</p>
-                    </div>
-                </div>
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 flex items-center gap-4">
-                    <div class="bg-indigo-50 text-indigo-600 p-4 rounded-2xl"><i data-lucide="calendar"></i></div>
-                    <div>
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Última Actualización</p>
-                        <p id="stat-fecha" class="text-sm font-bold text-slate-600">Hoy</p>
+        <div class="flex-1 overflow-auto p-10 flex gap-10">
+            <div class="w-80 shrink-0 space-y-4">
+                <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
+                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4">Ingreso de Producto</h3>
+                    <div class="space-y-3">
+                        <input id="in-nombre" type="text" placeholder="Descripción" class="input-field text-sm">
+                        <input id="in-sku" type="text" placeholder="SKU" class="input-field text-sm uppercase">
+                        <input id="in-marca" type="text" placeholder="Marca" class="input-field text-sm">
+                        <input type="file" id="in-file" class="text-[10px]">
+                        <button onclick="guardarConMensajes()" id="btn-save" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest mt-2">Guardar Producto</button>
                     </div>
                 </div>
             </div>
 
-            <div class="flex gap-8 items-start">
-                
-                <div class="w-full max-w-sm shrink-0 glass-card p-8">
-                    <h3 class="text-xs font-black uppercase text-blue-600 mb-6 flex items-center gap-2 italic">
-                        <i data-lucide="plus-circle" size="14"></i> Registro de Producto
-                    </h3>
-                    <div class="space-y-4">
-                        <input id="in-nombre" type="text" placeholder="Descripción (Ej: Fusible 500A)" class="input-field font-bold">
-                        <div class="grid grid-cols-2 gap-3">
-                            <input id="in-sku" type="text" placeholder="SKU" class="input-field uppercase font-mono text-xs">
-                            <input id="in-marca" type="text" placeholder="Marca" class="input-field">
-                        </div>
-                        <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:bg-slate-50 cursor-pointer relative group transition-all">
-                            <input type="file" id="in-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateLabel(this)">
-                            <i data-lucide="file-up" class="mx-auto text-slate-300 mb-2 group-hover:text-blue-600 transition-colors" size="24"></i>
-                            <p id="file-name" class="text-[9px] font-black text-slate-400 uppercase">Vincular PDF Técnico</p>
-                        </div>
-                        <button onclick="guardar()" id="btn-save" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all">Guardar en Base de Datos</button>
-                    </div>
-                </div>
-
-                <div class="flex-1 glass-card overflow-hidden">
-                    <table class="w-full text-left">
-                        <thead class="bg-slate-50/80 border-b border-slate-100">
-                            <tr class="text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                                <th class="p-6">Información del Item</th>
-                                <th class="p-6">Identificación</th>
-                                <th class="p-6 text-right">Acciones Pro</th>
-                            </tr>
-                        </thead>
-                        <tbody id="lista" class="divide-y divide-slate-50">
-                            </tbody>
-                    </table>
-                    <div id="loading" class="p-20 text-center text-slate-300 font-bold uppercase text-[10px] tracking-widest italic animate-pulse">Sincronizando con la nube...</div>
-                </div>
+            <div class="flex-1 bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-black uppercase text-slate-400">
+                        <tr><th class="p-4">Producto</th><th class="p-4">SKU</th><th class="p-4 text-right">Acciones</th></tr>
+                    </thead>
+                    <tbody id="lista" class="divide-y divide-slate-50 italic"></tbody>
+                </table>
+                <div id="status-msg" class="p-10 text-center text-slate-400 text-xs font-bold">Iniciando conexión...</div>
             </div>
         </div>
     </main>
 
     <script>
-        // CONFIGURACIÓN (PEGAR TUS LLAVES AQUÍ)
-        const URL = "https://xnarwetyjeijkitzivno.supabase.co";
-        const KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-        const db = window.supabase.createClient(URL, KEY);
+        // --- 1. REEMPLAZA ESTO ---
+        const URL_SB = "https://xnarwetyjeijkitzivno.supabase.co"; 
+        const KEY_SB = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+
+        const db = window.supabase.createClient(URL_SB, KEY_SB);
 
         async function cargar() {
-            const { data, error } = await db.from('productos').select('*').order('created_at', { ascending: false });
-            document.getElementById('loading').classList.add('hidden');
-            const lista = document.getElementById('lista');
-            
-            if(!data || data.length === 0) {
-                lista.innerHTML = '<tr><td colspan="3" class="p-20 text-center text-slate-300 font-bold uppercase text-xs italic">No hay productos en inventario</td></tr>';
-                return;
+            const msg = document.getElementById('status-msg');
+            try {
+                const { data, error } = await db.from('productos').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                msg.classList.add('hidden');
+                document.getElementById('lista').innerHTML = data.map(p => `
+                    <tr>
+                        <td class="p-4 font-bold">${p.nombre}</td>
+                        <td class="p-4 font-mono text-blue-600">${p.sku}</td>
+                        <td class="p-4 text-right"><button onclick="alert('PDF Generado')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="file-text" size="14"></i></button></td>
+                    </tr>
+                `).join('');
+                lucide.createIcons();
+            } catch (e) {
+                msg.innerText = "ERROR DE CONEXIÓN: " + e.message;
+                msg.classList.add('text-red-500');
             }
-
-            // Actualizar Estadísticas
-            document.getElementById('stat-total').innerText = data.length;
-            document.getElementById('stat-fichas').innerText = data.filter(p => p.url_ficha).length;
-
-            lista.innerHTML = data.map(p => `
-                <tr class="hover:bg-blue-50/30 transition-colors group">
-                    <td class="p-6">
-                        <p class="font-bold text-slate-800 leading-tight">${p.nombre}</p>
-                        <p class="text-[9px] text-slate-400 uppercase font-black tracking-tighter mt-1 italic">Certificado Industrial</p>
-                    </td>
-                    <td class="p-6">
-                        <p class="font-mono text-blue-600 font-black text-xs uppercase bg-blue-50 px-2 py-1 rounded inline-block">${p.sku}</p>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase mt-1">${p.marca || 'S/M'}</p>
-                    </td>
-                    <td class="p-6 text-right">
-                        <div class="flex justify-end gap-2">
-                            <button onclick="descargarPDF('${p.nombre}','${p.sku}','${p.marca}')" class="p-2.5 bg-slate-100 text-slate-500 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Ficha PDF">
-                                <i data-lucide="file-text" size="16"></i>
-                            </button>
-                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2.5 bg-slate-100 text-slate-500 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Ver Archivo"><i data-lucide="external-link" size="16"></i></a>` : ''}
-                            <button onclick="eliminar('${p.id}')" class="p-2.5 bg-slate-50 text-slate-300 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm" title="Eliminar"><i data-lucide="trash-2" size="16"></i></button>
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
-            lucide.createIcons();
         }
 
-        async function guardar() {
+        async function guardarConMensajes() {
             const btn = document.getElementById('btn-save');
-            const nombre = document.getElementById('in-nombre').value;
-            const sku = document.getElementById('in-sku').value;
-            const marca = document.getElementById('in-marca').value;
+            const n = document.getElementById('in-nombre').value;
+            const s = document.getElementById('in-sku').value;
+            const m = document.getElementById('in-marca').value;
             const file = document.getElementById('in-file').files[0];
 
-            if(!nombre || !sku) return alert("Nombre y SKU son obligatorios");
+            if(!n || !s) return alert("Por favor escribe el Nombre y SKU");
 
-            btn.innerText = "PROCESANDO...";
+            btn.innerText = "SUBIENDO...";
             btn.disabled = true;
 
-            let url = "";
+            let finalUrl = "";
             if(file) {
-                const name = `${Date.now()}_${sku}.pdf`;
-                const { error: upErr } = await db.storage.from('fichas').upload(name, file);
-                if(!upErr) url = db.storage.from('fichas').getPublicUrl(name).data.publicUrl;
+                const fileName = `${Date.now()}_${s}.pdf`;
+                const { data: upData, error: upErr } = await db.storage.from('fichas').upload(fileName, file);
+                
+                if(upErr) {
+                    alert("ERROR AL SUBIR PDF: " + upErr.message + "\n\n¿Creaste el bucket 'fichas' en Supabase?");
+                    btn.innerText = "GUARDAR PRODUCTO";
+                    btn.disabled = false;
+                    return;
+                }
+                finalUrl = db.storage.from('fichas').getPublicUrl(fileName).data.publicUrl;
             }
 
-            const { error } = await db.from('productos').insert([{ nombre, sku, marca, url_ficha: url }]);
-            if(error) alert("Error: " + error.message);
-            else { 
-                document.getElementById('in-nombre').value = "";
-                document.getElementById('in-sku').value = "";
-                cargar(); 
+            const { error: insErr } = await db.from('productos').insert([{ nombre: n, sku: s, marca: m, url_ficha: finalUrl }]);
+            
+            if(insErr) {
+                alert("ERROR AL GUARDAR DATOS: " + insErr.message);
+            } else {
+                alert("¡ÉXITO! Producto guardado.");
+                location.reload();
             }
-            btn.innerText = "GUARDAR EN BASE DE DATOS";
+            btn.innerText = "GUARDAR PRODUCTO";
             btn.disabled = false;
-        }
-
-        async function eliminar(id) {
-            if(!confirm("¿Estás seguro de eliminar este producto del inventario maestro?")) return;
-            const { error } = await db.from('productos').delete().eq('id', id);
-            if(error) alert(error.message);
-            else cargar();
-        }
-
-        function descargarPDF(n, s, m) {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            
-            // Estilo Corporativo
-            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 50, 'F');
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(24); doc.setFont("helvetica", "bold"); doc.text("FICHA TÉCNICA", 20, 30);
-            doc.setFontSize(9); doc.setFont("helvetica", "normal"); doc.text("MIS DOCUMENTOS | ECOSISTEMA DE GESTIÓN AI", 20, 40);
-            
-            // Cuerpo
-            doc.setTextColor(0, 0, 0);
-            doc.setDrawColor(226, 232, 240); doc.line(20, 65, 190, 65);
-            
-            doc.setFontSize(14); doc.setFont("helvetica", "bold"); doc.text("ESPECIFICACIONES DEL PRODUCTO", 20, 80);
-            
-            doc.setFontSize(11); doc.setFont("helvetica", "bold"); doc.text("NOMBRE:", 20, 100);
-            doc.setFont("helvetica", "normal"); doc.text(n.toUpperCase(), 60, 100);
-            
-            doc.setFont("helvetica", "bold"); doc.text("CÓDIGO / SKU:", 20, 115);
-            doc.setFont("helvetica", "normal"); doc.text(s.toUpperCase(), 60, 115);
-            
-            doc.setFont("helvetica", "bold"); doc.text("FABRICANTE:", 20, 130);
-            doc.setFont("helvetica", "normal"); doc.text(m.toUpperCase() || 'NO ESPECIFICADO', 60, 130);
-
-            // Pie de Página
-            doc.setFillColor(248, 250, 252); doc.rect(20, 250, 170, 30, 'F');
-            doc.setTextColor(100, 100, 100); doc.setFontSize(8);
-            doc.text("Documento generado por Alejandro del Solar - +569 4743 6919", 105, 265, { align: 'center' });
-            doc.text("microempresasaunclick@gmail.com / sadelsolar@gmail.com", 105, 272, { align: 'center' });
-
-            doc.save(`Ficha_${s}.pdf`);
-        }
-
-        function updateLabel(i) { if(i.files[0]) document.getElementById('file-name').innerText = i.files[0].name; }
-        function filtrar(v) {
-            const t = v.toLowerCase();
-            document.querySelectorAll('#lista tr').forEach(r => r.style.display = r.innerText.toLowerCase().includes(t) ? '' : 'none');
         }
 
         window.onload = () => { lucide.createIcons(); cargar(); };
