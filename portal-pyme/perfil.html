@@ -8,21 +8,24 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; }
+        
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
         
         /* Estilos de la Ficha */
-        input.pro-field { width: 100%; padding: 6px 10px; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.9rem; transition: 0.2s; }
-        input.pro-field:focus { outline: none; border-color: #0d9488; background-color: #f0fdfa; }
-        .card { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 12px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 8px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        .card-header::before { content: ""; width: 3px; height: 14px; background: #0d9488; border-radius: 1px; }
-        .grid-row { display: grid; grid-template-columns: 180px 1fr; gap: 8px; padding: 10px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .card { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; overflow: hidden; background: white; }
+        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        .card-header::before { content: ""; width: 4px; height: 16px; background: #0d9488; border-radius: 2px; }
+        
+        .grid-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 10px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .grid-row:last-child { border-bottom: none; }
-        .label { font-weight: 600; font-size: 0.7rem; color: #64748b; text-transform: uppercase; }
+        
+        .label { font-weight: 700; font-size: 0.75rem; color: #475569; text-transform: uppercase; letter-spacing: 0.025em; }
+        input.pro-field { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; transition: all 0.2s; color: #1e293b; }
+        input.pro-field:focus { outline: none; border-color: #2563eb; ring: 2px; ring-color: #bfdbfe; background-color: #f8fafc; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -46,20 +49,22 @@
 
     <main class="flex-1 bg-slate-100 overflow-y-auto p-8">
         
-        <div id="ficha-documento" class="max-w-[816px] mx-auto bg-white p-10 shadow-2xl min-h-[1248px] flex flex-col">
+        <div id="ficha-pdf" class="max-w-[816px] mx-auto bg-white p-12 shadow-2xl min-h-[1248px] flex flex-col">
             
-            <div class="border-b-4 border-slate-900 pb-4 mb-6 flex justify-between items-center">
-                <div class="w-28 h-28 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer overflow-hidden bg-slate-50 hover:bg-slate-100 transition" onclick="document.getElementById('logo-input').click()">
-                    <img id="preview-logo" class="hidden max-w-full max-h-full object-contain">
-                    <span id="label-logo" class="text-[10px] text-slate-400 font-bold text-center p-2 uppercase">Subir Logo</span>
+            <div class="border-b-4 border-slate-900 pb-6 mb-8 flex justify-between items-center">
+                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 hover:bg-slate-100 transition relative group" onclick="document.getElementById('logo-upload').click()">
+                    <img id="logo-img" class="hidden max-w-full max-h-full object-contain p-2">
+                    <span id="logo-text" class="text-[10px] text-slate-400 font-bold uppercase text-center">Click para<br>subir logo</span>
                 </div>
-                <input type="file" id="logo-input" class="hidden" accept="image/*" onchange="previewLogo(event)">
+                <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="previewImage(event)">
+                
                 <div class="text-right">
-                    <h1 id="header-title" class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Ficha Comercial</h1>
-                    <p class="text-slate-500 font-bold text-sm">Información Bancaria y de Contacto</p>
+                    <h1 id="display-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter">Ficha Comercial</h1>
+                    <p class="text-slate-500 font-bold">Información Bancaria y de Contacto</p>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" id="rs-input" oninput="document.getElementById('header-title').innerText = this.value || 'Ficha Comercial'">
+                <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" id="rs-input" class="pro-field" oninput="document.getElementById('display-rs').innerText = this.value || 'Ficha Comercial'"></div>
+                <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="Ej: 76.000.000
