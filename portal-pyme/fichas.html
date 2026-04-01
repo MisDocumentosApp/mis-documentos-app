@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Técnica Pro - Mis Documentos</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary-bg: #0f172a; 
+            --sidebar-width: 260px;
+            /* Colores Dinámicos (Brand Kit) */
+            --brand-primary: #0a58ca;
+            --brand-footer: #0f2c59;
+        }
+
+        body { margin: 0; font-family: 'Inter', sans-serif; display: flex; height: 100vh; background: #f1f5f9; overflow: hidden; }
+
+        /* --- SIDEBAR (Persistente) --- */
+        .sidebar { width: var(--sidebar-width); background: var(--primary-bg); color: white; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
+        .nav-item { padding: 12px 15px; border-radius: 8px; margin-bottom: 5px; cursor: pointer; color: #94a3b8; text-decoration: none; display: block; font-size: 0.9rem; }
+        .nav-item.active { background: #2563eb; color: white; }
+
+        /* --- CONTENIDO PRINCIPAL --- */
+        .main-app { flex-grow: 1; display: flex; overflow: hidden; }
+
+        /* EDITOR (Izquierda) */
+        .editor-panel { width: 400px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+        .section-title { font-size: 0.75rem; font-weight: bold; color: #1e293b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; padding-bottom: 5px; margin-bottom: 10px; }
+        .input-group { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+        label { font-size: 0.7rem; font-weight: bold; color: #64748b; text-transform: uppercase; }
+        input, textarea { padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.85rem; }
+
+        /* VISTA PREVIA (Derecha) */
+        .preview-panel { flex-grow: 1; background: #cbd5e1; overflow-y: auto; display: flex; justify-content: center; padding: 40px 0; }
+        
+        /* HOJA OFICIO PDF */
+        #ficha-pdf { 
+            width: 816px; /* Aprox Oficio en px */
+            min-height: 1248px; 
+            background: white; 
+            padding: 40px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        /* DISEÑO DE LA FICHA (Inspirado en tu código React) */
+        .ficha-header { border: 2px solid #1e293b; border-radius: 12px; padding: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .brand-text { font-size: 2.5rem; font-weight: 900; margin: 0; color: var(--brand-primary); }
+        .prod-name { font-size: 1.4rem; font-weight: 800; margin: 5px 0; text-transform: uppercase; }
+        
+        .logo-placeholder { width: 200px; height: 80px; border: 1px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; }
+
+        .content-cols { display: grid; grid-template-columns: 1fr 1.5fr; gap: 30px; margin-top: 30px; }
+        .tag-black { background: #2d2d2d; color: white; padding: 5px 15px; font-size: 0.8rem; font-weight: bold; display: inline-block; margin-bottom: 10px; }
+        
+        .img-box { background: white; border: 1px solid #eee; height: 250px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+
+        .specs-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.85rem; }
+        .specs-table th { text-align: left; padding: 10px; border-bottom: 2px solid #2d2d2d; color: var(--brand-primary); }
+        .specs-table td { padding: 8px 10px; border-bottom: 1px solid #eee; }
+
+        .ficha-footer { margin-top: auto; background: var(--brand-footer); color: white; padding: 20px; text-align: center; border-top: 5px solid var(--brand-primary); }
+
+        /* BOTONES FLOTANTES */
+        .floating-actions { position: sticky; bottom: 0; background: white; padding: 15px; border-top: 1px solid #eee; display: flex; gap: 10px; }
+        .btn { flex: 1; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; font-size: 0.8rem; }
+        .btn-pdf { background: var(--brand-primary); color: white; }
+        .btn-clean { background: #f1f5f9; color: #64748b; }
+
+        @media print { .sidebar, .editor-panel, .floating-actions { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div style="border-bottom: 1px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px;">
+            <h2 style="margin:0; font-size:1.1rem">MIS DOCUMENTOS</h2>
+            <small style="color:#6366f1">ECOSISTEMA AI</small>
+        </div>
+        <nav>
+            <a href="index.html" class="nav-item">Inicio / Dashboard</a>
+            <a href="perfil.html" class="nav-item">Perfil Empresa</a>
+            <a href="#" class="nav-item">Gestión Clientes</a>
+            <a href="catalogo.html" class="nav-item">Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item active">Fichas Técnicas</a>
+        </nav>
+    </div>
+
+    <div class="main-app">
+        <div class="editor-panel">
+            <div class="section-title">1. Brand Kit (Identidad)</div>
+            <div class="input-group">
+                <label>Color Principal</label>
+                <input type="color" id="cp" value="#0a58ca" oninput="updateBrand()">
+            </div>
+            <div class="input-group">
+                <label>Color Footer</label>
+                <input type="color" id="cf" value="#0f2c59" oninput="updateBrand()">
+            </div>
+
+            <div class="section-title">2. Datos del Producto</div>
+            <div class="input-group">
+                <label>Marca</label>
+                <input type="text" id="in_brand" value="UYUSTOOLS" oninput="sync()">
+            </div>
+            <div class="input-group">
+                <label>Nombre Producto</label>
+                <input type="text" id="in_name" value='BROCHA PARA BARNIZ 2"' oninput="sync()">
+            </div>
+            <div class="input-group">
+                <label>Imagen Producto</label>
+                <input type="file" accept="image/*" onchange="loadImg(event, 'prod-img')">
+            </div>
+
+            <div class="section-title">3. Descripción y Seguridad</div>
+            <textarea id="in_desc" rows="4" oninput="sync()">Herramienta de alto rendimiento diseñada para la aplicación precisa de barnices...</textarea>
+            
+            <div class="floating-actions">
+                <button class="btn btn-clean" onclick="location.reload()">Limpiar</button>
+                <button class="btn btn-pdf" onclick="exportarPDF()">Descargar PDF</button>
+            </div>
+        </div>
+
+        <div class="preview-panel">
+            <div id="ficha-pdf">
+                <div class="ficha-header">
+                    <div>
+                        <h1 class="brand-text" id="out_brand">UYUSTOOLS</h1>
+                        <h2 class="prod-name" id="out_name">BROCHA PARA BARNIZ 2"</h2>
+                    </div>
+                    <div class="logo-placeholder">LOGO AQUÍ</div>
+                </div>
+
+                <div class="content-cols">
+                    <div>
+                        <div class="tag-black">VISTA DEL PRODUCTO</div>
+                        <div class="img-box">
+                            <img id="prod-img" src="" style="display:none">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="tag-black">DESCRIPCIÓN TÉCNICA</div>
+                        <p id="out_desc" style="font-size:0.9rem; line-height:1.5; text-align:justify">...</p>
+                    </div>
+                </div>
+
+                <div style="margin-top:40px">
+                    <div class="tag-black">ESPECIFICACIONES NOMINALES</div>
+                    <table class="specs-table">
+                        <thead><tr><th>PARÁMETRO</th><th>VALOR</th></tr></thead>
+                        <tbody id="specs_body">
+                            <tr><td>Material Cerdas</td><td>Naturales y Poliéster</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="ficha-footer">
+                    <strong id="out_footer">DEL SOLAR TRUCK & CARS SPA</strong>
+                    <div style="font-size:0.8rem; margin-top:5px; color:#eab308">WhatsApp: +569 47436919</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateBrand() {
+            const cp = document.getElementById('cp').value;
+            const cf = document.getElementById('cf').value;
+            document.documentElement.style.setProperty('--brand-primary', cp);
+            document.documentElement.style.setProperty('--brand-footer', cf);
+        }
+
+        function sync() {
+            document.getElementById('out_brand').innerText = document.getElementById('in_brand').value;
+            document.getElementById('out_name').innerText = document.getElementById('in_name').value;
+            document.getElementById('out_desc').innerText = document.getElementById('in_desc').value;
+        }
+
+        function loadImg(e, id) {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const img = document.getElementById(id);
+                img.src = reader.result;
+                img.style.display = 'block';
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        function exportarPDF() {
+            const element = document.getElementById('ficha-pdf');
+            const opt = {
+                margin: 0,
+                filename: 'Ficha_Tecnica.pdf',
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
+            };
+            html2pdf().set(opt).from(element).save();
+        }
+        
+        sync();
+    </script>
+</body>
+</html>
