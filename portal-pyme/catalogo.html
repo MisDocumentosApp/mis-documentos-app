@@ -3,133 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Pro | Diagnóstico</title>
+    <title>Catálogo Pro | Mis Documentos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <style>
-        .nav-link { transition: all 0.2s; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-size: 13px; font-weight: 600; color: #94a3b8; text-decoration: none; }
-        .nav-link:hover { background: #1e293b; color: white; }
-        .nav-active { background: #2563eb !important; color: white !important; }
-        .input-field { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; }
-    </style>
 </head>
-<body class="bg-[#f8fafc] font-sans text-slate-900 h-screen flex overflow-hidden">
+<body class="bg-[#f8fafc] font-sans h-screen flex overflow-hidden text-slate-900">
 
-    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0 border-r border-white/5">
+    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0">
         <div class="p-8">
-            <div class="flex items-center gap-3 mb-10">
-                <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="layout-grid" size="20"></i></div>
-                <h1 class="text-xs font-black uppercase tracking-widest leading-none">Mis Documentos</h1>
-            </div>
+            <h1 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-10 italic">Mis Documentos</h1>
             <nav class="space-y-2">
-                <a href="index.html" class="nav-link"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
-                <a href="catalogo.html" class="nav-link nav-active"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+                <a href="index.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition-all text-slate-400 font-bold text-sm"><i data-lucide="home" size="18"></i> Dashboard</a>
+                <a href="catalogo.html" class="flex items-center gap-3 p-3 rounded-xl bg-blue-600 text-white font-bold text-sm"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
             </nav>
         </div>
-        <div class="mt-auto p-6 border-t border-white/5 bg-black/20 text-[10px] text-slate-400">
-            <p>Soporte: +569 4743 6919</p>
+        <div class="mt-auto p-6 bg-black/20 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+            <p>microempresasaunclick@gmail.com</p>
+            <p>sadelsolar@gmail.com</p>
+            <p class="text-blue-400 mt-2">+569 4743 6919</p>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center px-10 shrink-0 italic font-black">
-            CATÁLOGO PRO <span class="ml-4 text-[9px] bg-blue-100 text-blue-600 px-2 py-1 rounded">MODO DIAGNÓSTICO</span>
+        <header class="h-20 bg-white border-b border-slate-200 flex items-center px-10 italic font-black text-xl tracking-tighter">
+            CATÁLOGO <span class="text-blue-600">PRO</span>
         </header>
 
         <div class="flex-1 overflow-auto p-10 flex gap-10">
-            <div class="w-80 shrink-0 space-y-4">
-                <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm">
-                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4">Ingreso de Producto</h3>
-                    <div class="space-y-3">
-                        <input id="in-nombre" type="text" placeholder="Descripción" class="input-field text-sm">
-                        <input id="in-sku" type="text" placeholder="SKU" class="input-field text-sm uppercase">
-                        <input id="in-marca" type="text" placeholder="Marca" class="input-field text-sm">
-                        <input type="file" id="in-file" class="text-[10px]">
-                        <button onclick="guardarConMensajes()" id="btn-save" class="w-full bg-blue-600 text-white py-3 rounded-xl font-black text-[10px] uppercase tracking-widest mt-2">Guardar Producto</button>
+            <div class="w-80 shrink-0">
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm space-y-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4 tracking-widest">Ingreso de Insumo</h3>
+                    <input id="prod-nombre" type="text" placeholder="Descripción del Producto" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-blue-500 font-bold text-sm">
+                    <div class="grid grid-cols-2 gap-3">
+                        <input id="prod-sku" type="text" placeholder="SKU" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-mono uppercase">
+                        <input id="prod-marca" type="text" placeholder="Marca" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs">
                     </div>
+                    <input type="file" id="prod-file" class="text-[10px] block w-full border border-dashed p-4 rounded-xl">
+                    <button onclick="ejecutarGuardado()" id="btn-main" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Guardar en Catálogo</button>
                 </div>
             </div>
 
-            <div class="flex-1 bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
+            <div class="flex-1 bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-black uppercase text-slate-400">
-                        <tr><th class="p-4">Producto</th><th class="p-4">SKU</th><th class="p-4 text-right">Acciones</th></tr>
+                        <tr><th class="p-6">Detalle</th><th class="p-6">ID</th><th class="p-6 text-right">Acciones</th></tr>
                     </thead>
-                    <tbody id="lista" class="divide-y divide-slate-50 italic"></tbody>
+                    <tbody id="tabla-lista" class="divide-y divide-slate-50 italic font-medium"></tbody>
                 </table>
-                <div id="status-msg" class="p-10 text-center text-slate-400 text-xs font-bold">Iniciando conexión...</div>
+                <div id="loading-state" class="p-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest animate-pulse">Sincronizando Inventario...</div>
             </div>
         </div>
     </main>
 
     <script>
-        // --- 1. REEMPLAZA ESTO ---
-        const URL_SB = "https://xnarwetyjeijkitzivno.supabase.co"; 
-        const KEY_SB = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+        // 1. PEGA TUS LLAVES AQUÍ (Asegúrate que estén entre las comillas)
+        const MI_URL = "https://xnarwetyjeijkitzivno.supabase.co"; 
+        const MI_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
 
-        const db = window.supabase.createClient(URL_SB, KEY_SB);
+        const supabase = window.supabase.createClient(MI_URL, MI_KEY);
 
-        async function cargar() {
-            const msg = document.getElementById('status-msg');
+        async function cargarInventario() {
             try {
-                const { data, error } = await db.from('productos').select('*').order('created_at', { ascending: false });
+                const { data, error } = await supabase.from('productos').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                msg.classList.add('hidden');
-                document.getElementById('lista').innerHTML = data.map(p => `
-                    <tr>
-                        <td class="p-4 font-bold">${p.nombre}</td>
-                        <td class="p-4 font-mono text-blue-600">${p.sku}</td>
-                        <td class="p-4 text-right"><button onclick="alert('PDF Generado')" class="p-2 bg-slate-100 rounded-lg"><i data-lucide="file-text" size="14"></i></button></td>
+                
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('tabla-lista').innerHTML = data.map(p => `
+                    <tr class="hover:bg-blue-50/50 transition-all">
+                        <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
+                        <td class="p-6 font-mono text-blue-600 text-xs uppercase">${p.sku}</td>
+                        <td class="p-6 text-right">
+                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2 bg-slate-100 rounded-lg inline-block hover:bg-emerald-500 hover:text-white"><i data-lucide="eye" size="14"></i></a>` : ''}
+                        </td>
                     </tr>
                 `).join('');
                 lucide.createIcons();
-            } catch (e) {
-                msg.innerText = "ERROR DE CONEXIÓN: " + e.message;
-                msg.classList.add('text-red-500');
+            } catch (err) {
+                document.getElementById('loading-state').innerText = "ERROR DE CONEXIÓN: " + err.message;
             }
         }
 
-        async function guardarConMensajes() {
-            const btn = document.getElementById('btn-save');
-            const n = document.getElementById('in-nombre').value;
-            const s = document.getElementById('in-sku').value;
-            const m = document.getElementById('in-marca').value;
-            const file = document.getElementById('in-file').files[0];
+        async function ejecutarGuardado() {
+            const btn = document.getElementById('btn-main');
+            const nombre = document.getElementById('prod-nombre').value;
+            const sku = document.getElementById('prod-sku').value;
+            const marca = document.getElementById('prod-marca').value;
+            const archivo = document.getElementById('prod-file').files[0];
 
-            if(!n || !s) return alert("Por favor escribe el Nombre y SKU");
+            if (!nombre || !sku) return alert("⚠️ Nombre y SKU son obligatorios");
 
-            btn.innerText = "SUBIENDO...";
+            btn.innerText = "⚡ PROCESANDO...";
             btn.disabled = true;
 
-            let finalUrl = "";
-            if(file) {
-                const fileName = `${Date.now()}_${s}.pdf`;
-                const { data: upData, error: upErr } = await db.storage.from('fichas').upload(fileName, file);
-                
-                if(upErr) {
-                    alert("ERROR AL SUBIR PDF: " + upErr.message + "\n\n¿Creaste el bucket 'fichas' en Supabase?");
-                    btn.innerText = "GUARDAR PRODUCTO";
-                    btn.disabled = false;
-                    return;
+            try {
+                let urlFinal = "";
+                if (archivo) {
+                    const nombreArchivo = `${Date.now()}_${sku}.pdf`;
+                    const { data: upData, error: upErr } = await supabase.storage.from('fichas').upload(nombreArchivo, archivo);
+                    if (upErr) throw upErr;
+                    urlFinal = supabase.storage.from('fichas').getPublicUrl(nombreArchivo).data.publicUrl;
                 }
-                finalUrl = db.storage.from('fichas').getPublicUrl(fileName).data.publicUrl;
-            }
 
-            const { error: insErr } = await db.from('productos').insert([{ nombre: n, sku: s, marca: m, url_ficha: finalUrl }]);
-            
-            if(insErr) {
-                alert("ERROR AL GUARDAR DATOS: " + insErr.message);
-            } else {
-                alert("¡ÉXITO! Producto guardado.");
+                const { error: insErr } = await supabase.from('productos').insert([{ 
+                    nombre: nombre, 
+                    sku: sku, 
+                    marca: marca, 
+                    url_ficha: urlFinal 
+                }]);
+                
+                if (insErr) throw insErr;
+
+                alert("✅ ¡Producto Guardado!");
                 location.reload();
+
+            } catch (error) {
+                alert("❌ ERROR: " + error.message);
+                btn.innerText = "GUARDAR EN CATÁLOGO";
+                btn.disabled = false;
             }
-            btn.innerText = "GUARDAR PRODUCTO";
-            btn.disabled = false;
         }
 
-        window.onload = () => { lucide.createIcons(); cargar(); };
+        window.onload = () => { lucide.createIcons(); cargarInventario(); };
     </script>
 </body>
 </html>
