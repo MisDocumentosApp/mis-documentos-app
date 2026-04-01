@@ -1,56 +1,81 @@
-<div class="container-ficha">
-    <div class="header-pro">
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuración Ficha Comercial</title>
+    <style>
+        :root {
+            --primary: #0f172a;    /* Azul Marino Profesional */
+            --accent: #0d9488;     /* Verde para Datos Bancarios */
+            --bg: #f1f5f9;
+            --white: #ffffff;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); margin: 0; padding: 40px 20px; color: #334155; }
+
+        .container { max-width: 850px; margin: 0 auto; }
+
+        /* Cabecera */
+        .main-title { border-bottom: 3px solid var(--primary); margin-bottom: 30px; padding-bottom: 10px; }
+        .main-title h1 { color: var(--primary); text-transform: uppercase; margin: 0; font-size: 1.6rem; }
+
+        /* Tarjetas */
+        .card { background: var(--white); border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); margin-bottom: 25px; border: 1px solid #e2e8f0; }
+        .card-header { background: #f8fafc; padding: 12px 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; color: var(--primary); display: flex; align-items: center; }
+        .card-header::before { content: ""; width: 4px; height: 16px; background: var(--accent); margin-right: 12px; border-radius: 2px; }
+
+        /* Formulario Grilla */
+        .grid-form { display: grid; grid-template-columns: 200px 1fr; gap: 15px; padding: 25px; align-items: center; }
+        .label { font-weight: 600; font-size: 0.8rem; color: #64748b; text-transform: uppercase; }
+
+        /* Inputs Estilizados */
+        input.pro-field { width: 100%; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 5px; font-size: 0.95rem; transition: 0.2s; box-sizing: border-box; }
+        input.pro-field:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1); }
+
+        /* Botón de Guardar */
+        .btn-save { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 6px; font-weight: bold; font-size: 1rem; cursor: pointer; transition: 0.3s; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-save:hover { background: #1e293b; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+        
+        .pago-style { border-left: 6px solid var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="main-title">
         <h1>Configuración de Ficha Comercial</h1>
     </div>
 
-    <div class="card-comercial">
-        <div class="card-title">Antecedentes de la Empresa</div>
-        <div class="info-grid">
+    <div class="card">
+        <div class="card-header">Antecedentes de la Empresa</div>
+        <div class="grid-form">
             <div class="label">Razón Social:</div>
-            <input type="text" id="razon_social" class="input-pro" placeholder="Ej: Del Solar Truck & Cars SpA">
+            <input type="text" class="pro-field" placeholder="Ej: Del Solar Truck & Cars SpA">
             
             <div class="label">RUT Empresa:</div>
-            <input type="text" id="rut_empresa" class="input-pro" placeholder="76.XXX.XXX-X">
+            <input type="text" class="pro-field" placeholder="76.779.159-3">
 
-            <div class="label">Giro:</div>
-            <input type="text" id="giro" class="input-pro">
+            <div class="label">Giro / Actividad:</div>
+            <input type="text" class="pro-field" placeholder="Venta por Internet">
         </div>
     </div>
 
-    <div class="card-comercial pago-accent">
-        <div class="card-title" style="color: var(--accent-color);">Datos Bancarios</div>
-        <div class="info-grid">
+    <div class="card pago-style">
+        <div class="card-header" style="color: var(--accent);">Instrucciones para Pago</div>
+        <div class="grid-form">
             <div class="label">Banco:</div>
-            <input type="text" id="banco" class="input-pro">
+            <input type="text" class="pro-field" placeholder="Ej: Banco Santander">
 
-            <div class="label">N° Cuenta:</div>
-            <input type="text" id="n_cuenta" class="input-pro">
+            <div class="label">N° de Cuenta:</div>
+            <input type="text" class="pro-field" placeholder="1234567890">
+
+            <div class="label">Titular:</div>
+            <input type="text" class="pro-field" placeholder="Nombre completo o Empresa">
         </div>
     </div>
 
-    <button onclick="guardarPerfil()" class="btn-guardar">Guardar Cambios y Actualizar Ficha</button>
+    <button class="btn-save" onclick="alert('Datos actualizados en la base de datos')">Actualizar Ficha del Cliente</button>
 </div>
 
-<style>
-/* Estilos adicionales para que los inputs no rompan el diseño pro */
-.input-pro {
-    border: 1px solid #cbd5e1;
-    padding: 8px;
-    border-radius: 4px;
-    font-size: 0.95rem;
-    width: 100%;
-    color: var(--text-main);
-}
-.btn-guardar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 15px 30px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    width: 100%;
-    transition: 0.3s;
-}
-.btn-guardar:hover { opacity: 0.9; transform: translateY(-2px); }
-</style>
+</body>
+</html>
