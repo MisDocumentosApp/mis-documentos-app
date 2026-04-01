@@ -10,121 +10,121 @@
 </head>
 <body class="bg-[#f8fafc] font-sans h-screen flex overflow-hidden text-slate-900">
 
-    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0">
+    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0 border-r border-white/5">
         <div class="p-8">
-            <h1 class="text-xs font-black uppercase tracking-widest text-blue-400 mb-10 italic">Mis Documentos</h1>
+            <h1 class="text-xs font-black uppercase tracking-[0.3em] text-blue-400 mb-10 italic text-center">Mis Documentos</h1>
             <nav class="space-y-2">
-                <a href="index.html" class="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-800 transition-all text-slate-400 font-bold text-sm"><i data-lucide="home" size="18"></i> Dashboard</a>
-                <a href="catalogo.html" class="flex items-center gap-3 p-3 rounded-xl bg-blue-600 text-white font-bold text-sm"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+                <a href="index.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
+                    <i data-lucide="home" size="18"></i> Dashboard
+                </a>
+                <a href="catalogo.html" class="flex items-center gap-3 p-4 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 text-decoration-none">
+                    <i data-lucide="database" size="18"></i> Catálogo Pro
+                </a>
             </nav>
         </div>
-        <div class="mt-auto p-6 bg-black/20 text-[10px] text-slate-500 font-bold uppercase tracking-widest">
+        <div class="mt-auto p-6 bg-black/20 text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
             <p>microempresasaunclick@gmail.com</p>
             <p>sadelsolar@gmail.com</p>
-            <p class="text-blue-400 mt-2">+569 4743 6919</p>
+            <p class="text-blue-500 mt-2">+569 4743 6919</p>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
         <header class="h-20 bg-white border-b border-slate-200 flex items-center px-10 italic font-black text-xl tracking-tighter">
-            CATÁLOGO <span class="text-blue-600">PRO</span>
+            CATÁLOGO <span class="text-blue-600 ml-1 underline decoration-2">PRO</span>
         </header>
 
         <div class="flex-1 overflow-auto p-10 flex gap-10">
             <div class="w-80 shrink-0">
-                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm space-y-4">
-                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4 tracking-widest">Ingreso de Insumo</h3>
-                    <input id="prod-nombre" type="text" placeholder="Descripción del Producto" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none focus:border-blue-500 font-bold text-sm">
+                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-4">
+                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4 tracking-widest italic">Registro de Insumo</h3>
+                    <input id="f-nombre" type="text" placeholder="Descripción del Producto" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 ring-blue-500/20 font-bold text-sm">
                     <div class="grid grid-cols-2 gap-3">
-                        <input id="prod-sku" type="text" placeholder="SKU" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs font-mono uppercase">
-                        <input id="prod-marca" type="text" placeholder="Marca" class="w-full p-3 bg-slate-50 border border-slate-100 rounded-xl outline-none text-xs">
+                        <input id="f-sku" type="text" placeholder="SKU" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-xs font-mono uppercase">
+                        <input id="f-marca" type="text" placeholder="Marca" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-xs">
                     </div>
-                    <input type="file" id="prod-file" class="text-[10px] block w-full border border-dashed p-4 rounded-xl">
-                    <button onclick="ejecutarGuardado()" id="btn-main" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Guardar en Catálogo</button>
+                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50/50">
+                        <input type="file" id="f-file" class="text-[10px] w-full">
+                    </div>
+                    <button onclick="guardar()" id="btn-save" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Guardar en la Nube</button>
                 </div>
             </div>
 
-            <div class="flex-1 bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+            <div class="flex-1 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden">
                 <table class="w-full text-left text-sm">
                     <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-black uppercase text-slate-400">
-                        <tr><th class="p-6">Detalle</th><th class="p-6">ID</th><th class="p-6 text-right">Acciones</th></tr>
+                        <tr><th class="p-6">Información</th><th class="p-6">Identificación</th><th class="p-6 text-right">Acciones</th></tr>
                     </thead>
-                    <tbody id="tabla-lista" class="divide-y divide-slate-50 italic font-medium"></tbody>
+                    <tbody id="lista" class="divide-y divide-slate-50 italic"></tbody>
                 </table>
-                <div id="loading-state" class="p-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-widest animate-pulse">Sincronizando Inventario...</div>
+                <div id="status" class="p-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Sincronizando...</div>
             </div>
         </div>
     </main>
 
     <script>
-        // 1. PEGA TUS LLAVES AQUÍ (Asegúrate que estén entre las comillas)
-        const MI_URL = "https://xnarwetyjeijkitzivno.supabase.co"; 
-        const MI_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+        // *** 2. AQUÍ ESTÁ EL SECRETO ***
+        // Copia tus llaves de Supabase > Settings > API
+        const URL_PROYECTO = "https://xnarwetyjeijkitzivno.supabase.co"; 
+        const KEY_PROYECTO = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
 
-        const supabase = window.supabase.createClient(MI_URL, MI_KEY);
+        // Inicializamos la conexión con el nombre 'db' para que el botón lo encuentre
+        const db = window.supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
 
-        async function cargarInventario() {
+        async function cargar() {
             try {
-                const { data, error } = await supabase.from('productos').select('*').order('created_at', { ascending: false });
+                const { data, error } = await db.from('productos').select('*').order('created_at', { ascending: false });
                 if (error) throw error;
-                
-                document.getElementById('loading-state').classList.add('hidden');
-                document.getElementById('tabla-lista').innerHTML = data.map(p => `
+                document.getElementById('status').classList.add('hidden');
+                document.getElementById('lista').innerHTML = data.map(p => `
                     <tr class="hover:bg-blue-50/50 transition-all">
-                        <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
-                        <td class="p-6 font-mono text-blue-600 text-xs uppercase">${p.sku}</td>
+                        <td class="p-6 font-bold text-slate-700 uppercase text-xs">${p.nombre}</td>
+                        <td class="p-6 font-mono text-blue-600 text-xs font-black">${p.sku}</td>
                         <td class="p-6 text-right">
-                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2 bg-slate-100 rounded-lg inline-block hover:bg-emerald-500 hover:text-white"><i data-lucide="eye" size="14"></i></a>` : ''}
+                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2 bg-slate-100 rounded-lg inline-block text-slate-400 hover:text-blue-600"><i data-lucide="eye" size="14"></i></a>` : ''}
                         </td>
                     </tr>
                 `).join('');
                 lucide.createIcons();
             } catch (err) {
-                document.getElementById('loading-state').innerText = "ERROR DE CONEXIÓN: " + err.message;
+                document.getElementById('status').innerText = "ERROR DE CONEXIÓN: " + err.message;
             }
         }
 
-        async function ejecutarGuardado() {
-            const btn = document.getElementById('btn-main');
-            const nombre = document.getElementById('prod-nombre').value;
-            const sku = document.getElementById('prod-sku').value;
-            const marca = document.getElementById('prod-marca').value;
-            const archivo = document.getElementById('prod-file').files[0];
+        async function guardar() {
+            const btn = document.getElementById('btn-save');
+            const n = document.getElementById('f-nombre').value;
+            const s = document.getElementById('f-sku').value;
+            const m = document.getElementById('f-marca').value;
+            const f = document.getElementById('f-file').files[0];
 
-            if (!nombre || !sku) return alert("⚠️ Nombre y SKU son obligatorios");
+            if (!n || !s) return alert("⚠️ Nombre y SKU son obligatorios");
 
-            btn.innerText = "⚡ PROCESANDO...";
+            btn.innerText = "PROCESANDO...";
             btn.disabled = true;
 
             try {
-                let urlFinal = "";
-                if (archivo) {
-                    const nombreArchivo = `${Date.now()}_${sku}.pdf`;
-                    const { data: upData, error: upErr } = await supabase.storage.from('fichas').upload(nombreArchivo, archivo);
+                let link = "";
+                if (f) {
+                    const ref = `${Date.now()}_${s}.pdf`;
+                    const { error: upErr } = await db.storage.from('fichas').upload(ref, f);
                     if (upErr) throw upErr;
-                    urlFinal = supabase.storage.from('fichas').getPublicUrl(nombreArchivo).data.publicUrl;
+                    link = db.storage.from('fichas').getPublicUrl(ref).data.publicUrl;
                 }
 
-                const { error: insErr } = await supabase.from('productos').insert([{ 
-                    nombre: nombre, 
-                    sku: sku, 
-                    marca: marca, 
-                    url_ficha: urlFinal 
-                }]);
-                
+                const { error: insErr } = await db.from('productos').insert([{ nombre: n, sku: s, marca: m, url_ficha: link }]);
                 if (insErr) throw insErr;
 
-                alert("✅ ¡Producto Guardado!");
+                alert("✅ ¡Producto Guardado con Éxito!");
                 location.reload();
-
-            } catch (error) {
-                alert("❌ ERROR: " + error.message);
-                btn.innerText = "GUARDAR EN CATÁLOGO";
+            } catch (e) {
+                alert("❌ ERROR: " + e.message);
+                btn.innerText = "Guardar en Catálogo";
                 btn.disabled = false;
             }
         }
 
-        window.onload = () => { lucide.createIcons(); cargarInventario(); };
+        window.onload = () => { lucide.createIcons(); cargar(); };
     </script>
 </body>
 </html>
