@@ -9,120 +9,126 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
-        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-        .btn-primary { background: #2563eb; color: white; transition: all 0.3s; }
-        .btn-primary:hover { background: #1d4ed8; transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
-        .input-field { width: 100%; padding: 12px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; font-weight: 500; outline: none; transition: border 0.3s; }
-        .input-field:focus { border-color: #2563eb; background: white; }
+        .nav-link { transition: all 0.2s; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-size: 14px; font-weight: 600; color: #94a3b8; }
+        .nav-link:hover { background: #1e293b; color: white; }
+        .nav-active { background: #2563eb !important; color: white !important; shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        .input-field { width: 100%; padding: 12px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; outline: none; transition: all 0.3s; }
+        .input-field:focus { border-color: #2563eb; background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
     </style>
 </head>
-<body class="bg-[#f1f5f9] font-sans text-slate-900 min-h-screen flex flex-col">
+<body class="bg-[#f8fafc] font-sans text-slate-900 h-screen flex overflow-hidden">
 
-    <header class="bg-white border-b border-slate-200 h-20 flex items-center justify-between px-10 sticky top-0 z-50">
-        <div class="flex items-center gap-6">
-            <a href="index.html" class="flex items-center gap-2 text-slate-400 hover:text-blue-600 transition-colors font-bold text-xs uppercase tracking-widest">
-                <i data-lucide="arrow-left" size="16"></i> Volver al Dashboard
-            </a>
-            <div class="h-6 w-[1px] bg-slate-200"></div>
-            <h2 class="text-xl font-black italic tracking-tighter">CATÁLOGO<span class="text-blue-600">PRO</span></h2>
-        </div>
-        
-        <div class="relative w-96">
-            <i data-lucide="search" class="absolute left-4 top-3 text-slate-400" size="18"></i>
-            <input type="text" onkeyup="filtrarProductos(this.value)" placeholder="Buscar por SKU, Marca o Nombre..." class="w-full pl-12 pr-4 py-2.5 bg-slate-100 border-none rounded-full text-sm font-medium focus:ring-2 ring-blue-500/20 outline-none">
-        </div>
-    </header>
-
-    <main class="flex-1 p-10 max-w-[1600px] mx-auto w-full grid grid-cols-12 gap-10">
-        
-        <div class="col-span-12 lg:col-span-4">
-            <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-200 sticky top-28">
-                <div class="flex items-center gap-3 mb-8">
-                    <div class="bg-blue-100 text-blue-600 p-2 rounded-xl"><i data-lucide="plus-circle"></i></div>
-                    <h3 class="font-black uppercase text-xs tracking-widest">Nuevo Registro</h3>
-                </div>
-
-                <div class="space-y-5">
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1 block">Descripción del Producto</label>
-                        <input id="in-nombre" type="text" placeholder="Ej: Fusible High Speed 1000A" class="input-field">
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1 block">SKU / Código</label>
-                            <input id="in-sku" type="text" placeholder="SKU-001" class="input-field uppercase">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1 block">Marca</label>
-                            <input id="in-marca" type="text" placeholder="Eaton" class="input-field">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-black text-slate-400 uppercase ml-2 mb-1 block">Ficha Técnica (PDF)</label>
-                        <div class="relative border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:bg-slate-50 transition-colors group">
-                            <input type="file" id="in-archivo" class="absolute inset-0 opacity-0 cursor-pointer" onchange="actualizarArchivo(this)">
-                            <i data-lucide="file-up" class="mx-auto text-slate-300 mb-2 group-hover:text-blue-500" size="32"></i>
-                            <p id="label-file" class="text-[10px] font-bold text-slate-400 uppercase">Click para adjuntar PDF</p>
-                        </div>
-                    </div>
-                    <button onclick="guardarProducto()" class="w-full btn-primary py-4 rounded-xl font-black uppercase text-xs tracking-widest mt-4">Guardar en Inventario</button>
+    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0 border-r border-white/5">
+        <div class="p-8">
+            <div class="flex items-center gap-3 mb-12">
+                <div class="bg-blue-600 p-2 rounded-lg"><i data-lucide="layout-grid" size="20"></i></div>
+                <div>
+                    <h1 class="text-xs font-black uppercase tracking-widest leading-none">Mis Documentos</h1>
+                    <span class="text-[9px] text-blue-400 font-bold uppercase tracking-[0.2em]">Ecosistema AI</span>
                 </div>
             </div>
+
+            <nav class="space-y-2">
+                <a href="index.html" class="nav-link"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
+                <div class="h-px bg-white/5 my-4"></div>
+                <a href="perfil.html" class="nav-link"><i data-lucide="building-2" size="18"></i> Perfil Empresa</a>
+                <a href="clientes.html" class="nav-link"><i data-lucide="users" size="18"></i> Gestión Clientes</a>
+                <a href="catalogo.html" class="nav-link nav-active"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+                <a href="docuflow.html" class="nav-link"><i data-lucide="cpu" size="18"></i> DocuFlow AI</a>
+            </nav>
         </div>
 
-        <div class="col-span-12 lg:col-span-8">
-            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50/50 border-b border-slate-100">
-                        <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                            <th class="p-6">Producto</th>
-                            <th class="p-6">SKU</th>
-                            <th class="p-6">Marca</th>
-                            <th class="p-6 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tabla-body" class="divide-y divide-slate-50 italic">
-                        </tbody>
-                </table>
-                <div id="loader" class="p-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
-                    Cargando inventario maestro...
+        <div class="mt-auto p-6 border-t border-white/5 bg-black/20">
+            <p class="text-[9px] text-slate-500 font-bold uppercase mb-2 tracking-widest">Contacto Directo</p>
+            <p class="text-[10px] text-blue-400 truncate font-medium">+569 4743 6919</p>
+            <p class="text-[10px] text-slate-400 truncate">sadelsolar@gmail.com</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col overflow-hidden">
+        
+        <header class="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-10 shrink-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-black italic tracking-tighter">CATÁLOGO<span class="text-blue-600">PRO</span></h2>
+                <span class="text-[9px] bg-slate-100 text-slate-500 px-3 py-1 rounded-full font-black uppercase tracking-widest">Módulo Activo</span>
+            </div>
+            
+            <div class="relative w-80">
+                <i data-lucide="search" class="absolute left-4 top-3 text-slate-400" size="16"></i>
+                <input type="text" onkeyup="filtrar(this.value)" placeholder="Buscar por SKU o Producto..." class="w-full pl-10 pr-4 py-2.5 bg-slate-100 border-none rounded-full text-sm font-medium">
+            </div>
+        </header>
+
+        <div class="flex-1 overflow-auto p-10">
+            <div class="max-[1400px]:flex-col flex gap-10">
+                
+                <div class="w-full max-w-sm shrink-0">
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm">
+                        <h3 class="text-xs font-black uppercase text-blue-600 mb-6 flex items-center gap-2">
+                            <i data-lucide="plus-circle" size="14"></i> Nuevo Registro
+                        </h3>
+                        <div class="space-y-4">
+                            <input id="in-nombre" type="text" placeholder="Descripción del Producto" class="input-field font-bold">
+                            <div class="grid grid-cols-2 gap-3">
+                                <input id="in-sku" type="text" placeholder="SKU" class="input-field uppercase font-mono text-xs">
+                                <input id="in-marca" type="text" placeholder="Marca" class="input-field">
+                            </div>
+                            <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:bg-slate-50 cursor-pointer relative group">
+                                <input type="file" id="in-file" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileLabel(this)">
+                                <i data-lucide="file-up" class="mx-auto text-slate-300 mb-2 group-hover:text-blue-600" size="24"></i>
+                                <p id="file-name" class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Adjuntar Ficha PDF</p>
+                            </div>
+                            <button onclick="guardar()" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all">Guardar en Nube</button>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="flex-1">
+                    <div class="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 border-b border-slate-100">
+                                <tr class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
+                                    <th class="p-6">Detalle del Item</th>
+                                    <th class="p-6">SKU / Marca</th>
+                                    <th class="p-6 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista" class="divide-y divide-slate-50 italic">
+                                </tbody>
+                        </table>
+                        <div id="loading" class="p-20 text-center text-slate-300 font-bold uppercase text-[10px]">Consultando Catálogo...</div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </main>
 
     <script>
-        // --- CONFIGURACIÓN SUPABASE ---
-        const SB_URL = "https://xnarwetyjeijkitzivno.supabase.co"; 
-        const SB_KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-        const client = window.supabase.createClient(SB_URL, SB_KEY);
+        // CONFIGURACIÓN (RECUERDA PONER TUS LLAVES AQUÍ)
+        const URL = "https://xnarwetyjeijkitzivno.supabase.co";
+        const KEY = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
+        const db = window.supabase.createClient(URL, KEY);
 
-        // --- CARGAR PRODUCTOS ---
-        async function cargarData() {
-            const { data, error } = await client.from('productos').select('*').order('created_at', { ascending: false });
-            document.getElementById('loader').classList.add('hidden');
-            const tbody = document.getElementById('tabla-body');
+        async function cargar() {
+            const { data } = await db.from('productos').select('*').order('created_at', { ascending: false });
+            document.getElementById('loading').classList.add('hidden');
+            const lista = document.getElementById('lista');
             
-            if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="4" class="p-20 text-center text-slate-300">No hay productos registrados</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(p => `
-                <tr class="group hover:bg-blue-50/30 transition-colors">
-                    <td class="p-6 font-bold text-slate-700">${p.nombre}</td>
-                    <td class="p-6 font-mono text-blue-600 font-black uppercase">${p.sku}</td>
-                    <td class="p-6 text-slate-400">${p.marca}</td>
+            lista.innerHTML = data.map(p => `
+                <tr class="hover:bg-blue-50/50 transition-colors">
+                    <td class="p-6">
+                        <p class="font-bold text-slate-800">${p.nombre}</p>
+                        <p class="text-[10px] text-slate-400 not-italic uppercase font-bold">Insumo Industrial</p>
+                    </td>
+                    <td class="p-6">
+                        <p class="font-mono text-blue-600 font-black text-xs uppercase">${p.sku}</p>
+                        <p class="text-[10px] text-slate-400 font-medium">${p.marca}</p>
+                    </td>
                     <td class="p-6 text-right">
                         <div class="flex justify-end gap-2">
-                            <button onclick="generarFichaPDF('${p.nombre}', '${p.sku}', '${p.marca}')" class="p-3 bg-slate-100 text-slate-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Generar PDF">
-                                <i data-lucide="file-text" size="18"></i>
-                            </button>
-                            ${p.url_ficha ? `
-                                <a href="${p.url_ficha}" target="_blank" class="p-3 bg-slate-100 text-slate-600 rounded-xl hover:bg-emerald-600 hover:text-white transition-all shadow-sm" title="Ver Ficha Original">
-                                    <i data-lucide="eye" size="18"></i>
-                                </a>
-                            ` : ''}
+                            <button onclick="descargarPDF('${p.nombre}','${p.sku}','${p.marca}')" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-blue-600 hover:text-white"><i data-lucide="file-text" size="16"></i></button>
+                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2 bg-slate-100 text-slate-500 rounded-lg hover:bg-emerald-600 hover:text-white"><i data-lucide="eye" size="16"></i></a>` : ''}
                         </div>
                     </td>
                 </tr>
@@ -130,92 +136,43 @@
             lucide.createIcons();
         }
 
-        // --- GUARDAR PRODUCTO ---
-        async function guardarProducto() {
+        async function guardar() {
             const nombre = document.getElementById('in-nombre').value;
             const sku = document.getElementById('in-sku').value;
             const marca = document.getElementById('in-marca').value;
-            const file = document.getElementById('in-archivo').files[0];
+            const file = document.getElementById('in-file').files[0];
 
-            if(!nombre || !sku) return alert("Completa Nombre y SKU");
+            if(!nombre || !sku) return alert("Nombre y SKU son obligatorios");
 
-            let url_ficha = "";
+            let url = "";
             if(file) {
-                const fileName = `${Date.now()}_${sku}.pdf`;
-                const { data: uploadData, error: uploadError } = await client.storage.from('fichas').upload(fileName, file);
-                if(uploadError) return alert("Error al subir archivo: " + uploadError.message);
-                const { data: urlData } = client.storage.from('fichas').getPublicUrl(fileName);
-                url_ficha = urlData.publicUrl;
+                const name = `${Date.now()}_${sku}.pdf`;
+                await db.storage.from('fichas').upload(name, file);
+                url = db.storage.from('fichas').getPublicUrl(name).data.publicUrl;
             }
 
-            const { error } = await client.from('productos').insert([{ nombre, sku, marca, url_ficha }]);
-            
+            const { error } = await db.from('productos').insert([{ nombre, sku, marca, url_ficha: url }]);
             if(error) alert(error.message);
-            else {
-                alert("¡Producto Registrado con Éxito!");
-                location.reload();
-            }
+            else location.reload();
         }
 
-        // --- GENERADOR DE PDF (jsPDF) ---
-        function generarFichaPDF(nombre, sku, marca) {
+        function descargarPDF(n, s, m) {
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-            
-            // Diseño del PDF
-            doc.setFillColor(15, 23, 42); // Color oscuro
-            doc.rect(0, 0, 210, 40, 'F');
-            
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(22);
-            doc.setFont("helvetica", "bold");
-            doc.text("MIS DOCUMENTOS", 20, 25);
-            doc.setFontSize(8);
-            doc.text("FICHA TÉCNICA OFICIAL", 20, 32);
-
-            doc.setTextColor(15, 23, 42);
-            doc.setFontSize(16);
-            doc.text("ESPECIFICACIONES TÉCNICAS", 20, 60);
-
-            doc.setDrawColor(226, 232, 240);
-            doc.line(20, 65, 190, 65);
-
-            doc.setFontSize(11);
-            doc.text("PRODUCTO:", 20, 80);
-            doc.setFont("helvetica", "normal");
-            doc.text(nombre, 60, 80);
-
-            doc.setFont("helvetica", "bold");
-            doc.text("SKU / CÓDIGO:", 20, 95);
-            doc.setFont("helvetica", "normal");
-            doc.text(sku, 60, 95);
-
-            doc.setFont("helvetica", "bold");
-            doc.text("MARCA:", 20, 110);
-            doc.setFont("helvetica", "normal");
-            doc.text(marca, 60, 110);
-
-            doc.setFontSize(8);
-            doc.setTextColor(150, 150, 150);
-            doc.text("Documento generado automáticamente por el Ecosistema AI de Alejandro del Solar.", 20, 280);
-
-            doc.save(`Ficha_${sku}.pdf`);
+            doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 40, 'F');
+            doc.setTextColor(255, 255, 255); doc.setFontSize(20); doc.text("MIS DOCUMENTOS", 20, 25);
+            doc.setTextColor(0, 0, 0); doc.text("FICHA TÉCNICA", 20, 60);
+            doc.setFontSize(12); doc.text(`PRODUCTO: ${n}`, 20, 80); doc.text(`SKU: ${s}`, 20, 95); doc.text(`MARCA: ${m}`, 20, 110);
+            doc.save(`Ficha_${s}.pdf`);
         }
 
-        function actualizarArchivo(input) {
-            if(input.files[0]) document.getElementById('label-file').innerText = input.files[0].name;
+        function updateFileLabel(i) { if(i.files[0]) document.getElementById('file-name').innerText = i.files[0].name; }
+        function filtrar(v) {
+            const t = v.toLowerCase();
+            document.querySelectorAll('#lista tr').forEach(r => r.style.display = r.innerText.toLowerCase().includes(t) ? '' : 'none');
         }
 
-        function filtrarProductos(val) {
-            const term = val.toLowerCase();
-            const rows = document.querySelectorAll('#tabla-body tr');
-            rows.forEach(row => {
-                const text = row.innerText.toLowerCase();
-                row.style.display = text.includes(term) ? '' : 'none';
-            });
-        }
-
-        window.onload = () => { lucide.createIcons(); cargarData(); };
+        window.onload = () => { lucide.createIcons(); cargar(); };
     </script>
 </body>
 </html>
