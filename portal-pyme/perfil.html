@@ -2,177 +2,94 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Perfil Empresa - Mis Documentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha Comercial - Mis Documentos</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-bg: #0f172a; /* Fondo oscuro del Dashboard */
-            --sidebar-width: 260px;
-            --accent: #0d9488;
-        }
-
-        body { margin: 0; font-family: 'Inter', sans-serif; display: flex; height: 100vh; background: #f8fafc; }
-
-        /* --- DASHBOARD / SIDEBAR --- */
-        .sidebar { width: var(--sidebar-width); background: var(--primary-bg); color: white; display: flex; flex-direction: column; padding: 20px; flex-shrink: 0; }
-        .sidebar-logo { border-bottom: 1px solid #1e293b; padding-bottom: 20px; margin-bottom: 30px; }
-        .sidebar-logo h2 { font-size: 0.9rem; margin: 0; letter-spacing: 1px; color: #94a3b8; }
-        .nav-links { list-style: none; padding: 0; margin: 0; }
-        .nav-item { padding: 12px 15px; border-radius: 8px; margin-bottom: 5px; cursor: pointer; color: #94a3b8; transition: 0.3s; font-size: 0.9rem; text-decoration: none; display: block; }
-        .nav-item:hover { background: #1e293b; color: white; }
-        .nav-item.active { background: #2563eb; color: white; } /* Color azul del Catálogo Pro */
-
-        /* --- CONTENIDO PRINCIPAL --- */
-        .main-content { flex-grow: 1; overflow-y: auto; padding: 40px; }
-        .ficha-container { max-width: 850px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-
-        /* Estilos de la Ficha Comercial */
-        .header-pro { border-bottom: 3px solid var(--primary-bg); padding-bottom: 15px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .logo-box { width: 100px; height: 100px; border: 1px dashed #cbd5e1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-        .logo-box img { max-width: 100%; max-height: 100%; }
-        
-        .card { border: 1px solid #e2e8f0; border-radius: 6px; margin-bottom: 15px; }
-        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: bold; font-size: 0.8rem; text-transform: uppercase; border-bottom: 1px solid #e2e8f0; color: var(--primary-bg); }
-        .grid-form { display: grid; grid-template-columns: 180px 1fr; gap: 10px; padding: 15px 20px; align-items: center; }
-        .label { font-weight: 600; font-size: 0.75rem; color: #64748b; text-transform: uppercase; }
-        input.pro-field { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 0.9rem; }
-
-        .btn-group { display: flex; gap: 10px; margin-top: 20px; }
-        .btn { flex: 1; padding: 15px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn-clean { background: #f1f5f9; color: #64748b; }
-        .btn-pdf { background: var(--accent); color: white; }
-
-        @media print { .sidebar, .btn-group { display: none !important; } .main-content { padding: 0; } }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
+        .nav-item:hover { background-color: #1e293b; color: white; }
+        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        input { border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; width: 100%; font-size: 0.9rem; }
+        .card { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 15px; overflow: hidden; background: white; }
+        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        .card-header::before { content: ""; width: 4px; height: 14px; background: #0d9488; border-radius: 2px; }
     </style>
 </head>
-<body>
+<body class="bg-slate-900 flex h-screen overflow-hidden">
 
-    <div class="sidebar">
-        <div class="sidebar-logo">
-            <h2 style="color:white; font-size:1.1rem">MIS DOCUMENTOS</h2>
-            <small style="color:#6366f1">ECOSISTEMA AI</small>
+    <aside class="w-64 flex flex-col p-6 shrink-0">
+        <div class="mb-10">
+            <h2 class="text-white font-bold text-xl tracking-tight">MIS DOCUMENTOS</h2>
+            <p class="text-blue-500 text-xs font-bold tracking-widest">ECOSISTEMA AI</p>
         </div>
         <nav class="space-y-2">
-  <a href="index.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
-    <i data-lucide="home" size="18"></i> Inicio / Dashboard
-  </a>
-  <a href="perfil.html" class="flex items-center gap-3 p-4 rounded-xl bg-blue-600 text-white font-bold text-sm shadow-lg shadow-blue-600/20 text-decoration-none">
-    <i data-lucide="user" size="18"></i> Ficha Comercial
-  </a>
-  <a href="#" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
-    <i data-lucide="users" size="18"></i> Gestión Clientes
-  </a>
-  <a href="catalogo.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
-    <i data-lucide="database" size="18"></i> Catálogo Pro
-  </a>
-  <a href="fichas.html" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
-    <i data-lucide="file-text" size="18"></i> Fichas Técnicas
-  </a>
-  <a href="#" class="flex items-center gap-3 p-4 rounded-xl hover:bg-slate-800 text-slate-400 font-bold text-sm text-decoration-none">
-    <i data-lucide="cpu" size="18"></i> DocuFlow AI
-  </a>
-</nav>
-    </div>
+            <a href="index.html" class="nav-item"><i data-lucide="home"></i> Inicio / Dashboard</a>
+            <a href="perfil.html" class="nav-item active"><i data-lucide="user"></i> Ficha Comercial</a>
+            <a href="#" class="nav-item"><i data-lucide="users"></i> Gestión Clientes</a>
+            <a href="catalogo.html" class="nav-item"><i data-lucide="database"></i> Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item"><i data-lucide="file-text"></i> Fichas Técnicas</a>
+            <a href="#" class="nav-item"><i data-lucide="cpu"></i> DocuFlow AI</a>
+        </nav>
+    </aside>
 
-    <div class="main-content">
-        <div class="ficha-container" id="ficha-comercial">
-            <div class="header-pro">
-                <div class="logo-box" onclick="document.getElementById('input-logo').click()">
-                    <img id="logo-preview" src="" style="display:none;">
-                    <span id="txt-logo" style="font-size:0.6rem; color:#94a3b8">SUBIR LOGO</span>
+    <main class="flex-1 bg-slate-50 overflow-y-auto p-10">
+        <div id="hoja-oficio" class="max-w-[816px] mx-auto bg-white p-10 shadow-xl min-h-[1248px] flex flex-col">
+            <div class="border-b-4 border-slate-900 pb-4 mb-8 flex justify-between items-center">
+                <div class="w-24 h-24 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer overflow-hidden" onclick="document.getElementById('logo-in').click()">
+                    <img id="logo-pre" class="hidden max-w-full max-h-full">
+                    <span id="logo-txt" class="text-[10px] text-slate-400 text-center">SUBIR LOGO</span>
                 </div>
-                <input type="file" id="input-logo" hidden accept="image/*" onchange="cargarLogo(event)">
-                
-                <div style="text-align: right">
-                    <h1 id="title-razon" style="margin:0; font-size:1.6rem">FICHA COMERCIAL</h1>
-                    <p style="margin:0; font-size:0.8rem; color:#64748b">Información Bancaria y de Contacto</p>
+                <input type="file" id="logo-in" class="hidden" accept="image/*" onchange="loadLogo(event)">
+                <div class="text-right">
+                    <h1 id="title-rs" class="text-2xl font-black text-slate-900 uppercase">Ficha Comercial</h1>
+                    <p class="text-slate-500 font-medium">Información Bancaria y de Contacto</p>
                 </div>
             </div>
 
             <div class="card">
                 <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="grid-form">
-                    <div class="label">Razón Social:</div>
-                    <input type="text" id="razon_social" class="pro-field" oninput="document.getElementById('title-razon').innerText = this.value || 'FICHA COMERCIAL'">
-                    <div class="label">RUT Empresa:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Giro / Actividad:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Dirección:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Sitio Web:</div>
-                    <input type="text" class="pro-field">
+                <div class="p-6 grid grid-cols-[150px_1fr] gap-4 items-center text-sm">
+                    <span class="font-bold text-slate-500">RAZÓN SOCIAL:</span> <input type="text" oninput="document.getElementById('title-rs').innerText = this.value || 'Ficha Comercial'">
+                    <span class="font-bold text-slate-500">RUT EMPRESA:</span> <input type="text">
+                    <span class="font-bold text-slate-500">GIRO:</span> <input type="text">
+                    <span class="font-bold text-slate-500">DIRECCIÓN:</span> <input type="text">
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">Información de Contacto</div>
-                <div class="grid-form">
-                    <div class="label">Nombre Contacto:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">RUT Contacto:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Teléfono:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Email Corporativo:</div>
-                    <input type="text" class="pro-field">
+            <div class="card border-l-8 border-teal-600">
+                <div class="card-header text-teal-700">Instrucciones para Pago</div>
+                <div class="p-6 grid grid-cols-[150px_1fr] gap-4 items-center text-sm">
+                    <span class="font-bold text-slate-500">BANCO:</span> <input type="text">
+                    <span class="font-bold text-slate-500">N° CUENTA:</span> <input type="text">
+                    <span class="font-bold text-slate-500">TITULAR:</span> <input type="text">
+                    <span class="font-bold text-slate-500">EMAIL:</span> <input type="text">
                 </div>
             </div>
 
-            <div class="card" style="border-left: 5px solid var(--accent);">
-                <div class="card-header" style="color: var(--accent);">Instrucciones para Pago</div>
-                <div class="grid-form">
-                    <div class="label">Banco:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Tipo de Cuenta:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">N° de Cuenta:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Titular:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">RUT Titular:</div>
-                    <input type="text" class="pro-field">
-                    <div class="label">Email Comprobante:</div>
-                    <input type="text" class="pro-field">
-                </div>
-            </div>
-
-            <div class="btn-group">
-                <button class="btn btn-clean" onclick="limpiarForm()">Limpiar Todo</button>
-                <button class="btn btn-pdf" onclick="bajarPDF()">Descargar PDF (Oficio)</button>
+            <div class="mt-auto flex gap-4 no-print">
+                <button onclick="location.reload()" class="flex-1 p-4 bg-slate-100 font-bold text-slate-500 rounded-lg uppercase">Limpiar Todo</button>
+                <button onclick="printPDF()" class="flex-1 p-4 bg-teal-600 font-bold text-white rounded-lg shadow-lg uppercase">Descargar PDF Oficio</button>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        function cargarLogo(e) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = document.getElementById('logo-preview');
-                img.src = reader.result;
-                img.style.display = 'block';
-                document.getElementById('txt-logo').style.display = 'none';
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        }
-
-        function limpiarForm() {
-            if(confirm("¿Borrar todos los datos?")) location.reload();
-        }
-
-        function bajarPDF() {
-            const element = document.getElementById('ficha-comercial');
-            const btns = document.querySelector('.btn-group');
-            btns.style.display = 'none';
-
-            const opt = {
-                margin: 10,
-                filename: 'Ficha_Comercial.pdf',
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
+        lucide.createIcons();
+        function loadLogo(e) {
+            const r = new FileReader();
+            r.onload = () => {
+                const img = document.getElementById('logo-pre');
+                img.src = r.result; img.classList.remove('hidden');
+                document.getElementById('logo-txt').classList.add('hidden');
             };
-
-            html2pdf().set(opt).from(element).save().then(() => btns.style.display = 'flex');
+            r.readAsDataURL(e.target.files[0]);
+        }
+        function printPDF() {
+            const el = document.getElementById('hoja-oficio');
+            const opt = { margin: 0, filename: 'Ficha_Comercial.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } };
+            html2pdf().set(opt).from(el).save();
         }
     </script>
 </body>
