@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cotizaciones Pro - Oficio</title>
+    <title>Generador de Cotizaciones Pro - Personalización Total</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -49,15 +49,24 @@
 
     <main class="flex-1 flex overflow-hidden">
         <div class="editor-panel no-print">
-            <h3 class="section-label">Datos del Vendedor</h3>
+            
+            <h3 class="section-label">Detalles del Documento</h3>
+            <div class="flex gap-2">
+                <div class="w-1/2"><label class="text-[10px] font-bold text-slate-400">N° COTIZACIÓN</label><input type="text" id="q-num" placeholder="#COT-000" class="field" oninput="sync()"></div>
+                <div class="w-1/2"><label class="text-[10px] font-bold text-slate-400">FECHA EMISIÓN</label><input type="text" id="q-date" placeholder="DD-MM-AAAA" class="field" oninput="sync()"></div>
+            </div>
+            <label class="text-[10px] font-bold text-slate-400">VALIDEZ DE OFERTA</label>
+            <input type="text" id="q-valid" placeholder="Ej: 30 Días Corridos" class="field" oninput="sync()">
+
+            <h3 class="section-label mt-4">Datos del Vendedor</h3>
             <input type="text" id="v-nom" placeholder="Razón Social Vendedor" class="field" oninput="sync()">
             <input type="text" id="v-rut" placeholder="RUT Vendedor" class="field" oninput="sync()">
             <input type="text" id="v-dir" placeholder="Dirección" class="field" oninput="sync()">
-            <input type="text" id="v-con" placeholder="Contacto" class="field" oninput="sync()">
             <div class="flex gap-2">
-                <input type="text" id="v-tel" placeholder="Teléfono" class="field" oninput="sync()">
-                <input type="text" id="v-mail" placeholder="Email" class="field" oninput="sync()">
+                <input type="text" id="v-con" placeholder="Contacto" class="field w-1/2" oninput="sync()">
+                <input type="text" id="v-tel" placeholder="Teléfono" class="field w-1/2" oninput="sync()">
             </div>
+            <input type="text" id="v-mail" placeholder="Email" class="field" oninput="sync()">
 
             <h3 class="section-label mt-4">Datos del Cliente</h3>
             <input type="text" id="c-nom" placeholder="Razón Social Cliente" class="field" oninput="sync()">
@@ -99,8 +108,11 @@
 
                     <div class="text-right">
                         <h1 class="text-4xl font-black text-slate-900 uppercase italic tracking-tighter">COTIZACIÓN</h1>
-                        <p class="text-blue-600 font-black text-xl mt-1">#COT-2026</p>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase mt-4">Emisión: <span id="pdf-fecha" class="text-slate-900">--/--/----</span></p>
+                        <p id="out-q-num" class="text-blue-600 font-black text-xl mt-1 italic">#FOLIO-000</p>
+                        <div class="mt-6 text-[10px] font-bold text-slate-400 uppercase space-y-1">
+                            <p>Emisión: <span id="out-q-date" class="text-slate-900">--/--/----</span></p>
+                            <p>Validez: <span id="out-q-valid" class="text-slate-900">30 Días Corridos</span></p>
+                        </div>
                     </div>
                 </div>
 
@@ -140,7 +152,7 @@
                 </div>
 
                 <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-widest">
-                    <span>Validez de Oferta: 30 Días corridos</span>
+                    <span>Copia de Especificación Comercial</span>
                     <span class="italic">Generado por DocuFlow AI</span>
                 </div>
             </div>
@@ -150,9 +162,18 @@
     <script>
         lucide.createIcons();
         let items = [];
-        document.getElementById('pdf-fecha').innerText = new Date().toLocaleDateString('es-CL');
+        
+        // Carga inicial de fecha de hoy
+        const hoy = new Date().toLocaleDateString('es-CL');
+        document.getElementById('q-date').value = hoy;
+        document.getElementById('out-q-date').innerText = hoy;
 
         function sync() {
+            // Detalles del Documento
+            document.getElementById('out-q-num').innerText = document.getElementById('q-num').value || '#FOLIO-000';
+            document.getElementById('out-q-date').innerText = document.getElementById('q-date').value || '--/--/----';
+            document.getElementById('out-q-valid').innerText = document.getElementById('q-valid').value || '30 Días Corridos';
+            
             // Vendedor
             document.getElementById('out-v-nom').innerText = document.getElementById('v-nom').value || '---';
             document.getElementById('out-v-rut').innerText = 'RUT: ' + (document.getElementById('v-rut').value || '---');
@@ -228,7 +249,12 @@
             const el = document.getElementById('cotizacion-pdf');
             const btns = document.querySelector('.no-print');
             btns.style.visibility = 'hidden';
-            const opt = { margin: 0, filename: 'Cotizacion.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } };
+            const opt = { 
+                margin: 0, 
+                filename: 'Cotizacion.pdf', 
+                html2canvas: { scale: 2 }, 
+                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
+            };
             html2pdf().set(opt).from(el).save().then(() => btns.style.visibility = 'visible');
         }
     </script>
