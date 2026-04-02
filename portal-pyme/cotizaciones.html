@@ -2,34 +2,22 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cotizaciones Pro - 10 Filas Max</title>
+    <title>Generador de Cotizaciones Pro - misdocumentosapp.com</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
-
         .editor-panel { width: 420px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 24px; flex-shrink: 0; }
         .preview-area { flex-grow: 1; background-color: #f1f5f9; overflow-y: auto; padding: 40px; display: flex; justify-content: center; }
-        
         #cotizacion-pdf { width: 816px; min-height: 1248px; background: white; padding: 60px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; box-sizing: border-box; }
-
         input.field { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 10px; font-size: 0.8rem; outline: none; transition: 0.2s; color: #1e293b; margin-bottom: 8px; }
-        input.field:focus { border-color: #2563eb; ring: 2px; ring-color: #bfdbfe; }
-        
-        h3.section-label { font-size: 0.65rem; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 12px; }
-
-        /* Estilo de la Tabla */
         .tabla-items { width: 100%; border-collapse: collapse; margin-top: 25px; table-layout: fixed; }
-        .tabla-items th { border-bottom: 2px solid #0f172a; padding: 10px 8px; text-align: left; font-size: 0.7rem; font-weight: 900; color: #0f172a; text-transform: uppercase; }
-        .tabla-items td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; color: #334155; 
-                          white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Evita 2 líneas */
-
+        .tabla-items td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; color: #334155; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
@@ -37,8 +25,8 @@
 
     <aside class="w-64 p-6 flex flex-col shrink-0 no-print">
         <div class="mb-10 text-white">
-            <h2 class="font-extrabold text-xl">MIS DOCUMENTOS</h2>
-            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase">Ecosistema AI</p>
+            <h2 class="font-extrabold text-xl leading-none">MIS DOCUMENTOS</h2>
+            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
         <nav class="space-y-2">
             <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Dashboard</a>
@@ -47,39 +35,45 @@
             <a href="fichas.html" class="nav-item"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
             <a href="cotizaciones.html" class="nav-item active"><i data-lucide="shopping-cart" size="18"></i> Cotizaciones</a>
         </nav>
+
+        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
+            <p>Sistema Gestionado por</p>
+            <p class="text-blue-500">misdocumentosapp.com</p>
+            <p class="mt-3 opacity-50 italic">Soporte Técnico:</p>
+            <p>microempresasaunclick@gmail.com</p>
+        </div>
     </aside>
 
     <main class="flex-1 flex overflow-hidden">
         <div class="editor-panel no-print">
-            
-            <h3 class="section-label">Detalles del Folio</h3>
+            <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-3 pb-1">Detalles Folio</h3>
             <div class="flex gap-2">
                 <input type="text" id="q-num" placeholder="# FOLIO" class="field" oninput="sync()">
-                <input type="text" id="q-date" placeholder="Fecha Emisión" class="field" oninput="sync()">
+                <input type="text" id="q-date" placeholder="Fecha" class="field" oninput="sync()">
             </div>
-            <input type="text" id="q-valid" placeholder="Validez (Días)" class="field" oninput="sync()">
+            <input type="text" id="q-valid" placeholder="Validez" class="field" oninput="sync()">
 
-            <h3 class="section-label mt-4">Vendedor</h3>
+            <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-3 mt-4 pb-1">Vendedor</h3>
             <input type="text" id="v-nom" placeholder="Razón Social" class="field" oninput="sync()">
             <input type="text" id="v-rut" placeholder="RUT" class="field" oninput="sync()">
             <input type="text" id="v-dir" placeholder="Dirección" class="field" oninput="sync()">
-            <input type="text" id="v-con" placeholder="Nombre Contacto" class="field" oninput="sync()">
+            <input type="text" id="v-con" placeholder="Contacto" class="field" oninput="sync()">
             <div class="flex gap-2">
-                <input type="text" id="v-tel" placeholder="Teléfono" class="field" oninput="sync()">
+                <input type="text" id="v-tel" placeholder="Tel" class="field" oninput="sync()">
                 <input type="text" id="v-mail" placeholder="Email" class="field" oninput="sync()">
             </div>
 
-            <h3 class="section-label mt-4">Cliente</h3>
+            <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-3 mt-4 pb-1">Cliente</h3>
             <input type="text" id="c-nom" placeholder="Razón Social Cliente" class="field" oninput="sync()">
             <input type="text" id="c-rut" placeholder="RUT Cliente" class="field" oninput="sync()">
             <input type="text" id="c-dir" placeholder="Dirección" class="field" oninput="sync()">
-            <input type="text" id="c-con" placeholder="Atención de..." class="field" oninput="sync()">
+            <input type="text" id="c-con" placeholder="Contacto" class="field" oninput="sync()">
             <div class="flex gap-2">
-                <input type="text" id="c-tel" placeholder="Teléfono" class="field" oninput="sync()">
+                <input type="text" id="c-tel" placeholder="Tel" class="field" oninput="sync()">
                 <input type="text" id="c-mail" placeholder="Email" class="field" oninput="sync()">
             </div>
 
-            <h3 class="section-label mt-4">Productos (Max. 10)</h3>
+            <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-3 mt-4 pb-1">Productos (Máx 10)</h3>
             <div id="editor-items" class="space-y-2 mb-4"></div>
             <button id="btn-add" onclick="addItem()" class="w-full py-2 border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-bold rounded-lg hover:bg-slate-50 transition">+ AGREGAR PRODUCTO</button>
 
@@ -93,20 +87,18 @@
             <div id="cotizacion-pdf">
                 <div class="flex justify-between items-start border-b-4 border-slate-900 pb-6 mb-8">
                     <div class="flex flex-col gap-4">
-                        <div class="w-28 h-28 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 relative group" onclick="document.getElementById('logo-file').click()">
-                            <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-1">
-                            <span id="pdf-logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Subir Logo</span>
+                        <div class="w-28 h-28 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 overflow-hidden" onclick="document.getElementById('logo-file').click()">
+                            <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain">
+                            <span id="pdf-logo-txt" class="text-[8px] font-bold text-slate-400 uppercase">Logo</span>
                         </div>
                         <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
-                        
                         <div class="leading-tight">
-                            <h2 id="out-v-nom" class="font-black text-lg uppercase">---</h2>
-                            <p id="out-v-rut" class="text-[10px] font-bold text-slate-500 uppercase">RUT: ---</p>
+                            <h2 id="out-v-nom" class="font-black text-lg uppercase leading-none">---</h2>
+                            <p id="out-v-rut" class="text-[10px] font-bold text-slate-500 uppercase mt-1">RUT: ---</p>
                             <p id="out-v-dir" class="text-[9px] text-slate-400 font-medium">---</p>
-                            <p id="out-v-extra" class="text-[9px] text-slate-400 mt-1 uppercase font-bold">--- | --- | ---</p>
+                            <p id="out-v-extra" class="text-[9px] text-slate-400 mt-1 font-bold uppercase">--- | --- | ---</p>
                         </div>
                     </div>
-
                     <div class="text-right">
                         <h1 class="text-4xl font-black text-slate-900 uppercase italic tracking-tighter leading-none">COTIZACIÓN</h1>
                         <p id="out-q-num" class="text-blue-600 font-black text-xl mt-1 italic">#FOLIO</p>
@@ -118,7 +110,7 @@
                 </div>
 
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-6">
-                    <h4 class="text-[8px] font-black text-blue-600 uppercase mb-2 tracking-widest">ANTECEDENTES DEL CLIENTE:</h4>
+                    <h4 class="text-[8px] font-black text-blue-600 uppercase mb-2">ANTECEDENTES DEL CLIENTE:</h4>
                     <div class="grid grid-cols-2 gap-x-8">
                         <div>
                             <p id="out-c-nom" class="text-sm font-black uppercase text-slate-800">---</p>
@@ -127,7 +119,7 @@
                         </div>
                         <div class="text-right flex flex-col justify-end">
                             <p id="out-c-con" class="text-[10px] font-bold text-slate-700 uppercase">Atn: ---</p>
-                            <p id="out-c-extra" class="text-[9px] text-slate-500 uppercase font-medium">Tel: --- | ---</p>
+                            <p id="out-c-extra" class="text-[9px] text-slate-500 uppercase font-medium">--- | ---</p>
                         </div>
                     </div>
                 </div>
@@ -135,10 +127,10 @@
                 <table class="tabla-items">
                     <thead>
                         <tr>
-                            <th width="55%">Descripción detallada</th>
-                            <th width="10%" class="text-center">Cant.</th>
-                            <th width="17%" class="text-right">Neto Unit.</th>
-                            <th width="18%" class="text-right">Total</th>
+                            <th width="55%" class="border-b-2 border-black text-[10px] font-black text-left uppercase py-2">Descripción Detallada</th>
+                            <th width="10%" class="border-b-2 border-black text-[10px] font-black text-center uppercase py-2">Cant.</th>
+                            <th width="17%" class="border-b-2 border-black text-[10px] font-black text-right uppercase py-2">Neto Unit.</th>
+                            <th width="18%" class="border-b-2 border-black text-[10px] font-black text-right uppercase py-2">Total</th>
                         </tr>
                     </thead>
                     <tbody id="pdf-tabla"></tbody>
@@ -153,7 +145,7 @@
                 </div>
 
                 <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-widest">
-                    <span>Copia de Especificación Comercial</span>
+                    <span>Documento Generado por misdocumentosapp.com</span>
                     <span class="italic">Generado por DocuFlow AI</span>
                 </div>
             </div>
@@ -163,108 +155,60 @@
     <script>
         lucide.createIcons();
         let items = [];
-        
-        const hoy = new Date().toLocaleDateString('es-CL');
-        document.getElementById('q-date').value = hoy;
-        document.getElementById('out-q-date').innerText = hoy;
-
+        document.getElementById('q-date').value = new Date().toLocaleDateString('es-CL');
         function sync() {
             document.getElementById('out-q-num').innerText = document.getElementById('q-num').value || '#FOLIO';
             document.getElementById('out-q-date').innerText = document.getElementById('q-date').value || '--/--/----';
             document.getElementById('out-q-valid').innerText = document.getElementById('q-valid').value || '15 Días';
-            
             document.getElementById('out-v-nom').innerText = document.getElementById('v-nom').value || '---';
             document.getElementById('out-v-rut').innerText = 'RUT: ' + (document.getElementById('v-rut').value || '---');
             document.getElementById('out-v-dir').innerText = document.getElementById('v-dir').value || '---';
             document.getElementById('out-v-extra').innerText = `${document.getElementById('v-con').value || '---'} | ${document.getElementById('v-tel').value || '---'} | ${document.getElementById('v-mail').value || '---'}`;
-            
             document.getElementById('out-c-nom').innerText = document.getElementById('c-nom').value || '---';
             document.getElementById('out-c-rut').innerText = 'RUT: ' + (document.getElementById('c-rut').value || '---');
             document.getElementById('out-c-dir').innerText = document.getElementById('c-dir').value || '---';
-            document.getElementById('out-c-con').innerText = 'Atención: ' + (document.getElementById('c-con').value || '---');
-            document.getElementById('out-c-extra').innerText = `Tel: ${document.getElementById('c-tel').value || '---'} | ${document.getElementById('c-mail').value || '---'}`;
+            document.getElementById('out-c-con').innerText = 'ATENCIÓN: ' + (document.getElementById('c-con').value || '---');
+            document.getElementById('out-c-extra').innerText = `${document.getElementById('c-tel').value || '---'} | ${document.getElementById('c-mail').value || '---'}`;
         }
-
         function loadLogo(e) {
             const r = new FileReader();
-            r.onload = () => {
-                const img = document.getElementById('pdf-logo');
-                img.src = r.result; img.classList.remove('hidden');
-                document.getElementById('pdf-logo-txt').classList.add('hidden');
-            };
+            r.onload = () => { const img = document.getElementById('pdf-logo'); img.src = r.result; img.classList.remove('hidden'); document.getElementById('pdf-logo-txt').classList.add('hidden'); };
             r.readAsDataURL(e.target.files[0]);
         }
-
         function addItem() {
-            if (items.length >= 10) {
-                alert("Límite de 10 filas alcanzado para asegurar una sola hoja.");
-                return;
-            }
-            const id = Date.now();
-            items.push({ id, desc: '', cant: 1, precio: 0 });
-            renderEditor();
-            renderTable();
-            
-            if (items.length >= 10) {
-                document.getElementById('btn-add').style.opacity = "0.5";
-                document.getElementById('btn-add').innerText = "LÍMITE DE FILAS ALCANZADO";
-            }
+            if (items.length >= 10) return alert("Máximo 10 productos.");
+            items.push({ id: Date.now(), desc: '', cant: 1, precio: 0 });
+            renderEditor(); renderTable();
         }
-
-        function removeItem(id) {
-            items = items.filter(i => i.id !== id);
-            renderEditor();
-            renderTable();
-            document.getElementById('btn-add').style.opacity = "1";
-            document.getElementById('btn-add').innerText = "+ AGREGAR PRODUCTO";
-        }
-
-        function updItem(id, f, v) {
-            const i = items.find(x => x.id === id);
-            i[f] = v;
-            renderTable();
-        }
-
+        function removeItem(id) { items = items.filter(i => i.id !== id); renderEditor(); renderTable(); }
+        function updItem(id, f, v) { const i = items.find(x => x.id === id); i[f] = v; renderTable(); }
         function renderEditor() {
-            const c = document.getElementById('editor-items');
-            c.innerHTML = items.map(i => `
+            document.getElementById('editor-items').innerHTML = items.map(i => `
                 <div class="p-2 bg-slate-50 border rounded-lg relative">
-                    <input type="text" maxlength="45" value="${i.desc}" placeholder="Producto (Max 45 carac.)" class="field mb-1" oninput="updItem(${i.id}, 'desc', this.value)">
+                    <input type="text" maxlength="45" value="${i.desc}" placeholder="Producto (Max 45)" class="field mb-1" oninput="updItem(${i.id}, 'desc', this.value)">
                     <div class="flex gap-2">
-                        <input type="number" value="${i.cant}" placeholder="Cant" class="field w-1/4" oninput="updItem(${i.id}, 'cant', this.value)">
-                        <input type="number" value="${i.precio}" placeholder="Precio" class="field w-3/4" oninput="updItem(${i.id}, 'precio', this.value)">
+                        <input type="number" value="${i.cant}" class="field w-1/4" oninput="updItem(${i.id}, 'cant', this.value)">
+                        <input type="number" value="${i.precio}" class="field w-3/4" oninput="updItem(${i.id}, 'precio', this.value)">
                     </div>
                     <button onclick="removeItem(${i.id})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-[9px]">×</button>
-                </div>
-            `).join('');
+                </div>`).join('');
         }
-
         function renderTable() {
-            const c = document.getElementById('pdf-tabla');
             let sub = 0;
-            c.innerHTML = items.map(i => {
-                const tot = (i.cant || 0) * (i.precio || 0);
-                sub += tot;
+            document.getElementById('pdf-tabla').innerHTML = items.map(i => {
+                const tot = (i.cant || 0) * (i.precio || 0); sub += tot;
                 return `<tr><td class="font-bold uppercase">${i.desc || '---'}</td><td class="text-center">${i.cant}</td><td class="text-right">$${Number(i.precio).toLocaleString('es-CL')}</td><td class="text-right font-black">$${tot.toLocaleString('es-CL')}</td></tr>`;
             }).join('');
-            
             const iva = sub * 0.19;
             document.getElementById('out-sub').innerText = `$${sub.toLocaleString('es-CL')}`;
             document.getElementById('out-iva').innerText = `$${Math.round(iva).toLocaleString('es-CL')}`;
             document.getElementById('out-total').innerText = `$${Math.round(sub + iva).toLocaleString('es-CL')}`;
         }
-
         function descargarPDF() {
             const el = document.getElementById('cotizacion-pdf');
             const btns = document.querySelector('.no-print');
             btns.style.visibility = 'hidden';
-            const opt = { 
-                margin: 0, 
-                filename: 'Cotizacion.pdf', 
-                html2canvas: { scale: 2 }, 
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
-            };
-            html2pdf().set(opt).from(el).save().then(() => btns.style.visibility = 'visible');
+            html2pdf().set({ margin: 0, filename: 'Cotizacion.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } }).from(el).save().then(() => btns.style.visibility = 'visible');
         }
     </script>
 </body>
