@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cotizaciones Pro - Personalización Total</title>
+    <title>Generador de Cotizaciones Pro - 10 Filas Max</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,9 +24,11 @@
         
         h3.section-label { font-size: 0.65rem; font-weight: 900; color: #2563eb; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 12px; }
 
-        .tabla-items { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        /* Estilo de la Tabla */
+        .tabla-items { width: 100%; border-collapse: collapse; margin-top: 25px; table-layout: fixed; }
         .tabla-items th { border-bottom: 2px solid #0f172a; padding: 10px 8px; text-align: left; font-size: 0.7rem; font-weight: 900; color: #0f172a; text-transform: uppercase; }
-        .tabla-items td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; color: #334155; }
+        .tabla-items td { padding: 10px 8px; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; color: #334155; 
+                          white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } /* Evita 2 líneas */
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -50,37 +52,36 @@
     <main class="flex-1 flex overflow-hidden">
         <div class="editor-panel no-print">
             
-            <h3 class="section-label">Detalles del Documento</h3>
+            <h3 class="section-label">Detalles del Folio</h3>
             <div class="flex gap-2">
-                <div class="w-1/2"><label class="text-[10px] font-bold text-slate-400">N° COTIZACIÓN</label><input type="text" id="q-num" placeholder="#COT-000" class="field" oninput="sync()"></div>
-                <div class="w-1/2"><label class="text-[10px] font-bold text-slate-400">FECHA EMISIÓN</label><input type="text" id="q-date" placeholder="DD-MM-AAAA" class="field" oninput="sync()"></div>
+                <input type="text" id="q-num" placeholder="# FOLIO" class="field" oninput="sync()">
+                <input type="text" id="q-date" placeholder="Fecha Emisión" class="field" oninput="sync()">
             </div>
-            <label class="text-[10px] font-bold text-slate-400">VALIDEZ DE OFERTA</label>
-            <input type="text" id="q-valid" placeholder="Ej: 30 Días Corridos" class="field" oninput="sync()">
+            <input type="text" id="q-valid" placeholder="Validez (Días)" class="field" oninput="sync()">
 
-            <h3 class="section-label mt-4">Datos del Vendedor</h3>
-            <input type="text" id="v-nom" placeholder="Razón Social Vendedor" class="field" oninput="sync()">
-            <input type="text" id="v-rut" placeholder="RUT Vendedor" class="field" oninput="sync()">
+            <h3 class="section-label mt-4">Vendedor</h3>
+            <input type="text" id="v-nom" placeholder="Razón Social" class="field" oninput="sync()">
+            <input type="text" id="v-rut" placeholder="RUT" class="field" oninput="sync()">
             <input type="text" id="v-dir" placeholder="Dirección" class="field" oninput="sync()">
+            <input type="text" id="v-con" placeholder="Nombre Contacto" class="field" oninput="sync()">
             <div class="flex gap-2">
-                <input type="text" id="v-con" placeholder="Contacto" class="field w-1/2" oninput="sync()">
-                <input type="text" id="v-tel" placeholder="Teléfono" class="field w-1/2" oninput="sync()">
+                <input type="text" id="v-tel" placeholder="Teléfono" class="field" oninput="sync()">
+                <input type="text" id="v-mail" placeholder="Email" class="field" oninput="sync()">
             </div>
-            <input type="text" id="v-mail" placeholder="Email" class="field" oninput="sync()">
 
-            <h3 class="section-label mt-4">Datos del Cliente</h3>
+            <h3 class="section-label mt-4">Cliente</h3>
             <input type="text" id="c-nom" placeholder="Razón Social Cliente" class="field" oninput="sync()">
             <input type="text" id="c-rut" placeholder="RUT Cliente" class="field" oninput="sync()">
             <input type="text" id="c-dir" placeholder="Dirección" class="field" oninput="sync()">
-            <input type="text" id="c-con" placeholder="Contacto" class="field" oninput="sync()">
+            <input type="text" id="c-con" placeholder="Atención de..." class="field" oninput="sync()">
             <div class="flex gap-2">
                 <input type="text" id="c-tel" placeholder="Teléfono" class="field" oninput="sync()">
                 <input type="text" id="c-mail" placeholder="Email" class="field" oninput="sync()">
             </div>
 
-            <h3 class="section-label mt-4">Ítems de Cotización</h3>
+            <h3 class="section-label mt-4">Productos (Max. 10)</h3>
             <div id="editor-items" class="space-y-2 mb-4"></div>
-            <button onclick="addItem()" class="w-full py-2 border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-bold rounded-lg hover:bg-slate-50 transition">+ AGREGAR PRODUCTO</button>
+            <button id="btn-add" onclick="addItem()" class="w-full py-2 border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-bold rounded-lg hover:bg-slate-50 transition">+ AGREGAR PRODUCTO</button>
 
             <div class="pt-6 space-y-3">
                 <button onclick="window.location.reload()" class="w-full py-3 bg-slate-100 text-slate-500 font-bold rounded-xl text-[10px] uppercase">Limpiar Todo</button>
@@ -101,32 +102,32 @@
                         <div class="leading-tight">
                             <h2 id="out-v-nom" class="font-black text-lg uppercase">---</h2>
                             <p id="out-v-rut" class="text-[10px] font-bold text-slate-500 uppercase">RUT: ---</p>
-                            <p id="out-v-dir" class="text-[10px] text-slate-400 font-medium">---</p>
+                            <p id="out-v-dir" class="text-[9px] text-slate-400 font-medium">---</p>
                             <p id="out-v-extra" class="text-[9px] text-slate-400 mt-1 uppercase font-bold">--- | --- | ---</p>
                         </div>
                     </div>
 
                     <div class="text-right">
-                        <h1 class="text-4xl font-black text-slate-900 uppercase italic tracking-tighter">COTIZACIÓN</h1>
-                        <p id="out-q-num" class="text-blue-600 font-black text-xl mt-1 italic">#FOLIO-000</p>
+                        <h1 class="text-4xl font-black text-slate-900 uppercase italic tracking-tighter leading-none">COTIZACIÓN</h1>
+                        <p id="out-q-num" class="text-blue-600 font-black text-xl mt-1 italic">#FOLIO</p>
                         <div class="mt-6 text-[10px] font-bold text-slate-400 uppercase space-y-1">
                             <p>Emisión: <span id="out-q-date" class="text-slate-900">--/--/----</span></p>
-                            <p>Validez: <span id="out-q-valid" class="text-slate-900">30 Días Corridos</span></p>
+                            <p>Validez: <span id="out-q-valid" class="text-slate-900">15 Días</span></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-slate-50 p-5 rounded-xl border border-slate-100 mb-6">
                     <h4 class="text-[8px] font-black text-blue-600 uppercase mb-2 tracking-widest">ANTECEDENTES DEL CLIENTE:</h4>
-                    <div class="grid grid-cols-2 gap-x-8 gap-y-1">
+                    <div class="grid grid-cols-2 gap-x-8">
                         <div>
                             <p id="out-c-nom" class="text-sm font-black uppercase text-slate-800">---</p>
                             <p id="out-c-rut" class="text-[10px] font-bold text-slate-500">RUT: ---</p>
-                            <p id="out-c-dir" class="text-[10px] text-slate-500 mt-1">---</p>
+                            <p id="out-c-dir" class="text-[9px] text-slate-500 mt-1">---</p>
                         </div>
                         <div class="text-right flex flex-col justify-end">
                             <p id="out-c-con" class="text-[10px] font-bold text-slate-700 uppercase">Atn: ---</p>
-                            <p id="out-c-extra" class="text-[9px] text-slate-500 uppercase">Tel: --- | ---</p>
+                            <p id="out-c-extra" class="text-[9px] text-slate-500 uppercase font-medium">Tel: --- | ---</p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +145,7 @@
                 </table>
 
                 <div class="mt-auto pt-8 flex justify-end">
-                    <div class="w-64 space-y-2 border-t-2 border-slate-900 pt-4">
+                    <div class="w-64 space-y-1 border-t-2 border-slate-900 pt-4">
                         <div class="flex justify-between text-[10px] font-bold text-slate-500"><span>SUBTOTAL NETO</span> <span id="out-sub">$0</span></div>
                         <div class="flex justify-between text-[10px] font-bold text-slate-500"><span>I.V.A. (19.0%)</span> <span id="out-iva">$0</span></div>
                         <div class="flex justify-between text-xl font-black text-slate-900 border-t pt-2"><span>TOTAL</span> <span id="out-total">$0</span></div>
@@ -163,23 +164,20 @@
         lucide.createIcons();
         let items = [];
         
-        // Carga inicial de fecha de hoy
         const hoy = new Date().toLocaleDateString('es-CL');
         document.getElementById('q-date').value = hoy;
         document.getElementById('out-q-date').innerText = hoy;
 
         function sync() {
-            // Detalles del Documento
-            document.getElementById('out-q-num').innerText = document.getElementById('q-num').value || '#FOLIO-000';
+            document.getElementById('out-q-num').innerText = document.getElementById('q-num').value || '#FOLIO';
             document.getElementById('out-q-date').innerText = document.getElementById('q-date').value || '--/--/----';
-            document.getElementById('out-q-valid').innerText = document.getElementById('q-valid').value || '30 Días Corridos';
+            document.getElementById('out-q-valid').innerText = document.getElementById('q-valid').value || '15 Días';
             
-            // Vendedor
             document.getElementById('out-v-nom').innerText = document.getElementById('v-nom').value || '---';
             document.getElementById('out-v-rut').innerText = 'RUT: ' + (document.getElementById('v-rut').value || '---');
             document.getElementById('out-v-dir').innerText = document.getElementById('v-dir').value || '---';
             document.getElementById('out-v-extra').innerText = `${document.getElementById('v-con').value || '---'} | ${document.getElementById('v-tel').value || '---'} | ${document.getElementById('v-mail').value || '---'}`;
-            // Cliente
+            
             document.getElementById('out-c-nom').innerText = document.getElementById('c-nom').value || '---';
             document.getElementById('out-c-rut').innerText = 'RUT: ' + (document.getElementById('c-rut').value || '---');
             document.getElementById('out-c-dir').innerText = document.getElementById('c-dir').value || '---';
@@ -198,16 +196,27 @@
         }
 
         function addItem() {
+            if (items.length >= 10) {
+                alert("Límite de 10 filas alcanzado para asegurar una sola hoja.");
+                return;
+            }
             const id = Date.now();
             items.push({ id, desc: '', cant: 1, precio: 0 });
             renderEditor();
             renderTable();
+            
+            if (items.length >= 10) {
+                document.getElementById('btn-add').style.opacity = "0.5";
+                document.getElementById('btn-add').innerText = "LÍMITE DE FILAS ALCANZADO";
+            }
         }
 
         function removeItem(id) {
             items = items.filter(i => i.id !== id);
             renderEditor();
             renderTable();
+            document.getElementById('btn-add').style.opacity = "1";
+            document.getElementById('btn-add').innerText = "+ AGREGAR PRODUCTO";
         }
 
         function updItem(id, f, v) {
@@ -220,10 +229,10 @@
             const c = document.getElementById('editor-items');
             c.innerHTML = items.map(i => `
                 <div class="p-2 bg-slate-50 border rounded-lg relative">
-                    <input type="text" placeholder="Producto" class="field mb-1" oninput="updItem(${i.id}, 'desc', this.value)">
+                    <input type="text" maxlength="45" value="${i.desc}" placeholder="Producto (Max 45 carac.)" class="field mb-1" oninput="updItem(${i.id}, 'desc', this.value)">
                     <div class="flex gap-2">
-                        <input type="number" placeholder="Cant" class="field w-1/4" oninput="updItem(${i.id}, 'cant', this.value)">
-                        <input type="number" placeholder="Precio" class="field w-3/4" oninput="updItem(${i.id}, 'precio', this.value)">
+                        <input type="number" value="${i.cant}" placeholder="Cant" class="field w-1/4" oninput="updItem(${i.id}, 'cant', this.value)">
+                        <input type="number" value="${i.precio}" placeholder="Precio" class="field w-3/4" oninput="updItem(${i.id}, 'precio', this.value)">
                     </div>
                     <button onclick="removeItem(${i.id})" class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-4 h-4 text-[9px]">×</button>
                 </div>
