@@ -12,6 +12,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         
+        /* Configuración Base */
         body { 
             font-family: 'Inter', sans-serif; 
             background-color: #0f172a; 
@@ -21,48 +22,50 @@
             overflow: hidden; 
         }
 
-        /* DISEÑO DEL SIDEBAR */
+        /* Sidebar Profesional */
         .sidebar {
-            width: 260px;
+            width: 280px;
             background-color: #0f172a;
             color: white;
             display: flex;
             flex-direction: column;
-            padding: 24px;
+            padding: 32px 24px;
             flex-shrink: 0;
+            border-right: 1px solid rgba(255,255,255,0.05);
         }
 
         .nav-item { 
             display: flex; 
             align-items: center; 
             gap: 12px; 
-            padding: 12px 16px; 
+            padding: 14px 16px; 
             border-radius: 12px; 
             font-weight: 600; 
             font-size: 0.875rem; 
             text-decoration: none; 
-            transition: 0.3s; 
+            transition: all 0.3s ease; 
             color: #94a3b8; 
-            margin-bottom: 4px;
+            margin-bottom: 8px;
         }
 
         .nav-item:hover { 
             background-color: #1e293b; 
             color: white; 
+            transform: translateX(4px);
         }
 
         .nav-item.active { 
             background-color: #2563eb; 
             color: white !important; 
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); 
+            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); 
         }
 
-        /* CONFIGURACIÓN DE HOJA OFICIO */
+        /* Área de Visualización Oficio */
         .preview-area { 
             flex-grow: 1; 
             background-color: #f1f5f9; 
             overflow-y: auto; 
-            padding: 40px; 
+            padding: 50px; 
             display: flex; 
             justify-content: center; 
         }
@@ -72,54 +75,58 @@
             min-height: 1248px; 
             background: white; 
             padding: 60px; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); 
+            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.15); 
             display: flex; 
             flex-direction: column; 
-            box-sizing: border-box; 
+            box-sizing: border-box;
+            position: relative;
         }
 
-        /* DISEÑO DE TARJETAS DE DATOS */
+        /* Estructura de Secciones */
         .card { 
             border: 1px solid #e2e8f0; 
-            border-radius: 8px; 
-            margin-bottom: 18px; 
+            border-radius: 12px; 
+            margin-bottom: 24px; 
             overflow: hidden; 
             background: white; 
+            transition: border-color 0.3s;
         }
+
+        .card:hover { border-color: #cbd5e1; }
 
         .card-header { 
             background: #f8fafc; 
-            padding: 10px 20px; 
-            font-weight: bold; 
+            padding: 12px 24px; 
+            font-weight: 800; 
             font-size: 0.75rem; 
             text-transform: uppercase; 
-            color: #0f172a; 
+            color: #1e293b; 
             border-bottom: 1px solid #e2e8f0; 
             display: flex; 
             align-items: center; 
-            gap: 8px; 
+            gap: 10px; 
+            letter-spacing: 0.05em;
         }
 
         .card-header::before { 
             content: ""; 
             width: 4px; 
-            height: 16px; 
+            height: 18px; 
             background: #0d9488; 
-            border-radius: 2px; 
+            border-radius: 4px; 
         }
 
+        /* Filas de la Grilla */
         .grid-row { 
             display: grid; 
-            grid-template-columns: 210px 1fr; 
-            gap: 12px; 
-            padding: 12px 20px; 
+            grid-template-columns: 220px 1fr; 
+            gap: 15px; 
+            padding: 14px 24px; 
             align-items: center; 
             border-bottom: 1px solid #f1f5f9; 
         }
 
-        .grid-row:last-child { 
-            border-bottom: none; 
-        }
+        .grid-row:last-child { border-bottom: none; }
         
         .label { 
             font-weight: 700; 
@@ -131,203 +138,82 @@
 
         input.pro-field { 
             width: 100%; 
-            padding: 8px 12px; 
+            padding: 10px 14px; 
             border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             font-size: 0.9rem; 
             outline: none; 
-            transition: 0.2s; 
-            color: #1e293b;
+            transition: all 0.2s; 
+            color: #0f172a;
+            background: #fff;
         }
 
         input.pro-field:focus { 
             border-color: #2563eb; 
-            background-color: #f8fafc; 
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            background-color: #fcfdfe;
         }
 
-        @media print { 
-            .no-print { display: none !important; } 
-        }
+        /* Botones Pro */
+        .btn-limpiar { background-color: #e2e8f0; color: #475569; }
+        .btn-descargar { background-color: #0d9488; color: white; }
+
+        @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
     <aside class="sidebar no-print">
-        <div class="mb-10 text-white">
-            <h2 class="font-extrabold text-xl leading-none uppercase">Mis Documentos</h2>
-            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
+        <div class="mb-12">
+            <h2 class="text-white font-black text-2xl tracking-tighter italic">MIS DOCUMENTOS</h2>
+            <p class="text-blue-500 text-[11px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
         
-        <nav class="space-y-2">
+        <nav class="flex-grow">
             <a href="index.html" class="nav-item">
-                <i data-lucide="home" size="18"></i> Inicio / Dashboard
+                <i data-lucide="layout-dashboard" size="20"></i> Dashboard
             </a>
             <a href="perfil.html" class="nav-item active">
-                <i data-lucide="user" size="18"></i> Ficha Comercial
+                <i data-lucide="file-badge" size="20"></i> Ficha Comercial
             </a>
             <a href="#" class="nav-item">
-                <i data-lucide="users" size="18"></i> Gestión Clientes
+                <i data-lucide="users" size="20"></i> Gestión Clientes
             </a>
             <a href="catalogo.html" class="nav-item">
-                <i data-lucide="database" size="18"></i> Catálogo Pro
+                <i data-lucide="book-open" size="20"></i> Catálogo Pro
             </a>
             <a href="fichas.html" class="nav-item">
-                <i data-lucide="file-text" size="18"></i> Fichas Técnicas
+                <i data-lucide="file-spreadsheet" size="20"></i> Fichas Técnicas
             </a>
             <a href="cotizaciones.html" class="nav-item">
-                <i data-lucide="shopping-cart" size="18"></i> Cotizaciones
+                <i data-lucide="shopping-cart" size="20"></i> Cotizaciones
             </a>
         </nav>
 
-        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
-            <p>Sistema Gestionado por</p>
-            <p class="text-blue-500">misdocumentosapp.com</p>
-            <p class="mt-3 opacity-50 italic">Soporte Técnico:</p>
-            <p>microempresasaunclick@gmail.com</p>
+        <div class="mt-auto p-5 bg-white/5 rounded-2xl border border-white/10 text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
+            <p class="opacity-50">Gestionado por</p>
+            <p class="text-blue-400 text-xs mt-1">misdocumentosapp.com</p>
+            <div class="mt-4 border-t border-white/5 pt-4">
+                <p class="opacity-50">Soporte Técnico:</p>
+                <p class="lowercase text-slate-300 font-medium">microempresasaunclick@gmail.com</p>
+            </div>
         </div>
     </aside>
 
     <main class="preview-area">
         <div id="ficha-documento">
             
-            <div class="border-b-4 border-slate-900 pb-8 mb-10 flex justify-between items-center">
-                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 overflow-hidden relative group" onclick="document.getElementById('logo-in').click()">
-                    <img id="logo-pre" class="hidden max-w-full max-h-full object-contain p-2">
-                    <span id="logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Haz clic para<br>subir logo</span>
+            <div class="border-b-4 border-slate-900 pb-10 mb-10 flex justify-between items-center">
+                <div class="w-36 h-36 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 rounded-xl overflow-hidden relative group" onclick="document.getElementById('logo-file').click()">
+                    <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-2">
+                    <div id="pdf-logo-txt" class="flex flex-col items-center gap-2 text-slate-400 group-hover:text-blue-500 transition">
+                        <i data-lucide="image-plus" size="24"></i>
+                        <span class="text-[9px] font-black uppercase text-center leading-tight">Haz clic para<br>subir logo</span>
+                    </div>
                 </div>
-                <input type="file" id="logo-in" class="hidden" accept="image/*" onchange="loadLogo(event)">
+                <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
                 
                 <div class="text-right">
-                    <h1 id="out-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">Ficha Comercial</h1>
-                    <p class="text-slate-500 font-bold text-sm mt-3">Información Bancaria y de Contacto</p>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="grid-row">
-                    <span class="label">Razón Social:</span> 
-                    <input type="text" id="in-rs" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('out-rs').innerText = this.value || 'Ficha Comercial'">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Empresa:</span> 
-                    <input type="text" class="pro-field" placeholder="76.XXX.XXX-X">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Giro / Actividad:</span> 
-                    <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Dirección:</span> 
-                    <input type="text" class="pro-field" placeholder="Calle, Número, Comuna">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Sitio Web:</span> 
-                    <input type="text" class="pro-field" placeholder="www.tuempresa.cl">
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">Información de Contacto</div>
-                <div class="grid-row">
-                    <span class="label">Nombre Contacto:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre del encargado">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Contacto:</span> 
-                    <input type="text" class="pro-field" placeholder="12.XXX.XXX-X">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Teléfono:</span> 
-                    <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Email Corporativo:</span> 
-                    <input type="text" class="pro-field" placeholder="contacto@tuempresa.cl">
-                </div>
-            </div>
-
-            <div class="card border-l-[6px] border-teal-600">
-                <div class="card-header text-teal-800">Instrucciones para Pago</div>
-                <div class="grid-row">
-                    <span class="label">Banco:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre del Banco">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Tipo de Cuenta:</span> 
-                    <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro">
-                </div>
-                <div class="grid-row">
-                    <span class="label">N° de Cuenta:</span> 
-                    <input type="text" class="pro-field" placeholder="Número de cuenta">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Titular:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre del titular">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Titular:</span> 
-                    <input type="text" class="pro-field" placeholder="RUT del titular">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Email Comprobante:</span> 
-                    <input type="text" class="pro-field" placeholder="finanzas@tuempresa.cl">
-                </div>
-            </div>
-
-            <div class="mt-auto flex gap-6 no-print pt-10">
-                <button onclick="window.location.reload()" class="flex-1 p-5 bg-slate-200 hover:bg-slate-300 text-slate-600 font-extrabold rounded-2xl uppercase text-xs transition duration-200">
-                    Limpiar Formulario
-                </button>
-                <button onclick="descargarPDF()" class="flex-1 p-5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl shadow-xl uppercase text-xs transition duration-200">
-                    Descargar PDF Profesional (Oficio)
-                </button>
-            </div>
-
-            <div class="mt-12 pt-6 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-widest">
-                <span>Documento Generado por misdocumentosapp.com</span>
-                <span class="italic text-slate-300 font-bold">Soporte: microempresasaunclick@gmail.com</span>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // Carga de iconos Lucide
-        lucide.createIcons();
-
-        // Función para cargar y mostrar el logo
-        function loadLogo(e) {
-            const r = new FileReader();
-            r.onload = () => { 
-                const img = document.getElementById('logo-pre'); 
-                img.src = r.result; 
-                img.classList.remove('hidden'); 
-                document.getElementById('logo-txt').classList.add('hidden'); 
-            };
-            r.readAsDataURL(e.target.files[0]);
-        }
-
-        // Generación de PDF en tamaño Oficio (216x330mm)
-        function descargarPDF() {
-            const element = document.getElementById('ficha-documento');
-            const buttons = document.querySelector('.no-print');
-            
-            // Ocultar botones temporalmente para el PDF
-            buttons.style.visibility = 'hidden';
-
-            const opt = { 
-                margin: 0, 
-                filename: 'Ficha_Comercial.pdf', 
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false }, 
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                buttons.style.visibility = 'visible'; // Restaurar botones
-            });
-        }
-    </script>
-</body>
-</html>
+                    <h1 id="header-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Ficha Comercial</h1>
+                    <p class="text-slate-500 font-bold text-base">Información Bancaria y de Contacto</p>
+                    <div class="h-1 w-24 bg-blue-600 ml-auto mt
