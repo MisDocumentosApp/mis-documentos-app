@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Cotizaciones - Mis Documentos</title>
+    <title>Generador de Cotizaciones Pro</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,22 +10,23 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar Estilo Pro */
         .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
 
-        /* Documento Oficio */
+        .editor-panel { width: 400px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 24px; flex-shrink: 0; }
         .preview-area { flex-grow: 1; background-color: #f1f5f9; overflow-y: auto; padding: 40px; display: flex; justify-content: center; }
-        #cotizacion-pdf { width: 816px; min-height: 1248px; background: white; padding: 50px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; box-sizing: border-box; }
-
-        /* Estilos de Tabla */
-        .tabla-items { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .tabla-items th { background: #f8fafc; border-bottom: 2px solid #0f172a; padding: 10px; text-align: left; font-size: 0.75rem; font-weight: 800; color: #0f172a; text-transform: uppercase; }
-        .tabla-items td { padding: 12px 10px; border-bottom: 1px solid #e2e8f0; font-size: 0.85rem; color: #334155; }
         
-        input.field { width: 100%; border: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 10px; font-size: 0.85rem; outline: none; transition: 0.2s; }
-        input.field:focus { border-color: #2563eb; background: #f8fafc; }
+        #cotizacion-pdf { width: 816px; min-height: 1248px; background: white; padding: 60px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; box-sizing: border-box; }
+
+        input.field { width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; padding: 8px 12px; font-size: 0.85rem; outline: none; transition: 0.2s; color: #1e293b; }
+        input.field:focus { border-color: #2563eb; ring: 2px; ring-color: #bfdbfe; }
+        
+        label { font-size: 0.65rem; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; display: block; }
+
+        .tabla-items { width: 100%; border-collapse: collapse; margin-top: 30px; }
+        .tabla-items th { border-bottom: 2px solid #0f172a; padding: 12px 8px; text-align: left; font-size: 0.7rem; font-weight: 900; color: #0f172a; text-transform: uppercase; }
+        .tabla-items td { padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-size: 0.8rem; color: #334155; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -38,100 +39,115 @@
             <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase">Ecosistema AI</p>
         </div>
         <nav class="space-y-2">
-  <a href="index.html" class="nav-item">
-    <i data-lucide="home"></i> Inicio / Dashboard
-  </a>
-  <a href="perfil.html" class="nav-item">
-    <i data-lucide="user"></i> Ficha Comercial
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="users"></i> Gestión Clientes
-  </a>
-  <a href="catalogo.html" class="nav-item">
-    <i data-lucide="database"></i> Catálogo Pro
-  </a>
-  <a href="fichas.html" class="nav-item">
-    <i data-lucide="file-text"></i> Fichas Técnicas
-  </a>
-  <a href="cotizaciones.html" class="nav-item">
-    <i data-lucide="shopping-cart"></i> Cotizaciones
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="cpu"></i> DocuFlow AI
-  </a>
-</nav>
+            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Dashboard</a>
+            <a href="perfil.html" class="nav-item"><i data-lucide="user" size="18"></i> Ficha Comercial</a>
+            <a href="catalogo.html" class="nav-item"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
+            <a href="cotizaciones.html" class="nav-item active"><i data-lucide="shopping-cart" size="18"></i> Cotizaciones</a>
+        </nav>
     </aside>
 
     <main class="flex-1 flex overflow-hidden">
-        <div class="w-96 bg-white border-r p-6 overflow-y-auto no-print">
-            <h3 class="text-xs font-black text-slate-400 uppercase border-b mb-4 pb-2">Datos del Cliente</h3>
-            <div class="space-y-3 mb-6">
-                <input type="text" id="in-cliente" placeholder="Razón Social Cliente" class="field" oninput="sync()">
-                <input type="text" id="in-rut" placeholder="RUT Cliente" class="field" oninput="sync()">
-                <input type="text" id="in-dir" placeholder="Dirección Cliente" class="field" oninput="sync()">
-            </div>
+        <div class="editor-panel no-print">
+            <div class="space-y-6">
+                <section>
+                    <h3 class="text-[10px] font-black text-blue-600 uppercase border-b pb-2 mb-4">Datos del Vendedor</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="in-v-nom" placeholder="Nombre Empresa" class="field" oninput="sync()">
+                        <input type="text" id="in-v-rut" placeholder="RUT Empresa" class="field" oninput="sync()">
+                        <input type="text" id="in-v-dir" placeholder="Dirección" class="field" oninput="sync()">
+                        <input type="text" id="in-v-mail" placeholder="Email" class="field" oninput="sync()">
+                    </div>
+                </section>
 
-            <h3 class="text-xs font-black text-slate-400 uppercase border-b mb-4 pb-2">Ítems de Cotización</h3>
-            <div id="items-editor" class="space-y-4 mb-4">
+                <section>
+                    <h3 class="text-[10px] font-black text-blue-600 uppercase border-b pb-2 mb-4">Datos del Cliente</h3>
+                    <div class="space-y-3">
+                        <input type="text" id="in-c-nom" placeholder="Razón Social Cliente" class="field" oninput="sync()">
+                        <input type="text" id="in-c-rut" placeholder="RUT Cliente" class="field" oninput="sync()">
+                        <input type="text" id="in-c-dir" placeholder="Dirección" class="field" oninput="sync()">
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[10px] font-black text-blue-600 uppercase border-b pb-2 mb-4">Ítems</h3>
+                    <div id="editor-items" class="space-y-3 mb-4"></div>
+                    <button onclick="addItem()" class="w-full py-2 border-2 border-dashed border-slate-200 text-slate-400 text-[10px] font-bold rounded-lg hover:bg-slate-50 transition">+ AGREGAR PRODUCTO</button>
+                </section>
+
+                <div class="pt-4 space-y-3">
+                    <button onclick="limpiarTodo()" class="w-full py-4 bg-slate-100 text-slate-500 font-bold rounded-xl text-[10px] uppercase">Limpiar Todo</button>
+                    <button onclick="descargarPDF()" class="w-full py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg text-[10px] uppercase">Descargar PDF (Oficio)</button>
                 </div>
-            <button onclick="addItem()" class="w-full p-2 border-2 border-dashed border-slate-200 text-slate-400 text-xs font-bold rounded hover:bg-slate-50 transition">+ AGREGAR PRODUCTO</button>
-
-            <div class="mt-8 space-y-3">
-                <button onclick="window.location.reload()" class="w-full p-4 bg-slate-100 text-slate-500 font-bold rounded-xl text-xs uppercase">Limpiar Todo</button>
-                <button onclick="generarPDF()" class="w-full p-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg text-xs uppercase">Descargar Cotización (Oficio)</button>
             </div>
         </div>
 
         <div class="preview-area">
             <div id="cotizacion-pdf">
-                <div class="flex justify-between items-start border-b-4 border-slate-900 pb-6 mb-8">
-                    <div class="flex flex-col">
-                        <div class="w-24 h-24 border border-dashed flex items-center justify-center text-[10px] text-slate-400 font-bold uppercase mb-2">LOGO</div>
-                        <h2 class="font-black text-lg leading-tight">ANTÜ OUTLET SPA</h2>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase">RUT: 77.936.866-1 | Santiago</p>
+                <div class="flex justify-between items-start border-b-4 border-slate-900 pb-8 mb-10">
+                    <div class="flex flex-col gap-4">
+                        <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 relative group" onclick="document.getElementById('logo-file').click()">
+                            <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-2">
+                            <span id="pdf-logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Subir<br>Logo</span>
+                        </div>
+                        <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
+                        
+                        <div>
+                            <h2 id="out-v-nom" class="font-black text-xl leading-none uppercase">---</h2>
+                            <p id="out-v-rut" class="text-[10px] font-bold text-slate-500 mt-1 uppercase">RUT: ---</p>
+                            <p id="out-v-dir" class="text-[10px] text-slate-400 font-medium">---</p>
+                            <p id="out-v-mail" class="text-[10px] text-slate-400 font-medium italic">---</p>
+                        </div>
                     </div>
+
                     <div class="text-right">
-                        <h1 class="text-3xl font-black text-slate-900 uppercase italic">COTIZACIÓN</h1>
-                        <p class="text-blue-600 font-black text-xl" id="out-num">#COT-0000</p>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mt-2">Validez: 30 días</p>
+                        <h1 class="text-4xl font-black text-slate-900 uppercase italic tracking-tighter">COTIZACIÓN</h1>
+                        <div class="mt-2">
+                            <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded font-black text-lg">#COT-2026</span>
+                        </div>
+                        <div class="mt-6 text-[10px] font-bold text-slate-400 uppercase space-y-1">
+                            <p>Emisión: <span class="text-slate-900" id="pdf-fecha">---</span></p>
+                            <p>Validez: <span class="text-slate-900">30 Días</span></p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-50 p-4 rounded-lg border border-slate-200 mb-6">
-                    <h3 class="text-[10px] font-black text-blue-600 uppercase mb-2">CLIENTE / FACTURAR A:</h3>
-                    <p class="text-sm font-black uppercase" id="out-cliente">---</p>
-                    <p class="text-xs font-bold text-slate-500" id="out-rut">RUT: ---</p>
-                    <p class="text-xs text-slate-400" id="out-dir">Dirección: ---</p>
+                <div class="bg-slate-50 p-6 rounded-xl border border-slate-100 mb-8">
+                    <h4 class="text-[9px] font-black text-blue-600 uppercase mb-3 tracking-widest">CLIENTE / FACTURAR A:</h4>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p id="out-c-nom" class="text-sm font-black uppercase text-slate-800 leading-tight">---</p>
+                            <p id="out-c-rut" class="text-[11px] font-bold text-slate-500 mt-1">RUT: ---</p>
+                        </div>
+                        <div class="text-right">
+                            <p id="out-c-dir" class="text-[11px] text-slate-500 font-medium">---</p>
+                        </div>
+                    </div>
                 </div>
 
                 <table class="tabla-items">
                     <thead>
                         <tr>
-                            <th width="50%">Descripción</th>
-                            <th width="10%">Cant.</th>
-                            <th width="20%">Precio Unit.</th>
-                            <th width="20%">Total</th>
+                            <th width="55%">Descripción de Producto / Servicio</th>
+                            <th width="10%" class="text-center">Cant.</th>
+                            <th width="17%" class="text-right">Unitario</th>
+                            <th width="18%" class="text-right">Total</th>
                         </tr>
                     </thead>
-                    <tbody id="out-tabla">
-                        </tbody>
+                    <tbody id="pdf-tabla"></tbody>
                 </table>
 
-                <div class="flex justify-end mt-10">
-                    <div class="w-64 space-y-2 border-t-2 border-slate-900 pt-4">
-                        <div class="flex justify-between text-xs font-bold text-slate-500"><span>SUBTOTAL</span> <span id="out-sub">0</span></div>
-                        <div class="flex justify-between text-xs font-bold text-slate-500"><span>IVA (19%)</span> <span id="out-iva">0</span></div>
-                        <div class="flex justify-between text-lg font-black text-slate-900 border-t pt-2"><span>TOTAL</span> <span id="out-total">0</span></div>
+                <div class="mt-auto pt-10 flex justify-end">
+                    <div class="w-72 space-y-3 border-t-2 border-slate-900 pt-6">
+                        <div class="flex justify-between text-[11px] font-bold text-slate-500"><span>SUBTOTAL</span> <span id="out-sub">$0</span></div>
+                        <div class="flex justify-between text-[11px] font-bold text-slate-500"><span>IVA (19%)</span> <span id="out-iva">$0</span></div>
+                        <div class="flex justify-between text-xl font-black text-slate-900 border-t pt-3"><span>TOTAL</span> <span id="out-total">$0</span></div>
                     </div>
                 </div>
 
-                <div class="mt-auto pt-10 border-t flex justify-between items-end">
-                    <div class="text-[10px]">
-                        <h4 class="font-black text-blue-600 uppercase mb-1">DATOS BANCARIOS</h4>
-                        <p class="font-bold">BANCO ESTADO | CUENTA VISTA</p>
-                        <p>N° 90279195140 | finanzas@antuoutlet.cl</p>
-                    </div>
-                    <div class="text-[9px] text-slate-400 italic">Generado por DocuFlow AI</div>
+                <div class="mt-10 pt-6 border-t border-slate-100 flex justify-between items-center text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+                    <span>Documento de Especificación Comercial</span>
+                    <span class="italic">Generado por DocuFlow AI</span>
                 </div>
             </div>
         </div>
@@ -140,11 +156,29 @@
     <script>
         lucide.createIcons();
         let items = [];
+        const hoy = new Date().toLocaleDateString('es-CL');
+        document.getElementById('pdf-fecha').innerText = hoy;
 
         function sync() {
-            document.getElementById('out-cliente').innerText = document.getElementById('in-cliente').value || '---';
-            document.getElementById('out-rut').innerText = 'RUT: ' + (document.getElementById('in-rut').value || '---');
-            document.getElementById('out-dir').innerText = 'Dirección: ' + (document.getElementById('in-dir').value || '---');
+            // Emisor
+            document.getElementById('out-v-nom').innerText = document.getElementById('in-v-nom').value || '---';
+            document.getElementById('out-v-rut').innerText = 'RUT: ' + (document.getElementById('in-v-rut').value || '---');
+            document.getElementById('out-v-dir').innerText = document.getElementById('in-v-dir').value || '---';
+            document.getElementById('out-v-mail').innerText = document.getElementById('in-v-mail').value || '---';
+            // Cliente
+            document.getElementById('out-c-nom').innerText = document.getElementById('in-c-nom').value || '---';
+            document.getElementById('out-c-rut').innerText = 'RUT: ' + (document.getElementById('in-c-rut').value || '---');
+            document.getElementById('out-c-dir').innerText = document.getElementById('in-c-dir').value || '---';
+        }
+
+        function loadLogo(e) {
+            const r = new FileReader();
+            r.onload = () => {
+                const img = document.getElementById('pdf-logo');
+                img.src = r.result; img.classList.remove('hidden');
+                document.getElementById('pdf-logo-txt').classList.add('hidden');
+            };
+            r.readAsDataURL(e.target.files[0]);
         }
 
         function addItem() {
@@ -160,53 +194,53 @@
             renderTable();
         }
 
-        function updateItem(id, field, value) {
-            const item = items.find(i => i.id === id);
-            item[field] = value;
+        function updItem(id, f, v) {
+            const i = items.find(x => x.id === id);
+            i[f] = v;
             renderTable();
         }
 
         function renderEditor() {
-            const container = document.getElementById('items-editor');
-            container.innerHTML = items.map(item => `
+            const c = document.getElementById('editor-items');
+            c.innerHTML = items.map(i => `
                 <div class="p-3 bg-slate-50 border rounded-lg relative">
-                    <input type="text" placeholder="Producto" class="field mb-2" oninput="updateItem(${item.id}, 'desc', this.value)">
+                    <input type="text" placeholder="Producto" class="field mb-2" oninput="updItem(${i.id}, 'desc', this.value)">
                     <div class="flex gap-2">
-                        <input type="number" placeholder="Cant" class="field w-1/3" oninput="updateItem(${item.id}, 'cant', this.value)">
-                        <input type="number" placeholder="Precio" class="field w-2/3" oninput="updateItem(${item.id}, 'precio', this.value)">
+                        <input type="number" placeholder="Cant" class="field w-1/4" oninput="updItem(${i.id}, 'cant', this.value)">
+                        <input type="number" placeholder="Precio" class="field w-3/4" oninput="updItem(${i.id}, 'precio', this.value)">
                     </div>
-                    <button onclick="removeItem(${item.id})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-[10px]">X</button>
+                    <button onclick="removeItem(${i.id})" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 text-[10px]">×</button>
                 </div>
             `).join('');
         }
 
         function renderTable() {
-            const container = document.getElementById('out-tabla');
-            let subtotal = 0;
-            container.innerHTML = items.map(item => {
-                const total = (item.cant || 0) * (item.precio || 0);
-                subtotal += total;
-                return `<tr><td>${item.desc || '---'}</td><td>${item.cant}</td><td>$${Number(item.precio).toLocaleString('es-CL')}</td><td class="font-bold">$${total.toLocaleString('es-CL')}</td></tr>`;
+            const c = document.getElementById('pdf-tabla');
+            let sub = 0;
+            c.innerHTML = items.map(i => {
+                const tot = (i.cant || 0) * (i.precio || 0);
+                sub += tot;
+                return `<tr><td class="font-bold">${i.desc || '---'}</td><td class="text-center">${i.cant}</td><td class="text-right">$${Number(i.precio).toLocaleString('es-CL')}</td><td class="text-right font-black">$${tot.toLocaleString('es-CL')}</td></tr>`;
             }).join('');
-
-            const iva = subtotal * 0.19;
-            const totalFinal = subtotal + iva;
-
-            document.getElementById('out-sub').innerText = `$${subtotal.toLocaleString('es-CL')}`;
+            
+            const iva = sub * 0.19;
+            document.getElementById('out-sub').innerText = `$${sub.toLocaleString('es-CL')}`;
             document.getElementById('out-iva').innerText = `$${Math.round(iva).toLocaleString('es-CL')}`;
-            document.getElementById('out-total').innerText = `$${Math.round(totalFinal).toLocaleString('es-CL')}`;
+            document.getElementById('out-total').innerText = `$${Math.round(sub + iva).toLocaleString('es-CL')}`;
         }
 
-        function generarPDF() {
+        function limpiarTodo() {
+            if(confirm("¿Borrar todos los datos?")) {
+                location.reload();
+            }
+        }
+
+        function descargarPDF() {
             const el = document.getElementById('cotizacion-pdf');
-            const opt = { 
-                margin: 0, 
-                filename: 'Cotizacion.pdf', 
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
-            };
-            html2pdf().set(opt).from(el).save();
+            const btns = document.querySelector('.no-print');
+            btns.style.visibility = 'hidden';
+            const opt = { margin: 0, filename: 'Cotizacion.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } };
+            html2pdf().set(opt).from(el).save().then(() => btns.style.visibility = 'visible');
         }
     </script>
 </body>
