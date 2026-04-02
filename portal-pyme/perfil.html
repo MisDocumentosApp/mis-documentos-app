@@ -106,7 +106,6 @@
             font-size: 0.75rem; 
             color: #475569; 
             text-transform: uppercase; 
-            letter-spacing: 0.025em;
         }
         input.pro-field { 
             width: 100%; 
@@ -121,7 +120,6 @@
         input.pro-field:focus { 
             border-color: #2563eb; 
             background-color: #f8fafc; 
-            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
         }
 
         @media print { .no-print { display: none !important; } }
@@ -136,27 +134,12 @@
         </div>
         
         <nav class="space-y-2">
-            <a href="index.html" class="nav-item">
-                <i data-lucide="home" size="18"></i> Inicio / Dashboard
-            </a>
-            <a href="perfil.html" class="nav-item active">
-                <i data-lucide="user" size="18"></i> Ficha Comercial
-            </a>
-            <a href="#" class="nav-item">
-                <i data-lucide="users" size="18"></i> Gestión Clientes
-            </a>
-            <a href="catalogo.html" class="nav-item">
-                <i data-lucide="database" size="18"></i> Catálogo Pro
-            </a>
-            <a href="fichas.html" class="nav-item">
-                <i data-lucide="file-text" size="18"></i> Fichas Técnicas
-            </a>
-            <a href="cotizaciones.html" class="nav-item">
-                <i data-lucide="shopping-cart" size="18"></i> Cotizaciones
-            </a>
-            <a href="#" class="nav-item">
-                <i data-lucide="cpu" size="18"></i> DocuFlow AI
-            </a>
+            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
+            <a href="perfil.html" class="nav-item active"><i data-lucide="user" size="18"></i> Ficha Comercial</a>
+            <a href="#" class="nav-item"><i data-lucide="users" size="18"></i> Gestión Clientes</a>
+            <a href="catalogo.html" class="nav-item"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
+            <a href="cotizaciones.html" class="nav-item"><i data-lucide="shopping-cart" size="18"></i> Cotizaciones</a>
         </nav>
 
         <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
@@ -171,9 +154,9 @@
         <div id="ficha-documento">
             
             <div class="border-b-4 border-slate-900 pb-6 mb-8 flex justify-between items-center">
-                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 overflow-hidden relative group" onclick="document.getElementById('logo-in').click()">
+                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 overflow-hidden" onclick="document.getElementById('logo-in').click()">
                     <img id="logo-pre" class="hidden max-w-full max-h-full object-contain p-2">
-                    <span id="logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Subir Logo<br>Empresa</span>
+                    <span id="logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Subir Logo</span>
                 </div>
                 <input type="file" id="logo-in" class="hidden" accept="image/*" onchange="loadLogo(event)">
                 
@@ -185,66 +168,61 @@
 
             <div class="card">
                 <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="grid-row">
-                    <span class="label">Razón Social:</span> 
-                    <input type="text" id="in-rs" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('out-rs').innerText = this.value || 'Ficha Comercial'">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Empresa:</span> 
-                    <input type="text" class="pro-field" placeholder="76.XXX.XXX-X">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Giro / Actividad:</span> 
-                    <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Dirección:</span> 
-                    <input type="text" class="pro-field" placeholder="Calle, Número, Comuna">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Sitio Web:</span> 
-                    <input type="text" class="pro-field" placeholder="www.tuempresa.cl">
-                </div>
+                <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" id="in-rs" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('out-rs').innerText = this.value || 'Ficha Comercial'"></div>
+                <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
+                <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales"></div>
+                <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field" placeholder="Calle, Número, Comuna"></div>
+                <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
             </div>
 
             <div class="card">
                 <div class="card-header">Información de Contacto</div>
-                <div class="grid-row">
-                    <span class="label">Nombre Contacto:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre de la persona encargada">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Contacto:</span> 
-                    <input type="text" class="pro-field" placeholder="12.XXX.XXX-X">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Teléfono:</span> 
-                    <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Email Corporativo:</span> 
-                    <input type="text" class="pro-field" placeholder="contacto@tuempresa.cl">
-                </div>
+                <div class="grid-row"><span class="label">Nombre Contacto:</span> <input type="text" class="pro-field" placeholder="Nombre de la persona encargada"></div>
+                <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field" placeholder="12.XXX.XXX-X"></div>
+                <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
+                <div class="grid-row"><span class="label">Email Corporativo:</span> <input type="text" class="pro-field" placeholder="contacto@tuempresa.cl"></div>
             </div>
 
             <div class="card border-l-[6px] border-teal-600">
                 <div class="card-header text-teal-800">Instrucciones para Pago</div>
-                <div class="grid-row">
-                    <span class="label">Banco:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre del Banco">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Tipo de Cuenta:</span> 
-                    <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro">
-                </div>
-                <div class="grid-row">
-                    <span class="label">N° de Cuenta:</span> 
-                    <input type="text" class="pro-field" placeholder="Número de cuenta bancaria">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Titular:</span> 
-                    <input type="text" class="pro-field" placeholder="Nombre del dueño de la cuenta">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Titular:</span> 
-                    <input type="text" class="pro-field" placeholder="
+                <div class="grid-row"><span class="label">Banco:</span> <input type="text" class="pro-field" placeholder="Nombre del Banco"></div>
+                <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro"></div>
+                <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field" placeholder="Número de cuenta bancaria"></div>
+                <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field" placeholder="Nombre del dueño de la cuenta"></div>
+                <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field" placeholder="RUT del dueño de la cuenta"></div>
+                <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field" placeholder="finanzas@tuempresa.cl"></div>
+            </div>
+
+            <div class="mt-auto flex gap-4 no-print pt-6">
+                <button onclick="window.location.reload()" class="flex-1 p-4 bg-slate-200 text-slate-600 font-bold rounded-xl uppercase text-xs">Limpiar Todo</button>
+                <button onclick="descargarPDF()" class="flex-1 p-4 bg-teal-600 text-white font-bold rounded-xl shadow-lg uppercase text-xs">Descargar PDF Profesional</button>
+            </div>
+
+            <div class="mt-8 pt-4 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-widest">
+                <span>Documento Generado por misdocumentosapp.com</span>
+                <span class="italic text-slate-300">Soporte: microempresasaunclick@gmail.com</span>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        function loadLogo(e) {
+            const r = new FileReader();
+            r.onload = () => { 
+                const img = document.getElementById('logo-pre'); 
+                img.src = r.result; 
+                img.classList.remove('hidden'); 
+                document.getElementById('logo-txt').classList.add('hidden'); 
+            };
+            r.readAsDataURL(e.target.files[0]);
+        }
+        function descargarPDF() {
+            const el = document.getElementById('ficha-documento');
+            const btns = document.querySelector('.no-print');
+            btns.style.visibility = 'hidden';
+            html2pdf().set({ margin: 0, filename: 'Ficha_Comercial.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } }).from(el).save().then(() => btns.style.visibility = 'visible');
+        }
+    </script>
+</body>
+</html>
