@@ -3,79 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ficha Comercial Pro - Mis Documentos</title>
+    <title>Ficha Comercial Pro - misdocumentosapp.com</title>
+    
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Estilos Sidebar */
-        .sidebar { width: 260px; padding: 24px; display: flex; flex-direction: column; flex-shrink: 0; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; margin-bottom: 4px; }
-        .nav-item:hover { background-color: #1e293b; color: white; }
-        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; 
+            margin: 0; 
+            display: flex; 
+            height: 100vh; 
+            overflow: hidden; 
+        }
 
-        /* Estilos de la Ficha (Papel Oficio) */
-        .main-content { flex-grow: 1; background-color: #f1f5f9; overflow-y: auto; padding: 40px; display: flex; justify-content: center; }
-        #documento-oficio { width: 816px; min-height: 1248px; background: white; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); display: flex; flex-direction: column; box-sizing: border-box; }
+        /* DISEÑO DEL SIDEBAR */
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            padding: 12px 16px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 0.875rem; 
+            text-decoration: none; 
+            transition: 0.3s; 
+            color: #94a3b8; 
+        }
+        .nav-item:hover { 
+            background-color: #1e293b; 
+            color: white; 
+        }
+        .nav-item.active { 
+            background-color: #2563eb; 
+            color: white !important; 
+            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); 
+        }
 
-        .card { border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: bold; font-size: 0.75rem; text-transform: uppercase; color: #0f172a; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        .card-header::before { content: ""; width: 4px; height: 16px; background: #0d9488; border-radius: 2px; }
+        /* ÁREA DE DOCUMENTO (OFICIO) */
+        .preview-area { 
+            flex-grow: 1; 
+            background-color: #f1f5f9; 
+            overflow-y: auto; 
+            padding: 40px; 
+            display: flex; 
+            justify-content: center; 
+        }
+        #ficha-documento { 
+            width: 816px; 
+            min-height: 1248px; 
+            background: white; 
+            padding: 60px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); 
+            display: flex; 
+            flex-direction: column; 
+            box-sizing: border-box; 
+        }
+
+        /* ESTILOS DE TARJETAS Y CAMPOS */
+        .card { 
+            border: 1px solid #e2e8f0; 
+            border-radius: 8px; 
+            margin-bottom: 16px; 
+            overflow: hidden; 
+            background: white; 
+        }
+        .card-header { 
+            background: #f8fafc; 
+            padding: 10px 20px; 
+            font-weight: bold; 
+            font-size: 0.75rem; 
+            text-transform: uppercase; 
+            color: #0f172a; 
+            border-bottom: 1px solid #e2e8f0; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .card-header::before { 
+            content: ""; 
+            width: 4px; 
+            height: 16px; 
+            background: #0d9488; 
+            border-radius: 2px; 
+        }
+        .grid-row { 
+            display: grid; 
+            grid-template-columns: 200px 1fr; 
+            gap: 10px; 
+            padding: 10px 20px; 
+            align-items: center; 
+            border-bottom: 1px solid #f1f5f9; 
+        }
+        .grid-row:last-child { border-bottom: none; }
         
-        .grid-field { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 10px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
-        .grid-field:last-child { border-bottom: none; }
-        
-        .label { font-weight: 700; font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
-        input.input-pro { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.9rem; transition: 0.2s; color: #1e293b; }
-        input.input-pro:focus { outline: none; border-color: #2563eb; background-color: #f8fafc; }
+        .label { 
+            font-weight: 700; 
+            font-size: 0.75rem; 
+            color: #475569; 
+            text-transform: uppercase; 
+            letter-spacing: 0.025em;
+        }
+        input.pro-field { 
+            width: 100%; 
+            padding: 8px 12px; 
+            border: 1px solid #cbd5e1; 
+            border-radius: 6px; 
+            font-size: 0.9rem; 
+            outline: none; 
+            transition: 0.2s; 
+            color: #1e293b;
+        }
+        input.pro-field:focus { 
+            border-color: #2563eb; 
+            background-color: #f8fafc; 
+            box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+        }
 
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar no-print">
-        <div class="mb-10">
-            <h2 class="text-white font-extrabold text-xl tracking-tight">MIS DOCUMENTOS</h2>
-            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase">Ecosistema AI</p>
+    <aside class="w-64 flex flex-col p-6 shrink-0 no-print">
+        <div class="mb-10 text-white">
+            <h2 class="font-extrabold text-xl leading-none uppercase">Mis Documentos</h2>
+            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
+        
         <nav class="space-y-2">
-  <a href="index.html" class="nav-item">
-    <i data-lucide="home"></i> Inicio / Dashboard
-  </a>
-  <a href="perfil.html" class="nav-item">
-    <i data-lucide="user"></i> Ficha Comercial
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="users"></i> Gestión Clientes
-  </a>
-  <a href="catalogo.html" class="nav-item">
-    <i data-lucide="database"></i> Catálogo Pro
-  </a>
-  <a href="fichas.html" class="nav-item">
-    <i data-lucide="file-text"></i> Fichas Técnicas
-  </a>
-  <a href="cotizaciones.html" class="nav-item">
-    <i data-lucide="shopping-cart"></i> Cotizaciones
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="cpu"></i> DocuFlow AI
-  </a>
-</nav>
+            <a href="index.html" class="nav-item">
+                <i data-lucide="home" size="18"></i> Inicio / Dashboard
+            </a>
+            <a href="perfil.html" class="nav-item active">
+                <i data-lucide="user" size="18"></i> Ficha Comercial
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="users" size="18"></i> Gestión Clientes
+            </a>
+            <a href="catalogo.html" class="nav-item">
+                <i data-lucide="database" size="18"></i> Catálogo Pro
+            </a>
+            <a href="fichas.html" class="nav-item">
+                <i data-lucide="file-text" size="18"></i> Fichas Técnicas
+            </a>
+            <a href="cotizaciones.html" class="nav-item">
+                <i data-lucide="shopping-cart" size="18"></i> Cotizaciones
+            </a>
+            <a href="#" class="nav-item">
+                <i data-lucide="cpu" size="18"></i> DocuFlow AI
+            </a>
+        </nav>
+
+        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
+            <p>Sistema Gestionado por</p>
+            <p class="text-blue-500">misdocumentosapp.com</p>
+            <p class="mt-3 opacity-50 italic">Soporte Técnico:</p>
+            <p>microempresasaunclick@gmail.com</p>
+        </div>
     </aside>
 
-    <main class="main-content">
-        <div id="documento-oficio">
+    <main class="preview-area">
+        <div id="ficha-documento">
             
             <div class="border-b-4 border-slate-900 pb-6 mb-8 flex justify-between items-center">
-                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 hover:bg-slate-100 transition relative" onclick="document.getElementById('file-logo').click()">
-                    <img id="img-logo" class="hidden max-w-full max-h-full object-contain p-2">
-                    <span id="txt-logo" class="text-[10px] text-slate-400 font-bold uppercase text-center p-2">Haz clic para<br>subir logo</span>
+                <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 overflow-hidden relative group" onclick="document.getElementById('logo-in').click()">
+                    <img id="logo-pre" class="hidden max-w-full max-h-full object-contain p-2">
+                    <span id="logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center">Subir Logo<br>Empresa</span>
                 </div>
-                <input type="file" id="file-logo" class="hidden" accept="image/*" onchange="preview(event)">
+                <input type="file" id="logo-in" class="hidden" accept="image/*" onchange="loadLogo(event)">
                 
                 <div class="text-right">
                     <h1 id="out-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">Ficha Comercial</h1>
@@ -85,73 +185,66 @@
 
             <div class="card">
                 <div class="card-header">Antecedentes de la Empresa</div>
-                <div class="grid-field"><span class="label">Razón Social:</span> <input type="text" id="in-rs" class="input-pro" oninput="document.getElementById('out-rs').innerText = this.value || 'Ficha Comercial'"></div>
-                <div class="grid-field"><span class="label">RUT Empresa:</span> <input type="text" class="input-pro" placeholder="76.XXX.XXX-X"></div>
-                <div class="grid-field"><span class="label">Giro / Actividad:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Dirección:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Sitio Web:</span> <input type="text" class="input-pro" placeholder="www.empresa.cl"></div>
+                <div class="grid-row">
+                    <span class="label">Razón Social:</span> 
+                    <input type="text" id="in-rs" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('out-rs').innerText = this.value || 'Ficha Comercial'">
+                </div>
+                <div class="grid-row">
+                    <span class="label">RUT Empresa:</span> 
+                    <input type="text" class="pro-field" placeholder="76.XXX.XXX-X">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Giro / Actividad:</span> 
+                    <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Dirección:</span> 
+                    <input type="text" class="pro-field" placeholder="Calle, Número, Comuna">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Sitio Web:</span> 
+                    <input type="text" class="pro-field" placeholder="www.tuempresa.cl">
+                </div>
             </div>
 
             <div class="card">
                 <div class="card-header">Información de Contacto</div>
-                <div class="grid-field"><span class="label">Nombre Contacto:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">RUT Contacto:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Teléfono:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Email Corporativo:</span> <input type="text" class="input-pro"></div>
+                <div class="grid-row">
+                    <span class="label">Nombre Contacto:</span> 
+                    <input type="text" class="pro-field" placeholder="Nombre de la persona encargada">
+                </div>
+                <div class="grid-row">
+                    <span class="label">RUT Contacto:</span> 
+                    <input type="text" class="pro-field" placeholder="12.XXX.XXX-X">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Teléfono:</span> 
+                    <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Email Corporativo:</span> 
+                    <input type="text" class="pro-field" placeholder="contacto@tuempresa.cl">
+                </div>
             </div>
 
             <div class="card border-l-[6px] border-teal-600">
                 <div class="card-header text-teal-800">Instrucciones para Pago</div>
-                <div class="grid-field"><span class="label">Banco:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Tipo de Cuenta:</span> <input type="text" class="input-pro" placeholder="Corriente / Vista"></div>
-                <div class="grid-field"><span class="label">N° de Cuenta:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Titular:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">RUT Titular:</span> <input type="text" class="input-pro"></div>
-                <div class="grid-field"><span class="label">Email Comprobante:</span> <input type="text" class="input-pro"></div>
-            </div>
-
-            <div class="mt-auto flex gap-4 no-print pt-6">
-                <button onclick="window.location.reload()" class="flex-1 p-4 bg-slate-200 hover:bg-slate-300 text-slate-600 font-bold rounded-xl uppercase text-xs transition">Limpiar Todo</button>
-                <button onclick="descargar()" class="flex-1 p-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg uppercase text-xs transition flex justify-center items-center gap-2">
-                    <i data-lucide="download" size="16"></i> Descargar PDF Profesional
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        lucide.createIcons();
-
-        function preview(e) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                const img = document.getElementById('img-logo');
-                img.src = reader.result;
-                img.classList.remove('hidden');
-                document.getElementById('txt-logo').classList.add('hidden');
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        }
-
-        function descargar() {
-            const el = document.getElementById('documento-oficio');
-            const btns = document.querySelector('.no-print');
-            const nombre = document.getElementById('in-rs').value || 'Ficha';
-            
-            btns.style.visibility = 'hidden';
-
-            const opt = {
-                margin: 0,
-                filename: `Ficha_Comercial_${nombre}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(el).save().then(() => {
-                btns.style.visibility = 'visible';
-            });
-        }
-    </script>
-</body>
-</html>
+                <div class="grid-row">
+                    <span class="label">Banco:</span> 
+                    <input type="text" class="pro-field" placeholder="Nombre del Banco">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Tipo de Cuenta:</span> 
+                    <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro">
+                </div>
+                <div class="grid-row">
+                    <span class="label">N° de Cuenta:</span> 
+                    <input type="text" class="pro-field" placeholder="Número de cuenta bancaria">
+                </div>
+                <div class="grid-row">
+                    <span class="label">Titular:</span> 
+                    <input type="text" class="pro-field" placeholder="Nombre del dueño de la cuenta">
+                </div>
+                <div class="grid-row">
+                    <span class="label">RUT Titular:</span> 
+                    <input type="text" class="pro-field" placeholder="
