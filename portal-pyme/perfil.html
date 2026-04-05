@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ficha Comercial Pro - misdocumentosapp.com</title>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         
         /* SIDEBAR ADAPTATIVO */
         #sidebar { transition: transform 0.3s ease-in-out; }
@@ -17,115 +17,111 @@
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; }
 
-        /* DISEÑO DE LA FICHA (OFICIO 216x330mm) */
-        #ficha-pdf { width: 816px; min-height: 1248px; background: white; padding: 50px; box-sizing: border-box; position: relative; }
-        
-        .card { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; overflow: hidden; }
-        .card-header { background: #f8fafc; padding: 10px 20px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
-        .card-header::before { content: ""; width: 4px; height: 16px; background: #2563eb; border-radius: 4px; }
+        /* CONTENEDOR AUTO-AJUSTABLE */
+        #ficha-render { 
+            width: 100%; 
+            max-width: 816px; /* Solo en PC llega a este tamaño */
+            background: white; 
+            margin: 0 auto;
+            min-height: 1056px; 
+            box-sizing: border-box; 
+        }
 
-        .grid-row { display: grid; grid-template-columns: 200px 1fr; gap: 10px; padding: 8px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
-        .grid-row:last-child { border-bottom: none; }
+        .card { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; }
+        .grid-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; padding: 8px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
         
         .label { font-weight: 700; font-size: 0.65rem; color: #64748b; text-transform: uppercase; }
-        input.pro-field { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.85rem; outline: none; transition: 0.2s; color: #0f172a; }
-        input.pro-field:focus { border-color: #2563eb; background: #fcfdfe; }
+        input.pro-field { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.85rem; outline: none; transition: 0.2s; color: #0f172a; }
 
-        /* AJUSTES MÓVIL */
-        @media (max-width: 1024px) {
-            #ficha-pdf { width: 100%; min-height: auto; padding: 20px; }
+        /* RESPONSIVE PARA CELULARES */
+        @media (max-width: 768px) {
             .grid-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 15px; }
+            #ficha-render { padding: 30px 20px !important; }
         }
-        @media print { .no-print { display: none !important; } }
+
+        /* ESTILOS PARA PDF (FUERZA EL TAMAÑO OFICIO) */
+        .pdf-mode { width: 816px !important; padding: 50px !important; }
     </style>
 </head>
 <body class="overflow-hidden flex h-screen">
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-[#0f172a] p-6 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform shadow-2xl">
-        <div class="flex justify-between items-center mb-10 text-white">
-            <div>
-                <h2 class="font-extrabold text-xl leading-none">MIS DOCUMENTOS</h2>
-                <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
-            </div>
-            <button onclick="toggleMenu()" class="lg:hidden text-slate-400"><i data-lucide="x"></i></button>
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-[#0f172a] p-6 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform shadow-2xl shrink-0">
+        <div class="mb-10 text-white">
+            <h2 class="font-extrabold text-xl leading-none">MIS DOCUMENTOS</h2>
+            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
         <nav class="flex-1 space-y-2">
-            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Inicio / Dashboard</a>
+            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Dashboard</a>
             <a href="perfil.html" class="nav-item active"><i data-lucide="user" size="18"></i> Ficha Comercial</a>
             <a href="catalogo.html" class="nav-item"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
             <a href="fichas.html" class="nav-item"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
             <a href="cotizaciones.html" class="nav-item"><i data-lucide="shopping-cart" size="18"></i> Cotizaciones</a>
         </nav>
-        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed border border-white/5">
+        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase border border-white/5">
             <p>Gestionado por <span class="text-blue-500">misdocumentosapp.com</span></p>
-            <p class="mt-3 opacity-50 italic">Soporte Técnico:</p>
-            <p class="lowercase">microempresasaunclick@gmail.com</p>
+            <p class="mt-2 opacity-50 lowercase">microempresasaunclick@gmail.com</p>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col min-w-0 bg-slate-100 overflow-hidden">
         
-        <header class="h-16 bg-white border-b px-4 flex items-center justify-between lg:hidden shrink-0">
+        <header class="h-14 bg-white border-b px-4 flex items-center justify-between lg:hidden shrink-0">
             <button onclick="toggleMenu()" class="p-2 text-slate-600"><i data-lucide="menu"></i></button>
-            <span class="font-bold text-xs uppercase tracking-widest text-blue-600">Ficha Comercial</span>
+            <span class="font-bold text-[10px] uppercase tracking-widest text-blue-600">Ficha Comercial</span>
             <div class="w-8"></div>
         </header>
 
-        <div class="flex-1 overflow-y-auto p-4 lg:p-10 flex justify-center no-scrollbar">
-            <div id="ficha-pdf" class="shadow-2xl rounded-none lg:rounded-xl">
+        <div class="flex-1 overflow-y-auto p-2 sm:p-6 lg:p-10 flex flex-col items-center">
+            
+            <div id="ficha-render" class="shadow-2xl sm:rounded-xl p-6 sm:p-12 transition-all">
                 
-                <div class="border-b-4 border-slate-900 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-center gap-6">
-                    <div class="w-32 h-32 border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 rounded-2xl relative overflow-hidden group cursor-pointer" onclick="document.getElementById('logo-file').click()">
+                <div class="border-b-4 border-slate-900 pb-6 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="w-28 h-28 border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 rounded-2xl relative cursor-pointer" onclick="document.getElementById('logo-file').click()">
                         <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-2">
-                        <div id="pdf-logo-txt" class="flex flex-col items-center text-slate-400">
-                            <i data-lucide="image-plus" size="20"></i>
-                            <span class="text-[7px] font-black uppercase mt-1">Logo</span>
-                        </div>
+                        <span id="pdf-logo-txt" class="text-[8px] font-black text-slate-400 uppercase">Subir Logo</span>
                     </div>
                     <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
                     <div class="text-center sm:text-right">
-                        <h1 id="header-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-1">Ficha Comercial</h1>
-                        <p class="text-slate-500 font-bold text-base italic">Información Bancaria y de Contacto</p>
+                        <h1 id="header-rs" class="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-1">Ficha Comercial</h1>
+                        <p class="text-slate-500 font-bold text-xs">Información Bancaria y de Contacto</p>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i data-lucide="building" size="14"></i> Antecedentes de la Empresa</div>
+                    <div class="bg-slate-50 p-2 px-5 text-[10px] font-black uppercase border-b text-slate-500">Antecedentes de la Empresa</div>
                     <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'"></div>
                     <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
-                    <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales"></div>
                     <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i data-lucide="phone" size="14"></i> Información de Contacto</div>
-                    <div class="grid-row"><span class="label">Nombre Contacto:</span> <input type="text" class="pro-field"></div>
-                    <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field"></div>
+                    <div class="bg-slate-50 p-2 px-5 text-[10px] font-black uppercase border-b text-slate-500">Información de Contacto</div>
+                    <div class="grid-row"><span class="label">Contacto:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
-                    <div class="grid-row"><span class="label">Email Corporativo:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Email:</span> <input type="text" class="pro-field"></div>
                 </div>
 
                 <div class="card border-l-[6px] border-blue-600">
-                    <div class="card-header text-blue-900"><i data-lucide="landmark" size="14"></i> Instrucciones para Pago</div>
+                    <div class="bg-slate-50 p-2 px-5 text-[10px] font-black uppercase border-b text-blue-600">Instrucciones para Pago</div>
                     <div class="grid-row"><span class="label">Banco:</span> <input type="text" class="pro-field"></div>
-                    <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista"></div>
-                    <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Tipo Cuenta:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">N° Cuenta:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field" placeholder="pagos@empresa.cl"></div>
                 </div>
 
-                <div class="mt-auto flex flex-col sm:flex-row gap-6 no-print pt-10">
-                    <button onclick="window.location.reload()" class="flex-1 p-4 bg-slate-100 hover:bg-slate-200 text-slate-500 font-extrabold rounded-2xl uppercase text-[11px] tracking-widest transition">Limpiar</button>
-                    <button onclick="descargarPDF()" class="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl shadow-xl uppercase text-[11px] tracking-widest transition flex items-center justify-center gap-3">
-                        <i data-lucide="download" size="18"></i> Descargar PDF (Oficio)
+                <div class="mt-8 flex flex-col sm:flex-row gap-4 no-print">
+                    <button onclick="window.location.reload()" class="flex-1 py-4 bg-slate-100 text-slate-500 font-black rounded-xl uppercase text-[10px] tracking-widest">Limpiar</button>
+                    <button onclick="descargarPDF()" class="flex-1 py-4 bg-blue-600 text-white font-black rounded-xl shadow-lg uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
+                        <i data-lucide="download" size="16"></i> Descargar PDF (Oficio)
                     </button>
                 </div>
 
-                <div class="mt-12 pt-6 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-[0.2em]">
-                    <span>Documento Generado por misdocumentosapp.com</span>
-                    <span class="italic">Soporte: microempresasaunclick@gmail.com</span>
+                <div class="mt-8 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-2 text-[8px] text-slate-400 font-black uppercase tracking-[0.2em]">
+                    <span>Generado por misdocumentosapp.com</span>
+                    <span class="italic uppercase">Soporte: microempresasaunclick@gmail.com</span>
                 </div>
             </div>
         </div>
@@ -140,10 +136,25 @@
             r.readAsDataURL(e.target.files[0]);
         }
         function descargarPDF() {
-            const el = document.getElementById('ficha-pdf');
+            const el = document.getElementById('ficha-render');
             const btns = document.querySelector('.no-print');
-            btns.style.visibility = 'hidden';
-            html2pdf().set({ margin: 0, filename: 'Ficha_Comercial.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 3 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } }).from(el).save().then(() => btns.style.visibility = 'visible');
+            
+            // Forzamos modo PDF para que el diseño no se rompa al capturar
+            el.classList.add('pdf-mode');
+            btns.style.display = 'none';
+
+            const opt = { 
+                margin: 0, 
+                filename: 'Ficha_Comercial.pdf', 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 3, useCORS: true }, 
+                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
+            };
+
+            html2pdf().set(opt).from(el).save().then(() => {
+                el.classList.remove('pdf-mode');
+                btns.style.display = 'flex';
+            });
         }
     </script>
 </body>
