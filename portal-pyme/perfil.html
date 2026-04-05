@@ -4,149 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ficha Comercial Pro - misdocumentosapp.com</title>
-    
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; 
-            margin: 0; 
-            display: flex; 
-            height: 100vh; 
-            overflow: hidden; 
-        }
-
         /* SIDEBAR PROFESIONAL */
-        .sidebar {
-            width: 280px;
-            background-color: #0f172a;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            padding: 32px 24px;
-            flex-shrink: 0;
-            border-right: 1px solid rgba(255,255,255,0.05);
-        }
+        .sidebar { width: 280px; background-color: #0f172a; color: white; display: flex; flex-direction: column; padding: 32px 24px; flex-shrink: 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; color: #94a3b8; transition: 0.3s; margin-bottom: 8px; }
+        .nav-item:hover { background-color: #1e293b; color: white; }
+        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
 
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            padding: 14px 16px; 
-            border-radius: 12px; 
-            font-weight: 600; 
-            font-size: 0.875rem; 
-            text-decoration: none; 
-            transition: all 0.3s ease; 
-            color: #94a3b8; 
-            margin-bottom: 8px;
-        }
+        /* HOJA OFICIO (216x330mm) */
+        .preview-area { flex-grow: 1; background-color: #f1f5f9; overflow-y: auto; padding: 40px; display: flex; justify-content: center; }
+        #ficha-pdf { width: 816px; min-height: 1248px; background: white; padding: 60px; box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.15); display: flex; flex-direction: column; box-sizing: border-box; }
 
-        .nav-item:hover { 
-            background-color: #1e293b; 
-            color: white; 
-            transform: translateX(4px);
-        }
-
-        .nav-item.active { 
-            background-color: #2563eb; 
-            color: white !important; 
-            box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); 
-        }
-
-        /* ÁREA DE TRABAJO (PAPEL OFICIO) */
-        .preview-area { 
-            flex-grow: 1; 
-            background-color: #f1f5f9; 
-            overflow-y: auto; 
-            padding: 50px; 
-            display: flex; 
-            justify-content: center; 
-        }
-
-        #ficha-documento { 
-            width: 816px; 
-            min-height: 1248px; 
-            background: white; 
-            padding: 60px; 
-            box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.15); 
-            display: flex; 
-            flex-direction: column; 
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        /* DISEÑO DE TARJETAS Y GRILLA */
-        .card { 
-            border: 1px solid #e2e8f0; 
-            border-radius: 12px; 
-            margin-bottom: 24px; 
-            overflow: hidden; 
-            background: white; 
-        }
-
-        .card-header { 
-            background: #f8fafc; 
-            padding: 12px 24px; 
-            font-weight: 800; 
-            font-size: 0.75rem; 
-            text-transform: uppercase; 
-            color: #1e293b; 
-            border-bottom: 1px solid #e2e8f0; 
-            display: flex; 
-            align-items: center; 
-            gap: 10px; 
-            letter-spacing: 0.05em;
-        }
-
-        .card-header::before { 
-            content: ""; 
-            width: 4px; 
-            height: 18px; 
-            background: #0d9488; 
-            border-radius: 4px; 
-        }
-
-        .grid-row { 
-            display: grid; 
-            grid-template-columns: 220px 1fr; 
-            gap: 15px; 
-            padding: 14px 24px; 
-            align-items: center; 
-            border-bottom: 1px solid #f1f5f9; 
-        }
-
-        .grid-row:last-child { border-bottom: none; }
+        /* DISEÑO DE TARJETAS */
+        .card { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 24px; overflow: hidden; background: white; }
+        .card-header { background: #f8fafc; padding: 12px 24px; font-weight: 800; font-size: 0.75rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; }
+        .card-header::before { content: ""; width: 4px; height: 18px; background: #0d9488; border-radius: 4px; }
         
-        .label { 
-            font-weight: 700; 
-            font-size: 0.75rem; 
-            color: #475569; 
-            text-transform: uppercase; 
-            letter-spacing: 0.025em;
-        }
-
-        input.pro-field { 
-            width: 100%; 
-            padding: 10px 14px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 8px; 
-            font-size: 0.9rem; 
-            outline: none; 
-            transition: all 0.2s; 
-            color: #0f172a;
-            background: #fff;
-        }
-
-        input.pro-field:focus { 
-            border-color: #2563eb; 
-            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-        }
+        .grid-row { display: grid; grid-template-columns: 210px 1fr; gap: 15px; padding: 12px 24px; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .grid-row:last-child { border-bottom: none; }
+        .label { font-weight: 700; font-size: 0.75rem; color: #475569; text-transform: uppercase; }
+        input.pro-field { width: 100%; padding: 8px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.9rem; outline: none; color: #0f172a; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -154,90 +37,45 @@
 <body>
 
     <aside class="sidebar no-print">
-        <div class="mb-12">
-            <h2 class="text-white font-black text-2xl tracking-tighter italic leading-none">MIS DOCUMENTOS</h2>
-            <p class="text-blue-500 text-[11px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
-        </div>
-        
+        <div class="mb-12"><h2 class="text-white font-black text-2xl tracking-tighter italic leading-none">MIS DOCUMENTOS</h2><p class="text-blue-500 text-[11px] font-bold uppercase mt-1">Ecosistema AI</p></div>
         <nav class="flex-grow">
-            <a href="index.html" class="nav-item">
-                <i data-lucide="layout-dashboard" size="20"></i> Dashboard
-            </a>
-            <a href="perfil.html" class="nav-item active">
-                <i data-lucide="file-badge" size="20"></i> Ficha Comercial
-            </a>
-            <a href="#" class="nav-item">
-                <i data-lucide="users" size="20"></i> Gestión Clientes
-            </a>
-            <a href="catalogo.html" class="nav-item">
-                <i data-lucide="book-open" size="20"></i> Catálogo Pro
-            </a>
-            <a href="fichas.html" class="nav-item">
-                <i data-lucide="file-spreadsheet" size="20"></i> Fichas Técnicas
-            </a>
-            <a href="cotizaciones.html" class="nav-item">
-                <i data-lucide="shopping-cart" size="20"></i> Cotizaciones
-            </a>
+            <a href="index.html" class="nav-item"><i data-lucide="layout-dashboard" size="20"></i> Dashboard</a>
+            <a href="perfil.html" class="nav-item active"><i data-lucide="file-badge" size="20"></i> Ficha Comercial</a>
+            <a href="#" class="nav-item"><i data-lucide="users" size="20"></i> Gestión Clientes</a>
+            <a href="catalogo.html" class="nav-item"><i data-lucide="book-open" size="20"></i> Catálogo Pro</a>
+            <a href="fichas.html" class="nav-item"><i data-lucide="file-spreadsheet" size="20"></i> Fichas Técnicas</a>
+            <a href="cotizaciones.html" class="nav-item"><i data-lucide="shopping-cart" size="20"></i> Cotizaciones</a>
         </nav>
-
         <div class="mt-auto p-5 bg-white/5 rounded-2xl border border-white/10 text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-relaxed">
-            <p class="opacity-50">Gestionado por</p>
-            <p class="text-blue-400 text-xs mt-1">misdocumentosapp.com</p>
-            <div class="mt-4 border-t border-white/5 pt-4">
-                <p class="opacity-50 lowercase text-slate-300 font-medium">microempresasaunclick@gmail.com</p>
-            </div>
+            <p>Sistema Gestionado por</p><p class="text-blue-400 text-xs mt-1">misdocumentosapp.com</p>
+            <p class="mt-4 border-t border-white/5 pt-4 opacity-50 font-medium lowercase">microempresasaunclick@gmail.com</p>
         </div>
     </aside>
 
     <main class="preview-area">
-        <div id="ficha-documento">
-            
+        <div id="ficha-pdf">
             <div class="border-b-4 border-slate-900 pb-10 mb-10 flex justify-between items-center">
-                <div class="w-36 h-36 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 rounded-xl overflow-hidden relative group" onclick="document.getElementById('logo-file').click()">
-                    <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-2">
-                    <div id="pdf-logo-txt" class="flex flex-col items-center gap-2 text-slate-400">
-                        <i data-lucide="image-plus" size="24"></i>
-                        <span class="text-[9px] font-black uppercase text-center leading-tight">Subir logo</span>
-                    </div>
+                <div class="w-36 h-36 border-2 border-dashed border-slate-200 flex items-center justify-center cursor-pointer bg-slate-50 rounded-xl relative overflow-hidden" onclick="document.getElementById('logo-file').click()">
+                    <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-1"><span id="pdf-logo-txt" class="text-[8px] font-bold text-slate-400 uppercase text-center leading-tight">Haz clic para<br>subir logo</span>
                 </div>
                 <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
-                
-                <div class="text-right">
-                    <h1 id="header-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Ficha Comercial</h1>
-                    <p class="text-slate-500 font-bold text-base">Información Bancaria y de Contacto</p>
-                    <div class="h-1 w-24 bg-blue-600 ml-auto mt-4 rounded-full"></div>
-                </div>
+                <div class="text-right"><h1 id="header-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-2">Ficha Comercial</h1><p class="text-slate-500 font-bold text-base italic">Información Bancaria y de Contacto</p></div>
             </div>
 
             <div class="card">
                 <div class="card-header"><i data-lucide="building-2" size="14"></i> Antecedentes de la Empresa</div>
-                <div class="grid-row">
-                    <span class="label">Razón Social:</span> 
-                    <input type="text" id="rs-input" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'">
-                </div>
-                <div class="grid-row">
-                    <span class="label">RUT Empresa:</span> 
-                    <input type="text" class="pro-field" placeholder="76.XXX.XXX-X">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Giro / Actividad:</span> 
-                    <input type="text" class="pro-field" placeholder="Giro Comercial">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Dirección:</span> 
-                    <input type="text" class="pro-field" placeholder="Dirección Matriz">
-                </div>
-                <div class="grid-row">
-                    <span class="label">Sitio Web:</span> 
-                    <input type="text" class="pro-field" placeholder="www.tuempresa.cl">
-                </div>
+                <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" id="rs-input" class="pro-field" placeholder="Nombre Legal" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'"></div>
+                <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
+                <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field"></div>
+                <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field"></div>
+                <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
             </div>
 
             <div class="card">
                 <div class="card-header"><i data-lucide="user-square-2" size="14"></i> Información de Contacto</div>
                 <div class="grid-row"><span class="label">Nombre Contacto:</span> <input type="text" class="pro-field"></div>
-                <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field" placeholder="12.XXX.XXX-X"></div>
-                <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
+                <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field"></div>
+                <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field"></div>
                 <div class="grid-row"><span class="label">Email Corporativo:</span> <input type="text" class="pro-field"></div>
             </div>
 
@@ -248,23 +86,16 @@
                 <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field"></div>
                 <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field"></div>
                 <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field"></div>
-                <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field"></div>
+                <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field" placeholder="finanzas@empresa.cl"></div>
             </div>
 
             <div class="mt-auto flex gap-6 no-print pt-10">
-                <button onclick="window.location.reload()" class="flex-1 p-5 bg-slate-100 hover:bg-slate-200 text-slate-500 font-extrabold rounded-2xl uppercase text-[11px] tracking-widest transition">
-                    Limpiar Formulario
-                </button>
-                <button onclick="descargarPDF()" class="flex-1 p-5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl shadow-xl uppercase text-[11px] tracking-widest transition flex items-center justify-center gap-3">
-                    <i data-lucide="download" size="18"></i> Descargar PDF (Oficio)
-                </button>
+                <button onclick="window.location.reload()" class="flex-1 p-5 bg-slate-100 hover:bg-slate-200 text-slate-500 font-extrabold rounded-2xl uppercase text-[11px] tracking-widest transition duration-300">Limpiar Formulario</button>
+                <button onclick="descargarPDF()" class="flex-1 p-5 bg-teal-600 hover:bg-teal-700 text-white font-extrabold rounded-2xl shadow-xl uppercase text-[11px] tracking-widest transition duration-300 flex items-center justify-center gap-3"><i data-lucide="download" size="18"></i> Descargar PDF (Oficio)</button>
             </div>
 
             <div class="mt-12 pt-8 border-t border-slate-100 flex justify-between items-center text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">
-                <div class="flex items-center gap-2">
-                    <span class="w-2 h-2 bg-blue-600 rounded-full"></span>
-                    <span>Documento Generado por misdocumentosapp.com</span>
-                </div>
+                <span>Documento Generado por misdocumentosapp.com</span>
                 <span class="italic text-slate-300 font-bold uppercase">Soporte: microempresasaunclick@gmail.com</span>
             </div>
         </div>
@@ -274,25 +105,14 @@
         lucide.createIcons();
         function loadLogo(e) {
             const r = new FileReader();
-            r.onload = () => { 
-                const img = document.getElementById('pdf-logo'); 
-                img.src = r.result; 
-                img.classList.remove('hidden'); 
-                document.getElementById('pdf-logo-txt').classList.add('hidden'); 
-            };
+            r.onload = () => { const img = document.getElementById('pdf-logo'); img.src = r.result; img.classList.remove('hidden'); document.getElementById('pdf-logo-txt').classList.add('hidden'); };
             r.readAsDataURL(e.target.files[0]);
         }
         function descargarPDF() {
-            const el = document.getElementById('ficha-documento');
+            const el = document.getElementById('ficha-pdf');
             const btns = document.querySelector('.no-print');
             btns.style.visibility = 'hidden';
-            html2pdf().set({ 
-                margin: 0, 
-                filename: 'Ficha_Comercial_Pro.pdf', 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 3 }, 
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
-            }).from(el).save().then(() => btns.style.visibility = 'visible');
+            html2pdf().set({ margin: 0, filename: 'Ficha_Comercial_Pro.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 3 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } }).from(el).save().then(() => btns.style.visibility = 'visible');
         }
     </script>
 </body>
