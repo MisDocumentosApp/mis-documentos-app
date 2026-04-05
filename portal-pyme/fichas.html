@@ -3,151 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador Fichas Técnicas - misdocumentosapp.com</title>
+    <title>Fichas Técnicas - misdocumentosapp.com</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; display: flex; height: 100vh; overflow: hidden; }
-        
-        /* CORRECCIÓN SIDEBAR: Debe ser flex-col para que el mt-auto funcione */
-        .sidebar { width: 260px; background-color: #0f172a; color: white; display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; height: 100vh; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; color: #94a3b8; transition: 0.2s; margin-bottom: 4px; }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; margin: 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; text-decoration: none; transition: 0.3s; color: #94a3b8; }
         .nav-item:hover { background-color: #1e293b; color: white; }
-        .nav-item.active { background-color: #2563eb; color: white !important; }
-
-        .editor-panel { width: 360px; background: white; border-right: 1px solid #e2e8f0; overflow-y: auto; padding: 24px; flex-shrink: 0; }
-        .preview-area { flex-grow: 1; background-color: #f1f5f9; overflow-y: auto; padding: 30px; display: flex; justify-content: center; }
-        
-        #ficha-tecnica-pdf { width: 816px; min-height: 1248px; background: white; padding: 45px; box-shadow: 0 25px 60px rgba(0,0,0,0.1); display: flex; flex-direction: column; box-sizing: border-box; }
-
-        .card { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 8px 18px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
-        .card-header::before { content: ""; width: 3px; height: 14px; background: #2563eb; border-radius: 2px; }
-        
-        .spec-row { display: grid; grid-template-columns: 180px 1fr; gap: 10px; padding: 6px 18px; border-bottom: 1px solid #f1f5f9; align-items: center; }
-        .spec-row:last-child { border-bottom: none; }
-        
-        .label { font-weight: 700; font-size: 0.65rem; color: #64748b; text-transform: uppercase; }
-        input.field { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; outline: none; margin-bottom: 8px; }
-        textarea.field { width: 100%; padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; min-height: 80px; resize: none; }
-
-        @media print { .no-print { display: none !important; } }
+        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
+        /* Scrollbar personalizada para el editor */
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <aside class="sidebar no-print">
-        <div class="mb-10 text-white">
-            <h2 class="font-extrabold text-xl leading-none uppercase">Mis Documentos</h2>
-            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1 italic">Ecosistema AI</p>
-        </div>
-        <nav class="flex-grow">
-            <a href="index.html" class="nav-item"><i data-lucide="home" size="18"></i> Dashboard</a>
-            <a href="perfil.html" class="nav-item"><i data-lucide="user" size="18"></i> Ficha Comercial</a>
-            <a href="catalogo.html" class="nav-item"><i data-lucide="database" size="18"></i> Catálogo Pro</a>
-            <a href="fichas.html" class="nav-item active"><i data-lucide="file-text" size="18"></i> Fichas Técnicas</a>
-            <a href="cotizaciones.html" class="nav-item"><i data-lucide="shopping-cart" size="18"></i> Cotizaciones</a>
-        </nav>
+    <div id="root" class="flex h-screen overflow-hidden"></div>
 
-        <div class="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
-            <p>Sistema Gestionado por</p>
-            <p class="text-blue-500">misdocumentosapp.com</p>
-            <p class="mt-3 opacity-50 italic">Soporte Técnico:</p>
-            <p>microempresasaunclick@gmail.com</p>
-        </div>
-    </aside>
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
 
-    <div class="editor-panel no-print">
-        <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-4 pb-1">Datos del Producto</h3>
-        <input type="text" id="in-prod" placeholder="Nombre Producto" class="field" value="CINTA ANTIDESLIZANTE AMARILLA NEGRO 50MM" oninput="sync()">
-        <input type="text" id="in-mod" placeholder="Referencia" class="field" value="SERIE PROFESIONAL | REF: 5051015" oninput="sync()">
-        <textarea id="in-desc" placeholder="Descripción técnica..." class="field" oninput="sync()">Cinta de seguridad crítica diseñada para prevenir resbalones y caídas en áreas de alto tránsito. Superficie abrasiva de alta tracción.</textarea>
+        function App() {
+            // --- ESTADOS Y LÓGICA DE TU CÓDIGO REACT ---
+            const [isPdfReady, setIsPdfReady] = useState(true);
+            const [isGenerating, setIsGenerating] = useState(false);
+            const [primaryColor, setPrimaryColor] = useState("#0a58ca");
+            const [footerColor, setFooterColor] = useState("#0f2c59");
+            const [logo, setLogo] = useState(null);
+            const [brand, setBrand] = useState("UYUSTOOLS");
+            const [productName, setProductName] = useState('BROCHA PARA BARNIZ 2"');
+            const [reference, setReference] = useState("SERIE PROFESIONAL | REF: BRO02U");
+            const [description, setDescription] = useState("Herramienta de alto rendimiento diseñada para la aplicación precisa de barnices...");
+            const [safetyNote, setSafetyNote] = useState("Mantener fuera del alcance de los niños...");
+            const [productImage, setProductImage] = useState(null);
+            const [keyProperties, setKeyProperties] = useState([
+                { name: "Cerdas de doble acción", value: "Mezcla natural y sintética." },
+                { name: "Virola reforzada", value: "Acero inoxidable." }
+            ]);
+            const [specs, setSpecs] = useState([
+                { param: "Marca", value: "UYUSTOOLS PROFESSIONAL TOOLS" },
+                { param: "Material Cerdas", value: "Naturales y Poliéster" }
+            ]);
 
-        <h3 class="text-[10px] font-black text-blue-600 uppercase border-b mb-4 mt-6 pb-1">Especificaciones</h3>
-        <div id="specs-editor">
-            <input type="text" class="field spec-in" value="MARCA: ANTÜ TAPE" oninput="sync()">
-            <input type="text" class="field spec-in" value="TIPO: Cinta Abrasiva" oninput="sync()">
-            <input type="text" class="field spec-in" value="FORMATO: 50MM / Amarillo-Negro" oninput="sync()">
-            <input type="text" class="field spec-in" value="RESISTENCIA: Tracción extrema" oninput="sync()">
-            <input type="text" class="field spec-in" value="ADHERENCIA: Autoadhesivo Caucho" oninput="sync()">
-        </div>
+            const [footerCompany, setFooterCompany] = useState("DEL SOLAR TRUCK & CARS SPA — RUT: 76.779.159-3");
+            const [footerHighlight, setFooterHighlight] = useState("GIRO: VENTA POR INTERNET");
+            const [footerContact, setFooterContact] = useState("WhatsApp: +569 47436919 | Email: sadelsolar@gmail.com");
+            const [footerLegal, setFooterLegal] = useState("DOCUMENTO PROPIEDAD DE TRUCKS & CARS");
 
-        <button onclick="descargarPDF()" class="w-full mt-8 py-3 bg-blue-600 text-white font-extrabold rounded-xl shadow-lg uppercase text-[10px] tracking-widest flex items-center justify-center gap-2">
-            <i data-lucide="download" size="14"></i> Descargar Ficha (Oficio)
-        </button>
-    </div>
+            // --- LÓGICA DE PERSISTENCIA ---
+            useEffect(() => {
+                const saved = localStorage.getItem('fichaTecnicaDraft');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    setBrand(data.brand || brand);
+                    setProductName(data.productName || productName);
+                    setPrimaryColor(data.primaryColor || primaryColor);
+                    // ... cargar el resto de campos similarmente
+                }
+            }, []);
 
-    <main class="preview-area">
-        <div id="ficha-tecnica-pdf">
-            <div class="border-b-4 border-blue-600 pb-6 mb-8 flex justify-between items-end">
-                <div>
-                    <h1 id="out-prod" class="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">---</h1>
-                    <p id="out-mod" class="text-blue-600 font-bold text-sm mt-1 uppercase italic">---</p>
-                </div>
-                <div class="text-right">
-                    <span class="bg-slate-900 text-white px-4 py-1 text-[10px] font-black uppercase tracking-widest rounded-full">Ficha Técnica</span>
-                </div>
-            </div>
+            useEffect(() => {
+                const draft = { brand, productName, reference, description, safetyNote, keyProperties, specs, primaryColor, footerColor };
+                localStorage.setItem('fichaTecnicaDraft', JSON.stringify(draft));
+            }, [brand, productName, reference, description, safetyNote, keyProperties, specs, primaryColor, footerColor]);
 
-            <div class="grid grid-cols-12 gap-8">
-                <div class="col-span-5">
-                    <div class="w-full aspect-square border-2 border-slate-100 rounded-2xl bg-slate-50 flex items-center justify-center cursor-pointer overflow-hidden relative mb-6" onclick="document.getElementById('prod-img-file').click()">
-                        <img id="prod-img" class="hidden w-full h-full object-cover">
-                        <div id="prod-img-txt" class="text-center text-slate-300 font-black text-[10px] uppercase">Imagen Producto</div>
+            const handleImage = (e, setter) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (ev) => setter(ev.target.result);
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            const generatePDF = () => {
+                setIsGenerating(true);
+                const element = document.getElementById('ficha-tecnica-pdf');
+                const opt = {
+                    margin: 0,
+                    filename: `Ficha_${brand}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: [215.9, 330.2], orientation: 'portrait' }
+                };
+                html2pdf().set(opt).from(element).save().then(() => setIsGenerating(false));
+            };
+
+            return (
+                <div className="flex w-full h-full">
+                    {/* 1. SIDEBAR GLOBAL DEL PROYECTO  */}
+                    <aside className="w-64 bg-[#0f172a] p-6 flex flex-col shrink-0">
+                        <div className="mb-10 text-white">
+                            <h2 className="font-extrabold text-xl leading-none">MIS DOCUMENTOS</h2>
+                            <p className="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
+                        </div>
+                        <nav className="space-y-2 flex-1">
+                            <a href="index.html" className="nav-item"><i className="lucide-home w-4 h-4"></i> Dashboard</a>
+                            <a href="perfil.html" className="nav-item"><i className="lucide-user w-4 h-4"></i> Ficha Comercial</a>
+                            <a href="catalogo.html" className="nav-item"><i className="lucide-database w-4 h-4"></i> Catálogo Pro</a>
+                            <a href="fichas.html" className="nav-item active"><i className="lucide-file-text w-4 h-4"></i> Fichas Técnicas</a>
+                            <a href="cotizaciones.html" className="nav-item"><i className="lucide-shopping-cart w-4 h-4"></i> Cotizaciones</a>
+                        </nav>
+                        <div className="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                            <p>Sistema Gestionado por</p>
+                            <p className="text-blue-500">misdocumentosapp.com</p>
+                        </div>
+                    </aside>
+
+                    {/* 2. EDITOR (TU CÓDIGO REACT)  */}
+                    <div className="w-[400px] bg-white border-r border-gray-200 overflow-y-auto custom-scroll p-6">
+                        <h2 className="font-bold text-gray-800 mb-6 flex items-center gap-2 border-b pb-2">
+                             Editor Multiempresa
+                        </h2>
+                        
+                        <div className="space-y-6">
+                            <section>
+                                <h3 className="text-[10px] font-black text-blue-600 uppercase mb-3">1. Brand Kit</h3>
+                                <div className="space-y-3">
+                                    <input type="file" onChange={e => handleImage(e, setLogo)} className="text-xs w-full" />
+                                    <div className="flex gap-4">
+                                        <input type="color" value={primaryColor} onChange={e => setPrimaryColor(e.target.value)} className="w-10 h-10" />
+                                        <input type="color" value={footerColor} onChange={e => setFooterColor(e.target.value)} className="w-10 h-10" />
+                                    </div>
+                                </div>
+                            </section>
+
+                            <section>
+                                <h3 className="text-[10px] font-black text-blue-600 uppercase mb-3">2. Datos Producto</h3>
+                                <input type="text" value={brand} onChange={e => setBrand(e.target.value)} className="w-full border p-2 rounded mb-2" placeholder="Marca" />
+                                <input type="text" value={productName} onChange={e => setProductName(e.target.value)} className="w-full border p-2 rounded mb-2" placeholder="Nombre" />
+                                <input type="file" onChange={e => handleImage(e, setProductImage)} className="text-xs w-full" />
+                            </section>
+
+                            <section>
+                                <h3 className="text-[10px] font-black text-blue-600 uppercase mb-3">3. Descripción</h3>
+                                <textarea value={description} onChange={e => setDescription(e.target.value)} className="w-full border p-2 rounded text-xs h-24" />
+                            </section>
+
+                            <button 
+                                onClick={generatePDF} 
+                                style={{backgroundColor: primaryColor}}
+                                className="w-full py-3 text-white font-bold rounded-xl shadow-lg uppercase text-xs"
+                            >
+                                {isGenerating ? 'Generando...' : 'Descargar PDF'}
+                            </button>
+                        </div>
                     </div>
-                    <input type="file" id="prod-img-file" class="hidden" accept="image/*" onchange="loadProdImg(event)">
-                    <div class="card">
-                        <div class="card-header">Descripción Técnica</div>
-                        <div id="out-desc" class="p-4 text-[11px] text-slate-600 leading-relaxed italic">---</div>
+
+                    {/* 3. PREVIEW  */}
+                    <div className="flex-1 bg-gray-200 overflow-y-auto p-10 flex justify-center">
+                        <div id="ficha-tecnica-pdf" className="w-[816px] min-h-[1248px] bg-[#f2f2f5] p-10 shadow-2xl flex flex-col">
+                            <div className="bg-white border-2 border-gray-800 rounded-2xl p-6 flex justify-between items-center mb-8">
+                                <div>
+                                    <h1 className="text-4xl font-black" style={{color: primaryColor}}>{brand}</h1>
+                                    <h2 className="text-2xl font-bold">{productName}</h2>
+                                    <p className="text-gray-400 text-xs mt-1 uppercase font-bold">{reference}</p>
+                                </div>
+                                <div className="w-48 h-24 flex items-center justify-end">
+                                    {logo && <img src={logo} className="max-h-full object-contain" />}
+                                </div>
+                            </div>
+
+                            <div className="flex gap-8 flex-1">
+                                <div className="w-1/2">
+                                    <div className="bg-white aspect-square rounded-xl shadow-sm mb-6 flex items-center justify-center overflow-hidden border">
+                                        {productImage ? <img src={productImage} className="w-full h-full object-contain" /> : "FOTO PRODUCTO"}
+                                    </div>
+                                    <div className="border-2 border-yellow-400 rounded-lg overflow-hidden">
+                                        <div className="bg-yellow-400 p-2 text-[10px] font-black">NOTA DE SEGURIDAD</div>
+                                        <div className="bg-white p-4 text-[10px]">{safetyNote}</div>
+                                    </div>
+                                </div>
+                                <div className="w-1/2">
+                                    <div className="bg-gray-800 text-white px-4 py-1 inline-block text-xs font-bold mb-4">DESCRIPCIÓN TÉCNICA</div>
+                                    <p className="text-xs leading-relaxed mb-8">{description}</p>
+                                    
+                                    <div className="bg-gray-800 text-white px-4 py-1 inline-block text-xs font-bold mb-4">ESPECIFICACIONES</div>
+                                    <table className="w-full text-xs">
+                                        <tbody>
+                                            {specs.map((s, i) => (
+                                                <tr key={i} className="border-b border-gray-300">
+                                                    <td className="py-2 font-bold uppercase text-[10px]" style={{color: primaryColor}}>{s.param}</td>
+                                                    <td className="py-2 text-right font-medium">{s.value}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div className="mt-auto w-full pt-10">
+                                <div className="p-6 text-center text-white" style={{backgroundColor: footerColor, borderTop: `4px solid ${primaryColor}`}}>
+                                    <p className="font-bold text-sm">{footerCompany}</p>
+                                    <p className="text-[10px] mt-2 opacity-80">{footerContact}</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-span-7">
-                    <div class="card">
-                        <div class="card-header">Especificaciones Nominales</div>
-                        <div id="specs-preview"></div>
-                    </div>
-                </div>
-            </div>
+            );
+        }
 
-            <div class="mt-auto pt-6 border-t border-slate-100 flex justify-between items-center text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">
-                <span>Documento Generado por misdocumentosapp.com</span>
-                <span class="italic font-bold">Soporte: microempresasaunclick@gmail.com</span>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        lucide.createIcons();
-        function sync() {
-            document.getElementById('out-prod').innerText = document.getElementById('in-prod').value || '---';
-            document.getElementById('out-mod').innerText = document.getElementById('in-mod').value || '---';
-            document.getElementById('out-desc').innerText = document.getElementById('in-desc').value || '---';
-            const specsIn = document.querySelectorAll('.spec-in');
-            let specsHtml = '';
-            specsIn.forEach(input => {
-                const parts = input.value.split(':');
-                specsHtml += `<div class="spec-row"><span class="label">${parts[0] || '---'}:</span> <span class="text-[0.85rem] font-medium text-slate-900">${parts[1] || '---'}</span></div>`;
-            });
-            document.getElementById('specs-preview').innerHTML = specsHtml;
-        }
-        function loadProdImg(e) {
-            const r = new FileReader();
-            r.onload = () => { const img = document.getElementById('prod-img'); img.src = r.result; img.classList.remove('hidden'); document.getElementById('prod-img-txt').classList.add('hidden'); };
-            r.readAsDataURL(e.target.files[0]);
-        }
-        function descargarPDF() {
-            const el = document.getElementById('ficha-tecnica-pdf');
-            const btns = document.querySelectorAll('.no-print');
-            btns.forEach(b => b.style.visibility = 'hidden');
-            html2pdf().set({ 
-                margin: 0, filename: 'Ficha_Tecnica.pdf', image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 3 }, 
-                jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
-            }).from(el).save().then(() => btns.forEach(b => b.style.visibility = 'visible'));
-        }
-        sync();
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        
+        // Inicializar iconos después de renderizar
+        setTimeout(() => lucide.createIcons(), 500);
     </script>
 </body>
 </html>
