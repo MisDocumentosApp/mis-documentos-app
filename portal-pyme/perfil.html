@@ -84,4 +84,67 @@
                     </div>
                     <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
                     <div class="text-center sm:text-right">
-                        <h1 id="header-rs" class="text-4xl font-black text-slate-9
+                        <h1 id="header-rs" class="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-1">Ficha Comercial</h1>
+                        <p class="text-slate-500 font-bold text-base italic">Información Bancaria y de Contacto</p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i data-lucide="building" size="14"></i> Antecedentes de la Empresa</div>
+                    <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'"></div>
+                    <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
+                    <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Ej: Servicios Industriales"></div>
+                    <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header"><i data-lucide="phone" size="14"></i> Información de Contacto</div>
+                    <div class="grid-row"><span class="label">Nombre Contacto:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
+                    <div class="grid-row"><span class="label">Email Corporativo:</span> <input type="text" class="pro-field"></div>
+                </div>
+
+                <div class="card border-l-[6px] border-blue-600">
+                    <div class="card-header text-blue-900"><i data-lucide="landmark" size="14"></i> Instrucciones para Pago</div>
+                    <div class="grid-row"><span class="label">Banco:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista"></div>
+                    <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field" placeholder="pagos@empresa.cl"></div>
+                </div>
+
+                <div class="mt-auto flex flex-col sm:flex-row gap-6 no-print pt-10">
+                    <button onclick="window.location.reload()" class="flex-1 p-4 bg-slate-100 hover:bg-slate-200 text-slate-500 font-extrabold rounded-2xl uppercase text-[11px] tracking-widest transition">Limpiar</button>
+                    <button onclick="descargarPDF()" class="flex-1 p-4 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl shadow-xl uppercase text-[11px] tracking-widest transition flex items-center justify-center gap-3">
+                        <i data-lucide="download" size="18"></i> Descargar PDF (Oficio)
+                    </button>
+                </div>
+
+                <div class="mt-12 pt-6 border-t border-slate-100 flex justify-between items-center text-[8px] text-slate-400 font-black uppercase tracking-[0.2em]">
+                    <span>Documento Generado por misdocumentosapp.com</span>
+                    <span class="italic">Soporte: microempresasaunclick@gmail.com</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        function toggleMenu() { document.getElementById('sidebar').classList.toggle('-translate-x-full'); }
+        function loadLogo(e) {
+            const r = new FileReader();
+            r.onload = () => { document.getElementById('pdf-logo').src = r.result; document.getElementById('pdf-logo').classList.remove('hidden'); document.getElementById('pdf-logo-txt').classList.add('hidden'); };
+            r.readAsDataURL(e.target.files[0]);
+        }
+        function descargarPDF() {
+            const el = document.getElementById('ficha-pdf');
+            const btns = document.querySelector('.no-print');
+            btns.style.visibility = 'hidden';
+            html2pdf().set({ margin: 0, filename: 'Ficha_Comercial.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 3 }, jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } }).from(el).save().then(() => btns.style.visibility = 'visible');
+        }
+    </script>
+</body>
+</html>
