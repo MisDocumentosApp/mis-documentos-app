@@ -11,34 +11,34 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; }
         
-        /* SIDEBAR PROFESIONAL Y RESPONSIVE */
+        /* SIDEBAR ADAPTATIVO */
         #sidebar { transition: transform 0.3s ease-in-out; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; color: #94a3b8; transition: 0.3s; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; color: #94a3b8; transition: 0.2s; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
 
-        /* CONTENEDOR AJUSTADO A PANTALLA PC */
+        /* CONTENEDOR DE ALTA DENSIDAD */
         #main-workspace { 
             width: 100%; 
-            max-width: 1050px; /* Tamaño ideal para monitores modernos */
+            max-width: 1050px; /* Expandido para llenar la pantalla en PC */
             background: white; 
             margin: 0 auto; 
             box-sizing: border-box; 
         }
 
-        /* AJUSTE DE BLOQUES Y LETRAS (DENSIDAD PRO) */
+        /* DISEÑO DE BLOQUES COMPACTOS */
         .card { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 8px 20px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        .card-header { background: #f8fafc; padding: 8px 20px; font-weight: 800; font-size: 0.68rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
         .card-header::before { content: ""; width: 3px; height: 14px; background: #2563eb; border-radius: 2px; }
 
         .grid-row { display: grid; grid-template-columns: 200px 1fr; gap: 8px; padding: 6px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .grid-row:last-child { border-bottom: none; }
         
-        /* FUENTES REDUCIDAS PARA AJUSTE VISUAL */
-        .label { font-weight: 700; font-size: 0.62rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        /* TIPOGRAFÍA NÍTIDA Y PEQUEÑA */
+        .label { font-weight: 700; font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
         input.pro-field { 
             width: 100%; 
-            padding: 6px 12px; 
+            padding: 7px 12px; 
             border: 1px solid #cbd5e1; 
             border-radius: 6px; 
             font-size: 0.82rem; 
@@ -48,15 +48,15 @@
         }
         input.pro-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
 
-        /* MÓVIL: APILAMIENTO VERTICAL */
+        /* MÓVIL */
         @media (max-width: 1024px) {
-            .grid-row { grid-template-columns: 1fr; gap: 2px; padding: 10px 15px; }
-            #main-workspace { padding: 15px !important; box-shadow: none; border: none; }
+            .grid-row { grid-template-columns: 1fr; gap: 2px; padding: 12px 15px; }
+            #main-workspace { padding: 20px !important; box-shadow: none; border: none; }
         }
 
-        /* MODO PDF: BLOQUEO A FORMATO OFICIO */
-        .pdf-mode { width: 816px !important; padding: 45px !important; margin: 0 !important; }
-        .pdf-mode .grid-row { grid-template-columns: 190px 1fr !important; padding: 6px 18px !important; }
+        /* MODO PDF (BLINDAJE OFICIO) */
+        .pdf-export-mode { width: 816px !important; padding: 45px !important; margin: 0 !important; }
+        .pdf-export-mode .grid-row { grid-template-columns: 190px 1fr !important; padding: 6px 18px !important; }
         
         @media print { .no-print { display: none !important; } }
     </style>
@@ -65,8 +65,8 @@
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-[#0f172a] p-6 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform shadow-2xl shrink-0">
         <div class="mb-10 text-white">
-            <h2 class="font-extrabold text-xl leading-none uppercase tracking-tighter">MIS DOCUMENTOS</h2>
-            <p class="text-blue-500 text-[9px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
+            <h2 class="font-extrabold text-xl leading-none tracking-tighter uppercase">MIS DOCUMENTOS</h2>
+            <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
         <nav class="flex-1 space-y-1">
             <a href="index.html" class="nav-item"><i data-lucide="home" size="16"></i> Dashboard</a>
@@ -85,13 +85,13 @@
         
         <header class="h-14 bg-white border-b px-4 flex items-center justify-between lg:hidden shrink-0">
             <button onclick="toggleMenu()" class="p-2 text-slate-600"><i data-lucide="menu"></i></button>
-            <span class="font-bold text-[10px] uppercase tracking-widest text-blue-600">Editor Ficha Comercial</span>
+            <span class="font-bold text-[10px] uppercase tracking-widest text-blue-600">Ficha Comercial</span>
             <div class="w-8"></div>
         </header>
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 flex justify-center no-scrollbar bg-slate-50">
             
-            <div id="main-workspace" class="shadow-2xl sm:rounded-2xl p-10 lg:p-14 transition-all">
+            <div id="main-workspace" class="shadow-2xl sm:rounded-2xl p-10 lg:p-14 transition-all duration-300">
                 
                 <div class="border-b-2 border-slate-900 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-end gap-4">
                     <div class="w-24 h-24 border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 rounded-xl relative cursor-pointer group" onclick="document.getElementById('logo-file').click()">
@@ -104,7 +104,7 @@
                     <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
                     <div class="text-center sm:text-right">
                         <h1 id="header-rs" class="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-1">Ficha Comercial</h1>
-                        <p class="text-slate-400 font-bold text-xs uppercase tracking-wide">Información Bancaria y de Contacto</p>
+                        <p class="text-slate-400 font-bold text-[10px] uppercase tracking-wide">Información Bancaria y de Contacto</p>
                     </div>
                 </div>
 
@@ -112,7 +112,7 @@
                     <div class="card-header"><i data-lucide="building-2" size="12"></i> Antecedentes de la Empresa</div>
                     <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'"></div>
                     <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
-                    <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Giro Comercial Registrado"></div>
+                    <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Giro Comercial"></div>
                     <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
                 </div>
@@ -128,7 +128,7 @@
                 <div class="card border-l-[4px] border-blue-600 shadow-sm">
                     <div class="card-header text-blue-600 font-black"><i data-lucide="banknote" size="12"></i> Instrucciones para Pago</div>
                     <div class="grid-row"><span class="label">Banco:</span> <input type="text" class="pro-field"></div>
-                    <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista"></div>
+                    <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro"></div>
                     <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field"></div>
@@ -144,8 +144,8 @@
                     </button>
                 </div>
 
-                <div class="mt-8 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-2 text-[7px] text-slate-400 font-bold uppercase tracking-[0.3em]">
-                    <span>Documento de Gestión por misdocumentosapp.com</span>
+                <div class="mt-10 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-2 text-[7px] text-slate-400 font-black uppercase tracking-[0.3em]">
+                    <span>Generado por misdocumentosapp.com</span>
                     <span class="italic text-slate-300">Soporte: microempresasaunclick@gmail.com</span>
                 </div>
             </div>
@@ -164,20 +164,20 @@
             const el = document.getElementById('main-workspace');
             const btns = document.querySelector('.no-print');
             
-            // Forzamos modo "Hojalata" para que el PDF se vea denso y profesional
-            el.classList.add('pdf-mode');
+            // Entramos en modo "Papel Oficio" de alta densidad
+            el.classList.add('pdf-export-mode');
             btns.style.display = 'none';
 
             const opt = { 
                 margin: 0, 
-                filename: 'Ficha_Comercial_Empresa.pdf', 
+                filename: 'Ficha_Comercial_Oficial.pdf', 
                 image: { type: 'jpeg', quality: 0.98 }, 
                 html2canvas: { scale: 3, useCORS: true, letterRendering: true }, 
                 jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' } 
             };
 
             html2pdf().set(opt).from(el).save().then(() => {
-                el.classList.remove('pdf-mode');
+                el.classList.remove('pdf-export-mode');
                 btns.style.display = 'flex';
             });
         }
