@@ -26,24 +26,29 @@
         const { useState, useEffect } = React;
 
         function App() {
-            // ESTADOS INICIALES
+            // ESTADOS INICIALES LIMPIOS
             const [brandKit, setBrandKit] = useState({ logo: null, primary: "#059669", footer: "#064e3b" });
             const [product, setProduct] = useState({ brand: "", name: "", ref: "", image: null });
             const [details, setDetails] = useState({ technical: "", safety: "" });
             const [properties, setProperties] = useState([{ name: "", value: "" }]);
             const [specs, setSpecs] = useState([{ param: "", value: "" }]);
-            const [footer, setFooter] = useState({ company: "", highlight: "", contact: "", legal: "" });
+            
+            // ESTADO DEL PIE DE PÁGINA
+            const [footerContent, setFooterContent] = useState({
+                company: "RAZÓN SOCIAL EMPRESA",
+                contact: "WhatsApp / Email / Ubicación",
+                legal: "DOCUMENTO DE ESPECIFICACIÓN TÉCNICA OFICIAL"
+            });
             
             const [isGenerating, setIsGenerating] = useState(false);
 
-            // FUNCIÓN LIMPIAR FORMULARIO
             const handleReset = () => {
                 if(window.confirm("¿Deseas vaciar toda la información de la ficha?")) {
                     setProduct({ brand: "", name: "", ref: "", image: null });
                     setDetails({ technical: "", safety: "" });
                     setProperties([{ name: "", value: "" }]);
                     setSpecs([{ param: "", value: "" }]);
-                    setFooter({ company: "", highlight: "", contact: "", legal: "" });
+                    setFooterContent({ company: "", contact: "", legal: "" });
                 }
             };
 
@@ -82,18 +87,14 @@
                         <div className="mt-auto p-4 bg-black/20 rounded-xl text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
                             <p>Sistema Gestionado por</p>
                             <p className="text-blue-500 font-black italic">misdocumentosapp.com</p>
-                            <p className="mt-3 opacity-50">Soporte Técnico:</p>
-                            <p className="lowercase">microempresasaunclick@gmail.com</p>
                         </div>
                     </aside>
 
                     {/* EDITOR PANEL */}
                     <div className="w-[420px] bg-white border-r custom-scroll overflow-y-auto p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h2 className="font-bold text-gray-800 flex items-center gap-2 uppercase tracking-tighter text-sm"><i className="lucide-pen-tool w-4 h-4 text-blue-600"></i> Editor Multiempresa</h2>
-                            <button onClick={handleReset} className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-[10px] font-black uppercase hover:bg-red-100 transition" title="Limpiar Formulario">
-                                <i className="lucide-trash-2 w-3.5 h-3.5"></i> Limpiar
-                            </button>
+                            <h2 className="font-bold text-gray-800 flex items-center gap-2 uppercase tracking-tighter text-sm">Editor Multiempresa</h2>
+                            <button onClick={handleReset} className="px-3 py-1 bg-red-50 text-red-600 rounded text-[10px] font-black uppercase hover:bg-red-100 transition">Limpiar</button>
                         </div>
 
                         <div className="space-y-6">
@@ -131,34 +132,40 @@
                             <section className="space-y-3">
                                 <div className="flex justify-between items-center border-b pb-1">
                                     <h3 className="text-[10px] font-black text-slate-400 uppercase">4. Propiedades</h3>
-                                    <button onClick={() => setProperties([...properties, {name:"", value:""}])} className="text-[10px] font-black text-blue-600">+ AGREGAR</button>
+                                    <button onClick={() => setProperties([...properties, {name:"", value:""}])} className="text-[10px] font-bold text-blue-600">+ AGREGAR</button>
                                 </div>
                                 {properties.map((p, i) => (
-                                    <div key={i} className="flex gap-1 items-center">
-                                        <input type="text" placeholder="Propiedad" value={p.name} onChange={e => {const n=[...properties]; n[i].name=e.target.value; setProperties(n)}} className="w-1/2 border p-1.5 rounded text-[10px]" />
-                                        <input type="text" placeholder="Valor" value={p.value} onChange={e => {const n=[...properties]; n[i].value=e.target.value; setProperties(n)}} className="w-1/2 border p-1.5 rounded text-[10px]" />
-                                        <button onClick={() => setProperties(properties.filter((_, idx)=>idx!==i))} className="text-red-400"><i className="lucide-trash-2 w-3 h-3"></i></button>
+                                    <div key={i} className="flex gap-1">
+                                        <input type="text" placeholder="Propiedad" value={p.name} onChange={e => {const n=[...properties]; n[i].name=e.target.value; setProperties(n)}} className="w-1/2 border p-1 rounded text-[10px]" />
+                                        <input type="text" placeholder="Valor" value={p.value} onChange={e => {const n=[...properties]; n[i].value=e.target.value; setProperties(n)}} className="w-1/2 border p-1 rounded text-[10px]" />
                                     </div>
                                 ))}
                             </section>
 
-                            <section className="space-y-3 pb-10">
+                            <section className="space-y-3">
                                 <div className="flex justify-between items-center border-b pb-1">
                                     <h3 className="text-[10px] font-black text-slate-400 uppercase">5. Especificaciones</h3>
-                                    <button onClick={() => setSpecs([...specs, {param:"", value:""}])} className="text-[10px] font-black text-blue-600">+ AGREGAR</button>
+                                    <button onClick={() => setSpecs([...specs, {param:"", value:""}])} className="text-[10px] font-bold text-blue-600">+ AGREGAR</button>
                                 </div>
                                 {specs.map((s, i) => (
-                                    <div key={i} className="flex gap-1 items-center">
-                                        <input type="text" placeholder="Parámetro" value={s.param} onChange={e => {const n=[...specs]; n[i].param=e.target.value; setSpecs(n)}} className="w-1/2 border p-1.5 rounded text-[10px]" />
-                                        <input type="text" placeholder="Valor" value={s.value} onChange={e => {const n=[...specs]; n[i].value=e.target.value; setSpecs(n)}} className="w-1/2 border p-1.5 rounded text-[10px]" />
-                                        <button onClick={() => setSpecs(specs.filter((_, idx)=>idx!==i))} className="text-red-400"><i className="lucide-trash-2 w-3 h-3"></i></button>
+                                    <div key={i} className="flex gap-1">
+                                        <input type="text" placeholder="Parámetro" value={s.param} onChange={e => {const n=[...specs]; n[i].param=e.target.value; setSpecs(n)}} className="w-1/2 border p-1 rounded text-[10px]" />
+                                        <input type="text" placeholder="Valor" value={s.value} onChange={e => {const n=[...specs]; n[i].value=e.target.value; setSpecs(n)}} className="w-1/2 border p-1 rounded text-[10px]" />
                                     </div>
                                 ))}
+                            </section>
+
+                            {/* SECCIÓN 6: PIE DE PÁGINA EDITABLE */}
+                            <section className="space-y-3 pb-10">
+                                <h3 className="text-[10px] font-black text-slate-400 uppercase border-b pb-1">6. Pie de Página</h3>
+                                <input type="text" placeholder="Nombre Empresa y RUT" value={footerContent.company} onChange={e => setFooterContent({...footerContent, company: e.target.value})} className="w-full border p-2 rounded text-xs" />
+                                <input type="text" placeholder="Contacto (WhatsApp / Email)" value={footerContent.contact} onChange={e => setFooterContent({...footerContent, contact: e.target.value})} className="w-full border p-2 rounded text-xs" />
+                                <input type="text" placeholder="Texto Legal" value={footerContent.legal} onChange={e => setFooterContent({...footerContent, legal: e.target.value})} className="w-full border p-2 rounded text-xs" />
                             </section>
                         </div>
 
                         <div className="sticky bottom-0 bg-white pt-4 border-t">
-                            <button onClick={generatePDF} disabled={isGenerating} style={{backgroundColor: brandKit.primary}} className="w-full py-4 rounded-xl font-bold text-white shadow-lg uppercase text-xs tracking-widest flex items-center justify-center gap-2 hover:brightness-90 transition-all">
+                            <button onClick={generatePDF} disabled={isGenerating} style={{backgroundColor: brandKit.primary}} className="w-full py-3 rounded-xl font-bold text-white shadow-lg uppercase text-xs tracking-widest flex items-center justify-center gap-2 hover:brightness-90 transition-all">
                                 <i className="lucide-download w-4 h-4"></i> {isGenerating ? 'Generando...' : 'Descargar PDF Profesional'}
                             </button>
                         </div>
@@ -168,7 +175,6 @@
                     <div className="flex-1 bg-gray-200 overflow-y-auto p-10 flex justify-center">
                         <div id="pdf-render" className="w-[816px] min-h-[1248px] bg-[#f8fafc] p-10 flex flex-col shadow-2xl relative">
                             
-                            {/* Cabecera */}
                             <div className="bg-white border-2 border-gray-900 rounded-[20px] p-8 flex justify-between items-center mb-10 shadow-sm">
                                 <div className="flex-1 pr-6 border-r border-gray-100">
                                     <h1 className="font-extrabold text-[38px] leading-none mb-2 uppercase tracking-tighter" style={{color: brandKit.primary}}>{product.brand || "NOMBRE MARCA"}</h1>
@@ -181,42 +187,38 @@
                             </div>
 
                             <div className="flex gap-10 flex-1">
-                                {/* COLUMNA IZQUIERDA: Imagen -> Nota Seguridad -> Especificaciones */}
                                 <div className="w-[45%] flex flex-col">
                                     <div className="bg-white aspect-square rounded-[24px] shadow-sm border border-slate-100 p-6 flex items-center justify-center overflow-hidden mb-8">
                                         {product.image ? <img src={product.image} className="w-full h-full object-contain scale-110" /> : <i className="lucide-image w-16 h-16 text-slate-100"></i>}
                                     </div>
                                     
-                                    {/* Nota de Seguridad */}
                                     <div className="border-2 border-yellow-400 rounded-2xl overflow-hidden shadow-sm mb-8">
-                                        <div className="bg-yellow-400 p-2.5 text-[11px] font-black uppercase text-center tracking-widest leading-none">Nota de Seguridad</div>
-                                        <div className="bg-white p-5 text-[10px] text-gray-700 leading-relaxed italic text-justify">{details.safety || "Aquí aparecerán las precauciones y medidas de seguridad..."}</div>
+                                        <div className="bg-yellow-400 p-2 text-[10px] font-black uppercase text-center tracking-widest">Nota de Seguridad</div>
+                                        <div className="bg-white p-4 text-[10px] text-gray-700 leading-relaxed italic text-justify">{details.safety}</div>
                                     </div>
 
-                                    {/* Especificaciones Técnicas REUBICADAS */}
-                                    <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-[0.2em] uppercase rounded-tr-xl shadow-md mb-4">Especificaciones</div>
-                                    <table className="w-full border-collapse rounded-xl overflow-hidden shadow-sm border border-slate-100">
+                                    <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl mb-4">Especificaciones</div>
+                                    <table className="w-full border-collapse border border-slate-100 rounded-xl overflow-hidden">
                                         <tbody>
                                             {specs.map((s, i) => s.param && (
                                                 <tr key={i} className={`${i % 2 === 0 ? 'bg-white' : 'bg-slate-50/50'} border-b border-slate-100 last:border-0`}>
-                                                    <td className="py-2.5 px-4 text-[10px] font-black uppercase" style={{color: brandKit.primary}}>{s.param}</td>
-                                                    <td className="py-2.5 px-4 text-[11px] text-right font-semibold text-slate-600">{s.value}</td>
+                                                    <td className="py-2 px-4 text-[10px] font-black uppercase" style={{color: brandKit.primary}}>{s.param}</td>
+                                                    <td className="py-2 px-4 text-[11px] text-right font-semibold text-slate-600">{s.value}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 </div>
 
-                                {/* COLUMNA DERECHA: Descripción -> Propiedades */}
                                 <div className="w-[55%] flex flex-col pt-2">
-                                    <div className="bg-slate-900 text-white text-[10px] font-black px-5 py-2.5 self-start tracking-[0.2em] uppercase rounded-tr-xl shadow-md mb-6">Descripción Técnica</div>
-                                    <p className="text-[13px] text-gray-700 leading-relaxed mb-10 text-justify font-medium">{details.technical || "Detalles sobre el funcionamiento y aplicaciones industriales del producto..."}</p>
+                                    <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl mb-6">Descripción Técnica</div>
+                                    <p className="text-[13px] text-gray-700 leading-relaxed mb-10 text-justify font-medium">{details.technical}</p>
 
-                                    <div className="bg-slate-900 text-white text-[10px] font-black px-5 py-2.5 self-start tracking-[0.2em] uppercase rounded-tr-xl shadow-md mb-6">Propiedades Clave</div>
+                                    <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl mb-6">Propiedades Clave</div>
                                     <ul className="space-y-4 mb-10">
                                         {properties.map((p, i) => p.name && (
-                                            <li key={i} className="flex items-start text-[13px] group">
-                                                <span className="mr-3 text-[18px] leading-none mt-0.5 transition-transform group-hover:scale-125" style={{color: brandKit.primary}}>■</span>
+                                            <li key={i} className="flex items-start text-[13px]">
+                                                <span className="mr-3 text-[16px] leading-none mt-0.5" style={{color: brandKit.primary}}>■</span>
                                                 <span className="text-slate-800"><strong className="font-extrabold uppercase text-xs">{p.name}:</strong> {p.value}</span>
                                             </li>
                                         ))}
@@ -224,13 +226,13 @@
                                 </div>
                             </div>
 
-                            {/* FOOTER PREMIUM */}
+                            {/* FOOTER DINÁMICO */}
                             <div className="mt-auto w-full pt-10">
                                 <div className="p-8 text-center text-white rounded-t-[40px] shadow-2xl" style={{backgroundColor: brandKit.footer, borderTop: `6px solid ${brandKit.primary}`}}>
-                                    <p className="font-black text-sm tracking-widest uppercase mb-1">{footer.company || "RAZÓN SOCIAL EMPRESA"}</p>
-                                    <p className="text-[10px] font-bold opacity-80 mb-4">{footer.contact || "WhatsApp / Email / Ubicación"}</p>
+                                    <p className="font-black text-sm tracking-widest uppercase mb-1">{footerContent.company}</p>
+                                    <p className="text-[10px] font-bold opacity-80 mb-4">{footerContent.contact}</p>
                                     <div className="h-[1px] w-20 bg-white/20 mx-auto mb-4"></div>
-                                    <p className="text-[8px] opacity-40 uppercase tracking-[0.4em] font-black italic">{footer.legal || "Documento de Especificación Técnica Oficial"}</p>
+                                    <p className="text-[8px] opacity-40 uppercase tracking-[0.4em] font-black italic">{footerContent.legal}</p>
                                 </div>
                             </div>
                         </div>
