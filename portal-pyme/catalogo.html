@@ -17,17 +17,17 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         
-        /* DISEÑO ALTA DENSIDAD (ZOOM 100%) */
+        /* DENSIDAD PRO (ZOOM 100%) */
         .input-dense { width: 100%; padding: 5px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; outline: none; transition: 0.1s; color: #0f172a; background: white; }
         .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); }
         .section-tag { font-weight: 800; font-size: 0.58rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #f1f5f9; padding-bottom: 3px; margin-bottom: 10px; display: block; }
         
-        /* SIDEBAR PROFESIONAL */
+        /* SIDEBAR */
         .nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.75rem; color: #94a3b8; cursor: pointer; transition: 0.2s; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
 
-        /* ÁREA DE CAPTURA PDF (OCULTA PERO ACTIVA) */
-        #pdf-render-area { position: absolute; left: -10000px; top: 0; width: 816px; background: white; z-index: -1; }
+        /* ÁREA DE CAPTURA PDF (OFICIO 216x330) */
+        #pdf-hidden-render { position: absolute; left: -9999px; top: 0; width: 816px; background: white; z-index: -1; }
     </style>
 </head>
 <body>
@@ -42,8 +42,7 @@
         };
 
         function App() {
-            const [companies] = useState(['Empresa Principal', 'DEL SOLAR TRUCK & CARS SPA']);
-            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || companies[0]);
+            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || 'Empresa Principal');
             const [products, setProducts] = useState([]);
             const [currentView, setCurrentView] = useState('list'); 
             const [selectedProduct, setSelectedProduct] = useState(null);
@@ -56,51 +55,34 @@
                 localStorage.setItem('catalog_active_company', activeCompany);
             }, [activeCompany]);
 
-            // --- MOTOR DE PDF REFORZADO (EVITA HOJA EN BLANCO) ---
-            const triggerAutoPDF = (data) => {
-                const element = document.getElementById('pdf-render-area');
-                
+            // --- MOTOR PDF BLINDADO (REPARACIÓN HOJA BLANCA) ---
+            const runAutoPDF = (data) => {
+                const element = document.getElementById('pdf-hidden-render');
                 const opt = {
-                    margin: 0,
-                    filename: `Ficha_${data.skuEngie || data.item || 'Producto'}.pdf`,
+                    margin: 0, filename: `Ficha_${data.item || 'Insumo'}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { 
-                        scale: 3, 
-                        useCORS: true, 
-                        letterRendering: true,
-                        logging: false 
-                    },
+                    html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                     jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
                 };
-
-                // Generar PDF
                 html2pdf().set(opt).from(element).save().then(() => {
                     setIsSaving(false);
                     setCurrentView('list');
-                    setSelectedProduct(null);
-                }).catch(err => {
-                    console.error("Error PDF:", err);
-                    setIsSaving(false);
                 });
             };
 
             const handleSave = (productData) => {
                 setIsSaving(true);
-                const id = productData.id || Date.now();
-                const finalData = { ...productData, id };
-                
-                // 1. Guardar en memoria
-                const updated = productData.id ? products.map(p => p.id === id ? finalData : p) : [finalData, ...products];
-                setProducts(updated);
-                localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
-                
-                // 2. Inyectar en plantilla de renderizado
-                setSelectedProduct(finalData);
-                
-                // 3. RETARDO CRÍTICO: Esperar a que el navegador "pinte" los datos
                 setTimeout(() => {
-                    triggerAutoPDF(finalData);
-                }, 1000); // 1 segundo de espera para asegurar renderizado total
+                    const id = productData.id || Date.now();
+                    const finalData = { ...productData, id };
+                    const updated = productData.id ? products.map(p => p.id === id ? finalData : p) : [finalData, ...products];
+                    
+                    setProducts(updated);
+                    localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
+                    
+                    setSelectedProduct(finalData); // Cargar en plantilla PDF
+                    setTimeout(() => { runAutoPDF(finalData); }, 1000); // 1 seg para asegurar renderizado
+                }, 200);
             };
 
             return (
@@ -108,14 +90,8 @@
                     {/* SIDEBAR */}
                     <aside className="w-60 bg-[#0f172a] p-5 flex flex-col shrink-0 shadow-2xl">
                         <div className="mb-8 text-white px-2">
-                            <h2 className="font-extrabold text-lg uppercase italic tracking-tighter">MIS DOCUMENTOS</h2>
+                            <h2 className="font-extrabold text-lg uppercase italic leading-none tracking-tighter">MIS DOCUMENTOS</h2>
                             <p className="text-blue-500 text-[9px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
-                        </div>
-                        <div className="p-3 bg-slate-800/50 rounded-xl mb-4 border border-white/5">
-                            <label className="text-[9px] text-slate-400 font-black uppercase block mb-1">Entorno Activo</label>
-                            <select value={activeCompany} onChange={(e) => setActiveCompany(e.target.value)} className="w-full bg-slate-900 text-white text-xs border-0 rounded-lg p-2 outline-none">
-                                {companies.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
                         </div>
                         <nav className="flex-1 space-y-1">
                             <div onClick={() => setCurrentView('list')} className={`nav-item ${currentView === 'list' ? 'active' : ''}`}><Icon name="list" /> Inventario</div>
@@ -127,15 +103,11 @@
                         </div>
                     </aside>
 
+                    {/* ÁREA PRINCIPAL */}
                     <main className="flex-1 flex flex-col bg-slate-50 overflow-hidden min-w-0">
-                        <header className="h-14 bg-white border-b px-8 flex items-center justify-between shrink-0 shadow-sm">
-                            <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest">Catálogo Pro 2026</h1>
-                            {isSaving && (
-                                <div className="flex items-center gap-3 text-[10px] font-black text-blue-600 animate-pulse uppercase bg-blue-50 px-4 py-2 rounded-full border border-blue-100">
-                                    <Icon name="refresh-cw" className="animate-spin" size={14} /> 
-                                    Sincronizando & Generando PDF Oficial...
-                                </div>
-                            )}
+                        <header className="h-14 bg-white border-b px-8 flex items-center justify-between shrink-0">
+                            <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest">Catálogo Pro</h1>
+                            {isSaving && <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse uppercase"><Icon name="refresh-cw" className="animate-spin" size={12}/> Sincronizando PDF...</div>}
                         </header>
 
                         <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scroll">
@@ -144,20 +116,20 @@
                             ) : (
                                 <div className="max-w-7xl mx-auto space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <button onClick={() => { setSelectedProduct(null); setCurrentView('form'); }} className="px-6 py-2.5 bg-blue-600 text-white text-[10px] font-black rounded-xl shadow-lg hover:bg-blue-700 uppercase transition">Nuevo Item</button>
-                                        <input type="text" placeholder="Filtrar por nombre o SKU..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-80 bg-white border rounded-full px-5 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500" />
+                                        <button onClick={() => { setSelectedProduct(null); setCurrentView('form'); }} className="px-6 py-2 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg hover:bg-blue-700 transition uppercase">Nuevo Item</button>
+                                        <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-80 bg-white border rounded-full px-5 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500" />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {products.filter(p => p.item.toLowerCase().includes(searchTerm.toLowerCase())).map(p => (
-                                            <div key={p.id} className="bg-white p-6 rounded-[2rem] border shadow-sm hover:border-blue-500 transition-all cursor-pointer group" onClick={() => { setSelectedProduct(p); setCurrentView('form'); }}>
+                                            <div key={p.id} className="bg-white p-5 rounded-3xl border shadow-sm hover:border-blue-500 transition cursor-pointer" onClick={() => { setSelectedProduct(p); setCurrentView('form'); }}>
                                                 <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-16 h-16 bg-slate-50 rounded-2xl border flex items-center justify-center overflow-hidden">
+                                                    <div className="w-14 h-14 bg-slate-50 rounded-2xl border flex items-center justify-center overflow-hidden">
                                                         {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <Icon name="package" size={24} className="text-slate-200" />}
                                                     </div>
-                                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">{p.skuEngie || 'CL-00'}</span>
+                                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase tracking-tighter">{p.skuEngie || 'CL-00'}</span>
                                                 </div>
-                                                <h3 className="font-bold text-slate-800 line-clamp-1 uppercase text-sm mb-1">{p.item}</h3>
-                                                <p className="text-[10px] text-slate-400 font-medium truncate uppercase">{p.description}</p>
+                                                <h3 className="font-bold text-slate-800 line-clamp-1 uppercase text-sm">{p.item}</h3>
+                                                <p className="text-[10px] text-slate-400 font-medium truncate uppercase mt-1">{p.razonSocial}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -166,56 +138,49 @@
                         </div>
                     </main>
 
-                    {/* --- PLANTILLA PDF TÉCNICA (OFICIO) --- */}
-                    <div id="pdf-render-area">
-                        <div style={{ padding: '60px', minHeight: '1248px', position: 'relative', color: '#0f172a' }}>
+                    {/* --- PLANTILLA OCULTA PARA PDF (OFICIO) --- */}
+                    <div id="pdf-hidden-render">
+                        <div style={{ padding: '60px', minHeight: '1248px', color: '#0f172a' }}>
                             <div className="flex justify-between items-end border-b-4 border-slate-900 pb-6 mb-10">
                                 <div>
-                                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedProduct?.item || 'NUEVO INSUMO'}</h1>
-                                    <p className="text-blue-600 font-extrabold text-xs tracking-[0.4em] uppercase mt-2">Ficha Técnica Oficial de Insumo</p>
+                                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedProduct?.item}</h1>
+                                    <p className="text-blue-600 font-bold text-xs tracking-[0.4em] uppercase mt-2">Ficha Técnica Oficial</p>
                                 </div>
-                                <div className="text-right">
-                                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Identificador:</p>
-                                    <p className="text-xl font-black text-slate-900">{selectedProduct?.skuEngie || 'S/N'}</p>
-                                </div>
+                                <div className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest italic">ID: {selectedProduct?.skuEngie}</div>
                             </div>
 
-                            <div className="grid grid-cols-12 gap-12">
+                            <div className="grid grid-cols-12 gap-10">
                                 <div className="col-span-5">
-                                    <div className="aspect-square bg-slate-50 border border-slate-200 rounded-[2.5rem] flex items-center justify-center overflow-hidden shadow-sm">
+                                    <div className="aspect-square bg-slate-50 border border-slate-200 rounded-[2.5rem] flex items-center justify-center overflow-hidden">
                                         {selectedProduct?.image ? <img src={selectedProduct.image} className="w-full h-full object-contain p-4" /> : <Icon name="image" size={60} className="text-slate-100" />}
                                     </div>
-                                    <div className="mt-10 bg-slate-900 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl shadow-lg">Datos de Origen</div>
-                                    <div className="mt-6 space-y-4 px-2 text-[12px] text-slate-700 leading-relaxed">
-                                        <p><strong>PROVEEDOR:</strong> <span className="block text-slate-900 font-medium">{selectedProduct?.proveedor}</span></p>
-                                        <p><strong>RAZÓN SOCIAL:</strong> <span className="block text-slate-900 font-medium">{selectedProduct?.razonSocial}</span></p>
-                                        <p><strong>RUT:</strong> <span className="block text-slate-900 font-medium">{selectedProduct?.rut}</span></p>
-                                        <p><strong>DIRECCIÓN:</strong> <span className="block text-slate-900 font-medium">{selectedProduct?.direccion}</span></p>
+                                    <div className="mt-10 bg-slate-900 text-white text-[9px] font-black px-4 py-2 uppercase tracking-widest rounded-r-lg">Identificación Origen</div>
+                                    <div className="mt-4 space-y-3 px-2 text-[11px] text-slate-700">
+                                        <p><strong>PROVEEDOR:</strong> {selectedProduct?.proveedor}</p>
+                                        <p><strong>RAZÓN SOCIAL:</strong> {selectedProduct?.razonSocial}</p>
+                                        <p><strong>RUT:</strong> {selectedProduct?.rut}</p>
+                                        <p><strong>DIRECCIÓN:</strong> {selectedProduct?.direccion}</p>
                                     </div>
                                 </div>
                                 <div className="col-span-7 space-y-10">
-                                    <div className="bg-blue-600 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl shadow-lg">Especificaciones del Fabricante</div>
-                                    <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 min-h-[400px]">
-                                        <pre className="text-[13px] font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">{selectedProduct?.eett || 'No hay especificaciones detalladas registradas para este producto.'}</pre>
+                                    <div className="bg-blue-600 text-white text-[9px] font-black px-4 py-2 uppercase tracking-widest rounded-r-lg">Especificaciones</div>
+                                    <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 min-h-[350px]">
+                                        <pre className="text-[12px] font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">{selectedProduct?.eett}</pre>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase text-slate-500 italic bg-slate-100 p-4 rounded-2xl">
-                                        <div>Marca: <span className="text-slate-900">{selectedProduct?.marca}</span></div>
-                                        <div>Modelo: <span className="text-slate-900">{selectedProduct?.modelo}</span></div>
-                                        <div>Peso: <span className="text-slate-900">{selectedProduct?.peso}</span></div>
-                                        <div>Medida: <span className="text-slate-900">{selectedProduct?.unidadMedida}</span></div>
+                                    <div className="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase text-slate-400">
+                                        <div>Marca: {selectedProduct?.marca}</div>
+                                        <div>Modelo: {selectedProduct?.modelo}</div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="absolute bottom-12 left-12 right-12 text-center border-t border-slate-100 pt-6">
-                                <p className="text-[9px] font-black text-slate-300 uppercase tracking-[0.5em]">Documento de Gestión por misdocumentosapp.com</p>
-                            </div>
+                            <div className="mt-20 text-center border-t pt-4 text-[8px] text-slate-400 font-black uppercase tracking-[0.4em]">misdocumentosapp.com</div>
                         </div>
                     </div>
                 </div>
             );
         }
 
-        // --- FORMULARIO INTEGRAL (22 CAMPOS + PROVEEDOR EDITABLE) ---
+        // --- FORMULARIO COMPLETO (22 CAMPOS + PROVEEDOR EDITABLE) ---
         function ProductForm({ initialData, onSave, onCancel, isSaving }) {
             const [form, setForm] = useState(initialData || { 
                 item: '', sku: '', skuEngie: '', centro: '', codificacion: '', description: '', 
@@ -232,18 +197,19 @@
             };
 
             return (
-                <div className="max-w-7xl mx-auto space-y-4 pb-16 transition-all">
-                    <div className="bg-white p-8 lg:p-12 rounded-[3rem] shadow-2xl border border-slate-200 grid grid-cols-12 gap-10">
+                <div className="max-w-7xl mx-auto space-y-4 pb-12 transition-all">
+                    <div className="bg-white p-8 lg:p-12 rounded-[2.5rem] shadow-2xl border border-slate-200 grid grid-cols-12 gap-10">
                         
+                        {/* ADJUNTOS */}
                         <div className="col-span-4 space-y-6">
-                            <span className="section-tag">Fotografía & Documentos</span>
-                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
+                            <span className="section-tag">Archivos Adjuntos</span>
+                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
                                 {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={48} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Subir Imagen</p></div>}
                                 <input type="file" onChange={handleImg} className="absolute inset-0 opacity-0 cursor-pointer" />
                             </div>
-                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-3xl">
-                                <label className="text-[10px] font-black text-blue-800 uppercase block mb-3 text-center">FICHA TÉCNICA PROVEEDOR</label>
-                                <label className="flex items-center justify-center gap-3 px-4 py-3 bg-white border border-blue-200 rounded-2xl cursor-pointer hover:shadow-md transition shadow-sm">
+                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                                <label className="text-[10px] font-black text-blue-800 uppercase block mb-3">FICHA TÉCNICA PROVEEDOR</label>
+                                <label className="flex items-center gap-3 px-4 py-3 bg-white border border-blue-200 rounded-xl cursor-pointer hover:shadow-md transition shadow-sm">
                                     <Icon name="upload-cloud" className="text-blue-600" />
                                     <span className="text-[10px] font-black text-slate-500 uppercase">Adjuntar PDF</span>
                                     <input type="file" className="hidden" accept="application/pdf" />
@@ -251,47 +217,65 @@
                             </div>
                         </div>
 
+                        {/* INFO GENERAL */}
                         <div className="col-span-8 space-y-6">
-                            <span className="section-tag">Información Técnica del Insumo</span>
+                            <span className="section-tag">Información Técnica General</span>
                             <div className="grid grid-cols-3 gap-3">
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Item *</label><input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">sku</label><input className="input-dense" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">sku engie</label><input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Centro</label><input className="input-dense" value={form.centro} onChange={e => setForm({...form, centro: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Codificación</label><input className="input-dense" value={form.codificacion} onChange={e => setForm({...form, codificacion: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Description (40c)</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
                             </div>
-                            <div className="grid grid-cols-3 gap-3">
+                            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-50">
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Fabricante</label><input className="input-dense" value={form.fabricante} onChange={e => setForm({...form, fabricante: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Marca</label><input className="input-dense" value={form.marca} onChange={e => setForm({...form, marca: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Modelo</label><input className="input-dense" value={form.modelo} onChange={e => setForm({...form, modelo: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">N° de Parte</label><input className="input-dense" value={form.nParte} onChange={e => setForm({...form, nParte: e.target.value})} /></div>
-                                <div className="col-span-2"><label className="text-[9px] font-black text-slate-400 uppercase">Descripción (40 carac.)</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Cód. Designación</label><input className="input-dense" value={form.codigoDesignacion} onChange={e => setForm({...form, codigoDesignacion: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">u. medida</label><input className="input-dense" placeholder="Ej: C/U" value={form.unidadMedida} onChange={e => setForm({...form, unidadMedida: e.target.value})} /></div>
                             </div>
                         </div>
 
+                        {/* EETT */}
                         <div className="col-span-12 space-y-4 pt-4 border-t">
                             <span className="section-tag">Especificaciones Técnicas (EETT)</span>
-                            <textarea className="input-dense h-28 font-mono text-[11px]" placeholder="Detalle completo..." value={form.eett} onChange={e => setForm({...form, eett: e.target.value})}></textarea>
+                            <textarea className="input-dense h-28 font-mono text-[11px]" placeholder="Detalle técnico completo..." value={form.eett} onChange={e => setForm({...form, eett: e.target.value})}></textarea>
                             <div className="grid grid-cols-3 gap-4">
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Peso</label><input className="input-dense" value={form.peso} onChange={e => setForm({...form, peso: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Volumen</label><input className="input-dense" value={form.volumen} onChange={e => setForm({...form, volumen: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">u. medida</label><input className="input-dense" value={form.unidadMedida} onChange={e => setForm({...form, unidadMedida: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Status</label><input className="input-dense bg-slate-50" value="Sincronizado" readOnly /></div>
                             </div>
                         </div>
 
-                        <div className="col-span-12 space-y-4 pt-6 border-t relative">
-                            <span className="section-tag">Información del Proveedor (Edición Activa)</span>
+                        {/* PROVEEDOR EDITABLE */}
+                        <div className="col-span-12 space-y-4 pt-6 border-t">
+                            <span className="section-tag">Información del Proveedor (Editable)</span>
                             <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-200 grid grid-cols-2 gap-x-12 gap-y-4">
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Proveedor</label><input className="input-dense" value={form.proveedor} onChange={e => setForm({...form, proveedor: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Razón Social</label><input className="input-dense" value={form.razonSocial} onChange={e => setForm({...form, razonSocial: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">RUT</label><input className="input-dense" value={form.rut} onChange={e => setForm({...form, rut: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Dirección</label><input className="input-dense" value={form.direccion} onChange={e => setForm({...form, direccion: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Teléfono</label><input className="input-dense" value={form.telefono} onChange={e => setForm({...form, telefono: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">WhatsApp</label><input className="input-dense" value={form.whatsapp} onChange={e => setForm({...form, whatsapp: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Contacto</label><input className="input-dense" value={form.contacto} onChange={e => setForm({...form, contacto: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Email</label><input className="input-dense" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Proveedor</label><input className="input-dense" value={form.proveedor} onChange={e => setForm({...form, proveedor: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Razón Social</label><input className="input-dense" value={form.razonSocial} onChange={e => setForm({...form, razonSocial: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">RUT</label><input className="input-dense" value={form.rut} onChange={e => setForm({...form, rut: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Dirección</label><input className="input-dense" value={form.direccion} onChange={e => setForm({...form, direccion: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Teléfono</label><input className="input-dense" value={form.telefono} onChange={e => setForm({...form, telefono: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">WhatsApp</label><input className="input-dense" value={form.whatsapp} onChange={e => setForm({...form, whatsapp: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Contacto</label><input className="input-dense" value={form.contacto} onChange={e => setForm({...form, contacto: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Email</label><input className="input-dense" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
                             </div>
                         </div>
 
-                        <div className="col-span-12 flex justify-end gap-4 border-t pt-10 no-print">
+                        {/* LOGÍSTICA */}
+                        <div className="col-span-12 space-y-4 pt-6 border-t">
+                            <span className="section-tag">Logística & Control de Stock</span>
+                            <div className="grid grid-cols-3 gap-6 mb-2">
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Requiere Mx Bodega</label><input className="input-dense" value={form.requiereMx} onChange={e => setForm({...form, requiereMx: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Total</label><input type="number" className="input-dense" value={form.contarTotal} onChange={e => setForm({...form, contarTotal: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Completo</label><input type="number" className="input-dense" value={form.contarCompleto} onChange={e => setForm({...form, contarCompleto: e.target.value})} /></div>
+                            </div>
+                            <textarea className="input-dense h-16 font-mono text-[11px]" placeholder="Ubicación física / Notas de inventario..." value={form.comentarios} onChange={e => setForm({...form, comentarios: e.target.value})}></textarea>
+                        </div>
+
+                        <div className="col-span-12 flex justify-end gap-4 border-t pt-8 no-print">
                             <button onClick={onCancel} className="px-10 py-3.5 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-200 transition">Cancelar</button>
                             <button onClick={() => onSave(form)} disabled={isSaving} className="px-12 py-3.5 bg-blue-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl shadow-blue-100 transition active:scale-95 disabled:opacity-50 flex items-center gap-4">
                                 {isSaving ? <Icon name="refresh-cw" className="animate-spin" /> : <Icon name="save" />}
