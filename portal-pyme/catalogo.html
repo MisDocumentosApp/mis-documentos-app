@@ -19,15 +19,14 @@
         
         /* ALTA DENSIDAD PRO (ZOOM 100%) */
         .input-dense { width: 100%; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.78rem; outline: none; transition: 0.1s; color: #0f172a; background: white; }
-        .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.05); }
+        .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); }
         .section-tag { font-weight: 800; font-size: 0.58rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.06em; border-bottom: 1px solid #f1f5f9; padding-bottom: 3px; margin-bottom: 10px; display: block; }
         
         /* SIDEBAR PROFESIONAL */
         .nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.75rem; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
 
-        /* ÁREA DE RENDER PDF (OFICIO 216x330mm) */
+        /* PLANTILLA PDF (OFICIO 216x330mm) */
         #pdf-factory-render { position: absolute; left: -10000px; top: 0; width: 816px; background: white; z-index: -1; visibility: hidden; }
     </style>
 </head>
@@ -38,11 +37,11 @@
         const { useState, useEffect } = React;
 
         const Icon = ({ name, size = 16, className = "" }) => {
-            useEffect(() => { if(window.lucide) lucide.createIcons(); }, []);
+            useEffect(() => { if(window.lucide) lucide.createIcons(); }, [name]);
             return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
         };
 
-        // Objeto maestro para evitar errores de campos nulos
+        // OBJETO MAESTRO COMPLETO (22 CAMPOS TÉCNICOS)
         const emptyProduct = { 
             id: null, item: '', sku: '', skuEngie: '', centro: '', codificacion: '', description: '', 
             fabricante: '', marca: '', modelo: '', nParte: '', codigoDesignacion: '', unidadMedida: '',
@@ -53,8 +52,7 @@
         };
 
         function App() {
-            const [companies] = useState(['Empresa Principal', 'DEL SOLAR TRUCK & CARS SPA']);
-            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || companies[0]);
+            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || 'Empresa Principal');
             const [products, setProducts] = useState([]);
             const [currentView, setCurrentView] = useState('list'); 
             const [selectedProduct, setSelectedProduct] = useState(null);
@@ -64,30 +62,22 @@
             useEffect(() => {
                 const saved = localStorage.getItem(`catalog_products_${activeCompany}`);
                 setProducts(saved ? JSON.parse(saved) : []);
-                localStorage.setItem('catalog_active_company', activeCompany);
             }, [activeCompany]);
 
-            // --- MOTOR PDF REFORZADO (REPARACIÓN HOJA BLANCA) ---
+            // MOTOR PDF REFORZADO
             const generateAndDownloadPDF = (data) => {
                 const element = document.getElementById('pdf-factory-render');
                 element.style.visibility = 'visible';
-                
                 const opt = {
-                    margin: 0,
-                    filename: `Ficha_${data.skuEngie || data.item || 'Insumo'}.pdf`,
+                    margin: 0, filename: `Ficha_${data.skuEngie || data.item}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 3, useCORS: true, letterRendering: true, logging: false },
+                    html2canvas: { scale: 3, useCORS: true, letterRendering: true },
                     jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
                 };
-
                 html2pdf().set(opt).from(element).save().then(() => {
                     element.style.visibility = 'hidden';
                     setIsSaving(false);
                     setCurrentView('list');
-                    setSelectedProduct(null);
-                }).catch(() => {
-                    element.style.visibility = 'hidden';
-                    setIsSaving(false);
                 });
             };
 
@@ -97,36 +87,33 @@
                     const id = productData.id || Date.now();
                     const finalData = { ...productData, id };
                     const updated = productData.id ? products.map(p => p.id === id ? finalData : p) : [finalData, ...products];
-                    
                     setProducts(updated);
                     localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
-                    
-                    setSelectedProduct(finalData); // Inyectar en plantilla PDF
-                    setTimeout(() => { generateAndDownloadPDF(finalData); }, 1500); // 1.5 seg para asegurar renderizado total
-                }, 200);
+                    setSelectedProduct(finalData);
+                    setTimeout(() => generateAndDownloadPDF(finalData), 1500); 
+                }, 100);
             };
 
             const handleDelete = (id) => {
-                if(window.confirm("¿Eliminar este producto definitivamente?")) {
-                    const filtered = products.filter(p => p.id !== id);
-                    setProducts(filtered);
-                    localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(filtered));
+                if(window.confirm("¿Eliminar definitivamente?")) {
+                    const updated = products.filter(p => p.id !== id);
+                    setProducts(updated);
+                    localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
                 }
             };
 
             const handleEnterEdit = (p) => {
-                const safeData = { ...emptyProduct, ...p };
-                setSelectedProduct(safeData);
+                // Clonado blindado para evitar pantalla blanca
+                setSelectedProduct({ ...emptyProduct, ...p });
                 setCurrentView('form');
             };
 
             return (
                 <div className="flex h-screen overflow-hidden">
-                    {/* SIDEBAR */}
                     <aside className="w-60 bg-[#0f172a] p-5 flex flex-col shrink-0 shadow-2xl text-white">
                         <div className="mb-8 px-2">
                             <h2 className="font-extrabold text-lg uppercase italic tracking-tighter">MIS DOCUMENTOS</h2>
-                            <p className="text-blue-500 text-[9px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
+                            <p className="text-blue-500 text-[9px] font-bold tracking-widest mt-1">Ecosistema AI</p>
                         </div>
                         <nav className="flex-1 space-y-1">
                             <div onClick={() => { setSelectedProduct(null); setCurrentView('list'); }} className={`nav-item ${currentView === 'list' ? 'active' : ''}`}><Icon name="database" /> Inventario Pro</div>
@@ -141,31 +128,30 @@
                     <main className="flex-1 flex flex-col bg-slate-50 overflow-hidden min-w-0">
                         <header className="h-14 bg-white border-b px-8 flex items-center justify-between shrink-0 shadow-sm z-10">
                             <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest">Catálogo Pro 2026</h1>
-                            {isSaving && <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse uppercase"><Icon name="refresh-cw" className="animate-spin" size={12}/> Generando PDF Oficial...</div>}
+                            {isSaving && <div className="flex items-center gap-2 text-[10px] font-black text-blue-600 animate-pulse uppercase"><Icon name="refresh-cw" className="animate-spin" size={12}/> Generando PDF...</div>}
                         </header>
 
                         <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scroll">
                             {currentView === 'list' ? (
                                 <div className="max-w-7xl mx-auto space-y-6">
                                     <div className="flex justify-between items-center">
-                                        <button onClick={() => { setSelectedProduct(emptyProduct); setCurrentView('form'); }} className="px-6 py-2.5 bg-blue-600 text-white text-[10px] font-bold rounded-xl shadow-lg hover:bg-blue-700 uppercase transition">Nuevo Item</button>
-                                        <input type="text" placeholder="Buscar por Nombre o SKU..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-80 bg-white border rounded-full px-5 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" />
+                                        <button onClick={() => { setSelectedProduct(emptyProduct); setCurrentView('form'); }} className="px-6 py-2 bg-blue-600 text-white text-[10px] font-bold rounded-xl shadow-lg hover:bg-blue-700 uppercase transition">Nuevo Item</button>
+                                        <input type="text" placeholder="Filtrar por nombre..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-80 bg-white border rounded-full px-5 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         {products.filter(p => (p.item || "").toLowerCase().includes(searchTerm.toLowerCase())).map(p => (
-                                            <div key={p.id} className="bg-white p-6 rounded-3xl border shadow-sm hover:border-blue-500 transition-all cursor-pointer relative group" onClick={() => handleEnterEdit(p)}>
-                                                {/* BOTÓN ELIMINAR */}
-                                                <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} className="absolute top-5 right-5 p-2 text-slate-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100">
-                                                    <Icon name="trash-2" size={16} />
-                                                </button>
-                                                <div className="flex justify-between items-start mb-4">
-                                                    <div className="w-16 h-16 bg-slate-50 rounded-2xl border flex items-center justify-center overflow-hidden shadow-inner">
-                                                        {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <Icon name="package" size={24} className="text-slate-200" />}
+                                            <div key={p.id} className="bg-white p-5 rounded-3xl border shadow-sm hover:border-blue-500 transition-all cursor-pointer relative group">
+                                                <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} className="absolute top-5 right-5 p-2 text-slate-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100"><Icon name="trash-2" size={16} /></button>
+                                                <div onClick={() => handleEnterEdit(p)}>
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <div className="w-16 h-16 bg-slate-50 rounded-2xl border flex items-center justify-center overflow-hidden">
+                                                            {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <Icon name="package" size={24} className="text-slate-200" />}
+                                                        </div>
+                                                        <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">{p.skuEngie || 'S/N'}</span>
                                                     </div>
-                                                    <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-tighter">{p.skuEngie || 'S/N'}</span>
+                                                    <h3 className="font-bold text-slate-800 line-clamp-1 uppercase text-sm mb-1">{p.item || 'Insumo'}</h3>
+                                                    <p className="text-[10px] text-slate-400 font-medium truncate uppercase">{p.razonSocial}</p>
                                                 </div>
-                                                <h3 className="font-bold text-slate-800 line-clamp-1 uppercase text-sm mb-1">{p.item || 'Sin Nombre'}</h3>
-                                                <p className="text-[10px] text-slate-400 font-medium truncate uppercase">{p.razonSocial}</p>
                                             </div>
                                         ))}
                                     </div>
@@ -176,65 +162,61 @@
                         </div>
                     </main>
 
-                    {/* --- PLANTILLA PDF REFORZADA (PROTECCIÓN DE DATOS) --- */}
+                    {/* --- PLANTILLA PDF (OFICIO) --- */}
                     <div id="pdf-factory-render">
                         <div style={{ padding: '60px', minHeight: '1248px', color: '#0f172a' }}>
                             <div className="flex justify-between items-end border-b-4 border-slate-900 pb-6 mb-10">
                                 <div>
-                                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedProduct?.item || 'FICHA TÉCNICA'}</h1>
+                                    <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tighter leading-none">{selectedProduct?.item}</h1>
                                     <p className="text-blue-600 font-extrabold text-xs tracking-[0.4em] uppercase mt-2">Ficha Técnica Oficial</p>
                                 </div>
-                                <p className="text-xl font-black text-slate-900">{selectedProduct?.skuEngie || 'S/N'}</p>
+                                <p className="text-xl font-black text-slate-900">{selectedProduct?.skuEngie}</p>
                             </div>
                             <div className="grid grid-cols-12 gap-12">
                                 <div className="col-span-5">
                                     <div className="aspect-square bg-slate-50 border border-slate-200 rounded-[2.5rem] flex items-center justify-center overflow-hidden shadow-sm">
                                         {selectedProduct?.image ? <img src={selectedProduct.image} className="w-full h-full object-contain p-4" /> : <Icon name="image" size={60} className="text-slate-100" />}
                                     </div>
-                                    <div className="mt-10 bg-slate-900 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl shadow-lg">Proveedor</div>
-                                    <div className="mt-6 space-y-4 px-2 text-[12px] text-slate-700">
-                                        <p><strong>PROVEEDOR:</strong> {selectedProduct?.proveedor || '-'}</p>
-                                        <p><strong>RAZÓN SOCIAL:</strong> <span className="block text-slate-900">{selectedProduct?.razonSocial || '-'}</span></p>
-                                        <p><strong>RUT:</strong> {selectedProduct?.rut || '-'}</p>
-                                        <p><strong>DIRECCIÓN:</strong> {selectedProduct?.direccion || '-'}</p>
+                                    <div className="mt-10 bg-slate-900 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl">Datos de Origen</div>
+                                    <div className="mt-6 space-y-4 px-2 text-[12px] text-slate-700 leading-relaxed">
+                                        <p><strong>PROVEEDOR:</strong> {selectedProduct?.proveedor}</p>
+                                        <p><strong>RAZÓN SOCIAL:</strong> <span className="block text-slate-900">{selectedProduct?.razonSocial}</span></p>
+                                        <p><strong>RUT:</strong> {selectedProduct?.rut}</p>
+                                        <p><strong>DIRECCIÓN:</strong> {selectedProduct?.direccion}</p>
                                     </div>
                                 </div>
                                 <div className="col-span-7 space-y-10">
-                                    <div className="bg-blue-600 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl shadow-lg">Especificaciones</div>
+                                    <div className="bg-blue-600 text-white text-[9px] font-black px-5 py-3 uppercase tracking-widest rounded-r-2xl shadow-lg">Especificaciones Técnicas</div>
                                     <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-100 min-h-[400px]">
-                                        <pre className="text-[13px] font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">{selectedProduct?.eett || 'No hay especificaciones registradas.'}</pre>
+                                        <pre className="text-[13px] font-mono text-slate-800 whitespace-pre-wrap leading-relaxed">{selectedProduct?.eett}</pre>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4 text-[10px] font-bold uppercase text-slate-500 italic bg-slate-100 p-4 rounded-2xl">
-                                        <div>Marca: <span className="text-slate-900">{selectedProduct?.marca || '-'}</span></div>
-                                        <div>Modelo: <span className="text-slate-900">{selectedProduct?.modelo || '-'}</span></div>
+                                        <div>Marca: <span className="text-slate-900">{selectedProduct?.marca}</span></div>
+                                        <div>Modelo: <span className="text-slate-900">{selectedProduct?.modelo}</span></div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="absolute bottom-12 left-12 right-12 text-center border-t border-slate-100 pt-6 text-[8px] text-slate-400 font-black uppercase tracking-[0.5em]">managed by misdocumentosapp.com</div>
+                            <div className="absolute bottom-12 left-12 right-12 text-center border-t pt-6 text-[8px] text-slate-400 font-black uppercase tracking-[0.5em]">managed by misdocumentosapp.com</div>
                         </div>
                     </div>
                 </div>
             );
         }
 
-        // --- FORMULARIO INTEGRAL (22 CAMPOS + PROVEEDOR EDITABLE) ---
+        // --- FORMULARIO COMPLETO (22 CAMPOS + PROVEEDOR EDITABLE) ---
         function ProductForm({ initialData, onSave, onCancel, isSaving }) {
             const [form, setForm] = useState(initialData || emptyProduct);
-
             const handleImg = (e) => {
                 const f = e.target.files[0];
                 if (f) { const r = new FileReader(); r.onload = (ev) => setForm({...form, image: ev.target.result}); r.readAsDataURL(f); }
             };
-
             return (
                 <div className="max-w-7xl mx-auto space-y-4 pb-16 transition-all duration-300">
                     <div className="bg-white p-8 lg:p-12 rounded-[3rem] shadow-2xl border border-slate-200 grid grid-cols-12 gap-10">
-                        
-                        {/* 1. ADJUNTOS */}
                         <div className="col-span-4 space-y-6">
                             <span className="section-tag">Fotografía & Adjuntos</span>
-                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
-                                {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={48} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Subir Imagen</p></div>}
+                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
+                                {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={48} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Subir Fotografía</p></div>}
                                 <input type="file" onChange={handleImg} className="absolute inset-0 opacity-0 cursor-pointer" />
                             </div>
                             <div className="p-4 bg-blue-50 border border-blue-100 rounded-3xl">
@@ -246,50 +228,57 @@
                                 </label>
                             </div>
                         </div>
-
-                        {/* 2. INFO TÉCNICA */}
                         <div className="col-span-8 space-y-6">
-                            <span className="section-tag">Información Técnica del Item</span>
-                            <div className="grid grid-cols-3 gap-4">
+                            <span className="section-tag">Información Técnica del Insumo</span>
+                            <div className="grid grid-cols-3 gap-3">
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Item *</label><input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">sku</label><input className="input-dense" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">sku engie</label><input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Centro</label><input className="input-dense" value={form.centro} onChange={e => setForm({...form, centro: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Codificación</label><input className="input-dense" value={form.codificacion} onChange={e => setForm({...form, codificacion: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Descripción Breve</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
+                            </div>
+                            <div className="grid grid-cols-3 gap-3 pt-4 border-t border-slate-50">
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Fabricante</label><input className="input-dense" value={form.fabricante} onChange={e => setForm({...form, fabricante: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Marca</label><input className="input-dense" value={form.marca} onChange={e => setForm({...form, marca: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">Modelo</label><input className="input-dense" value={form.modelo} onChange={e => setForm({...form, modelo: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">N° de Parte</label><input className="input-dense" value={form.nParte} onChange={e => setForm({...form, nParte: e.target.value})} /></div>
-                                <div className="col-span-2"><label className="text-[9px] font-black text-slate-400 uppercase">Descripción (40 carac.)</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
-                            </div>
-                        </div>
-
-                        {/* 3. EETT */}
-                        <div className="col-span-12 space-y-4 pt-4 border-t">
-                            <span className="section-tag">Especificaciones Técnicas (EETT)</span>
-                            <textarea className="input-dense h-28 font-mono text-[11px]" value={form.eett} onChange={e => setForm({...form, eett: e.target.value})} placeholder="Detalle técnico completo de materiales, voltajes, dimensiones..."></textarea>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Peso</label><input className="input-dense" value={form.peso} onChange={e => setForm({...form, peso: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Volumen</label><input className="input-dense" value={form.volumen} onChange={e => setForm({...form, volumen: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Cód. Designación</label><input className="input-dense" value={form.codigoDesignacion} onChange={e => setForm({...form, codigoDesignacion: e.target.value})} /></div>
                                 <div><label className="text-[9px] font-black text-slate-400 uppercase">u. medida</label><input className="input-dense" placeholder="Ej: C/U" value={form.unidadMedida} onChange={e => setForm({...form, unidadMedida: e.target.value})} /></div>
                             </div>
                         </div>
-
-                        {/* 4. PROVEEDOR EDITABLE */}
+                        <div className="col-span-12 space-y-4 pt-4 border-t">
+                            <span className="section-tag">Especificaciones Técnicas (EETT)</span>
+                            <textarea className="input-dense h-28 font-mono text-[11px]" value={form.eett} onChange={e => setForm({...form, eett: e.target.value})} placeholder="Detalle técnico completo..."></textarea>
+                            <div className="grid grid-cols-3 gap-4">
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Peso</label><input className="input-dense" value={form.peso} onChange={e => setForm({...form, peso: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Volumen</label><input className="input-dense" value={form.volumen} onChange={e => setForm({...form, volumen: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Status</label><input className="input-dense bg-slate-50" value="Sincronizado" readOnly /></div>
+                            </div>
+                        </div>
                         <div className="col-span-12 space-y-4 pt-6 border-t relative">
                             <span className="section-tag">Información del Proveedor (Editable)</span>
                             <div className="bg-slate-50 p-8 rounded-[2rem] border border-slate-200 grid grid-cols-2 gap-x-12 gap-y-4">
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Razón Social</label><input className="input-dense" value={form.razonSocial} onChange={e => setForm({...form, razonSocial: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">RUT</label><input className="input-dense" value={form.rut} onChange={e => setForm({...form, rut: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">WhatsApp</label><input className="input-dense" value={form.whatsapp} onChange={e => setForm({...form, whatsapp: e.target.value})} /></div>
-                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase">Email</label><input className="input-dense" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Razón Social</label><input className="input-dense bg-white" value={form.razonSocial} onChange={e => setForm({...form, razonSocial: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">RUT</label><input className="input-dense bg-white" value={form.rut} onChange={e => setForm({...form, rut: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">WhatsApp</label><input className="input-dense bg-white" value={form.whatsapp} onChange={e => setForm({...form, whatsapp: e.target.value})} /></div>
+                                <div className="flex items-center gap-4"><label className="w-32 text-[9px] font-black text-slate-400 uppercase text-right leading-none">Email</label><input className="input-dense bg-white" value={form.email} onChange={e => setForm({...form, email: e.target.value})} /></div>
                             </div>
                         </div>
-
-                        {/* BOTONES ACCIÓN */}
+                        <div className="col-span-12 space-y-4 pt-6 border-t relative">
+                            <span className="section-tag">Logística & Control de Stock</span>
+                            <div className="grid grid-cols-3 gap-6 mb-2">
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Requiere Mx Bodega</label><input className="input-dense" value={form.requiereMx} onChange={e => setForm({...form, requiereMx: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Total</label><input type="number" className="input-dense" value={form.contarTotal} onChange={e => setForm({...form, contarTotal: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Completo</label><input type="number" className="input-dense" value={form.contarCompleto} onChange={e => setForm({...form, contarCompleto: e.target.value})} /></div>
+                            </div>
+                            <textarea className="input-dense h-16 font-mono text-[11px]" placeholder="Observaciones de stock..." value={form.comentarios} onChange={e => setForm({...form, comentarios: e.target.value})}></textarea>
+                        </div>
                         <div className="col-span-12 flex justify-end gap-4 border-t pt-10 no-print">
-                            <button onClick={onCancel} className="px-10 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-200 transition">Volver</button>
+                            <button onClick={onCancel} className="px-10 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-[11px] tracking-widest transition">Volver</button>
                             <button onClick={() => onSave(form)} disabled={isSaving} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[11px] tracking-widest shadow-xl shadow-blue-100 transition active:scale-95 disabled:opacity-50 flex items-center gap-4">
                                 {isSaving ? <Icon name="refresh-cw" className="animate-spin" /> : <Icon name="save" />}
-                                {isSaving ? 'Generando PDF Oficial...' : 'Guardar y Generar PDF'}
+                                {isSaving ? 'Sincronizando...' : 'Guardar y Generar PDF'}
                             </button>
                         </div>
                     </div>
