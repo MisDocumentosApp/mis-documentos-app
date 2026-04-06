@@ -2,145 +2,244 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo Pro | Mis Documentos</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Catálogo Pro - misdocumentosapp.com</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; height: 100vh; overflow: hidden; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.8rem; text-decoration: none; color: #94a3b8; transition: 0.2s; }
+        .nav-item.active { background-color: #2563eb; color: white !important; }
+        
+        /* Ajuste de Densidad Pro */
+        .input-dense { width: 100%; padding: 4px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.78rem; outline: none; }
+        .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; }
+        
+        /* Estilo para el PDF */
+        .pdf-export-active { width: 816px !important; padding: 40px !important; margin: 0 !important; }
+    </style>
 </head>
-<body class="bg-[#f8fafc] font-sans h-screen flex overflow-hidden text-slate-900">
+<body>
+    <div id="root"></div>
 
-    <aside class="w-72 bg-[#0f172a] text-white flex flex-col shrink-0 border-r border-white/5">
-        <div class="p-8">
-            <h1 class="text-xs font-black uppercase tracking-[0.3em] text-blue-400 mb-10 italic text-center">Mis Documentos</h1>
-            <nav class="space-y-2">
-  <a href="index.html" class="nav-item">
-    <i data-lucide="home"></i> Inicio / Dashboard
-  </a>
-  <a href="perfil.html" class="nav-item">
-    <i data-lucide="user"></i> Ficha Comercial
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="users"></i> Gestión Clientes
-  </a>
-  <a href="catalogo.html" class="nav-item">
-    <i data-lucide="database"></i> Catálogo Pro
-  </a>
-  <a href="fichas.html" class="nav-item">
-    <i data-lucide="file-text"></i> Fichas Técnicas
-  </a>
-  <a href="cotizaciones.html" class="nav-item">
-    <i data-lucide="shopping-cart"></i> Cotizaciones
-  </a>
-  <a href="#" class="nav-item">
-    <i data-lucide="cpu"></i> DocuFlow AI
-  </a>
-</nav>
-        <div class="mt-auto p-6 bg-black/20 text-[9px] text-slate-500 font-black uppercase tracking-widest leading-relaxed">
-    <p>Sistema Gestionado por</p>
-    <p class="text-blue-500">misdocumentosapp.com</p>
-    
-    <p class="mt-4 opacity-50">Soporte Técnico:</p>
-    <p>microempresasaunclick@gmail.com</p>
-</div>
-    </aside>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-slate-200 flex items-center px-10 italic font-black text-xl tracking-tighter">
-            CATÁLOGO <span class="text-blue-600 ml-1 underline decoration-2">PRO</span>
-        </header>
+        // --- ICONOS PARA REACT BROWSER ---
+        const Icon = ({ name, size = 16, className = "" }) => {
+            useEffect(() => { lucide.createIcons(); }, []);
+            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
+        };
 
-        <div class="flex-1 overflow-auto p-10 flex gap-10">
-            <div class="w-80 shrink-0">
-                <div class="bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-xl space-y-4">
-                    <h3 class="text-[10px] font-black uppercase text-blue-600 mb-4 tracking-widest italic">Registro de Insumo</h3>
-                    <input id="f-nombre" type="text" placeholder="Descripción del Producto" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none focus:ring-2 ring-blue-500/20 font-bold text-sm">
-                    <div class="grid grid-cols-2 gap-3">
-                        <input id="f-sku" type="text" placeholder="SKU" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-xs font-mono uppercase">
-                        <input id="f-marca" type="text" placeholder="Marca" class="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl outline-none text-xs">
-                    </div>
-                    <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center bg-slate-50/50">
-                        <input type="file" id="f-file" class="text-[10px] w-full">
-                    </div>
-                    <button onclick="guardar()" id="btn-save" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest shadow-xl hover:bg-blue-700 transition-all">Guardar en la Nube</button>
-                </div>
-            </div>
+        function App() {
+            // --- LÓGICA DE TU CÓDIGO (Supabase + Multiempresa) ---
+            const [supabaseConfig, setSupabaseConfig] = useState(() => {
+                const saved = localStorage.getItem('catalog_supabase_config');
+                return saved ? JSON.parse(saved) : { url: '', key: '' };
+            });
+            const [supabaseClient, setSupabaseClient] = useState(null);
+            const [companies, setCompanies] = useState(() => JSON.parse(localStorage.getItem('catalog_companies')) || ['Empresa Principal']);
+            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || companies[0]);
+            const [products, setProducts] = useState([]);
+            const [currentView, setCurrentView] = useState('list');
+            const [selectedProduct, setSelectedProduct] = useState(null);
+            const [searchTerm, setSearchTerm] = useState('');
+            const [isGenerating, setIsGenerating] = useState(false);
 
-            <div class="flex-1 bg-white rounded-[2.5rem] border border-slate-200 shadow-xl overflow-hidden">
-                <table class="w-full text-left text-sm">
-                    <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-black uppercase text-slate-400">
-                        <tr><th class="p-6">Información</th><th class="p-6">Identificación</th><th class="p-6 text-right">Acciones</th></tr>
-                    </thead>
-                    <tbody id="lista" class="divide-y divide-slate-50 italic"></tbody>
-                </table>
-                <div id="status" class="p-20 text-center text-slate-300 font-black uppercase text-[10px] tracking-[0.3em] animate-pulse">Sincronizando...</div>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // *** 2. AQUÍ ESTÁ EL SECRETO ***
-        // Copia tus llaves de Supabase > Settings > API
-        const URL_PROYECTO = "https://xnarwetyjeijkitzivno.supabase.co"; 
-        const KEY_PROYECTO = "sb_publishable_9N60sB1Y7iOf3lTsh8ZM3Q___nZto7W";
-
-        // Inicializamos la conexión con el nombre 'db' para que el botón lo encuentre
-        const db = window.supabase.createClient(URL_PROYECTO, KEY_PROYECTO);
-
-        async function cargar() {
-            try {
-                const { data, error } = await db.from('productos').select('*').order('created_at', { ascending: false });
-                if (error) throw error;
-                document.getElementById('status').classList.add('hidden');
-                document.getElementById('lista').innerHTML = data.map(p => `
-                    <tr class="hover:bg-blue-50/50 transition-all">
-                        <td class="p-6 font-bold text-slate-700 uppercase text-xs">${p.nombre}</td>
-                        <td class="p-6 font-mono text-blue-600 text-xs font-black">${p.sku}</td>
-                        <td class="p-6 text-right">
-                            ${p.url_ficha ? `<a href="${p.url_ficha}" target="_blank" class="p-2 bg-slate-100 rounded-lg inline-block text-slate-400 hover:text-blue-600"><i data-lucide="eye" size="14"></i></a>` : ''}
-                        </td>
-                    </tr>
-                `).join('');
-                lucide.createIcons();
-            } catch (err) {
-                document.getElementById('status').innerText = "ERROR DE CONEXIÓN: " + err.message;
-            }
-        }
-
-        async function guardar() {
-            const btn = document.getElementById('btn-save');
-            const n = document.getElementById('f-nombre').value;
-            const s = document.getElementById('f-sku').value;
-            const m = document.getElementById('f-marca').value;
-            const f = document.getElementById('f-file').files[0];
-
-            if (!n || !s) return alert("⚠️ Nombre y SKU son obligatorios");
-
-            btn.innerText = "PROCESANDO...";
-            btn.disabled = true;
-
-            try {
-                let link = "";
-                if (f) {
-                    const ref = `${Date.now()}_${s}.pdf`;
-                    const { error: upErr } = await db.storage.from('fichas').upload(ref, f);
-                    if (upErr) throw upErr;
-                    link = db.storage.from('fichas').getPublicUrl(ref).data.publicUrl;
+            useEffect(() => {
+                if (supabaseConfig.url && supabaseConfig.key && window.supabase) {
+                    setSupabaseClient(window.supabase.createClient(supabaseConfig.url, supabaseConfig.key));
                 }
+            }, [supabaseConfig]);
 
-                const { error: insErr } = await db.from('productos').insert([{ nombre: n, sku: s, marca: m, url_ficha: link }]);
-                if (insErr) throw insErr;
+            // Carga de datos unificada
+            useEffect(() => {
+                const load = async () => {
+                    if (supabaseClient) {
+                        const { data } = await supabaseClient.from('catalogo_productos').select('*').eq('company_name', activeCompany);
+                        if (data) setProducts(data.map(row => row.product_data));
+                    } else {
+                        const saved = localStorage.getItem(`catalog_products_${activeCompany}`);
+                        setProducts(saved ? JSON.parse(saved) : []);
+                    }
+                };
+                load();
+            }, [activeCompany, supabaseClient]);
 
-                alert("✅ ¡Producto Guardado con Éxito!");
-                location.reload();
-            } catch (e) {
-                alert("❌ ERROR: " + e.message);
-                btn.innerText = "Guardar en Catálogo";
-                btn.disabled = false;
-            }
+            const handleSave = (productData) => {
+                const updated = productData.id ? products.map(p => p.id === productData.id ? productData : p) : [ { ...productData, id: crypto.randomUUID() }, ...products ];
+                setProducts(updated);
+                if (!supabaseClient) localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
+                setCurrentView('list');
+                setSelectedProduct(null);
+            };
+
+            return (
+                <div className="flex h-screen overflow-hidden">
+                    {/* 1. SIDEBAR GLOBAL */}
+                    <aside className="w-60 bg-[#0f172a] p-5 flex flex-col shrink-0 shadow-2xl">
+                        <div className="mb-8 text-white px-2">
+                            <h2 className="font-extrabold text-lg uppercase italic leading-none tracking-tighter">MIS DOCUMENTOS</h2>
+                            <p className="text-blue-500 text-[9px] font-bold uppercase mt-1">Ecosistema AI</p>
+                        </div>
+                        <nav className="flex-1 space-y-1">
+                            <a href="perfil.html" className="nav-item"><Icon name="user" /> Ficha Comercial</a>
+                            <a href="fichas.html" className="nav-item"><Icon name="file-text" /> Fichas Técnicas</a>
+                            <a href="catalogo.html" className="nav-item active"><Icon name="database" /> Catálogo Pro</a>
+                            <a href="cotizaciones.html" className="nav-item"><Icon name="shopping-cart" /> Cotizaciones</a>
+                        </nav>
+                        <div className="p-4 bg-slate-800/50 rounded-xl mb-4">
+                            <label className="text-[10px] text-slate-400 font-bold uppercase block mb-2">Empresa Activa</label>
+                            <select value={activeCompany} onChange={(e) => setActiveCompany(e.target.value)} className="w-full bg-slate-900 text-white text-xs border-0 rounded-lg p-2 outline-none">
+                                {companies.map(c => <option key={c} value={c}>{c}</option>)}
+                            </select>
+                        </div>
+                        <div className="mt-auto p-4 bg-black/20 rounded-xl text-[7px] text-slate-500 font-bold uppercase">
+                            <p>Sistema por <span className="text-blue-500">misdocumentosapp.com</span></p>
+                        </div>
+                    </aside>
+
+                    {/* 2. ÁREA DE CONTENIDO (ALTA DENSIDAD) */}
+                    <main className="flex-1 flex flex-col bg-slate-50 min-w-0">
+                        <header className="h-14 bg-white border-b flex items-center justify-between px-8 shrink-0">
+                            <div className="flex items-center gap-4">
+                                <h1 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Módulo de Inventario</h1>
+                                <button onClick={() => setCurrentView('form')} className="px-4 py-1.5 bg-blue-600 text-white text-[10px] font-bold rounded-lg shadow-lg hover:bg-blue-700 transition uppercase">Nuevo Item</button>
+                            </div>
+                            <div className="relative w-64">
+                                <Icon name="search" className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                                <input type="text" placeholder="Buscar..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full bg-slate-100 border-0 rounded-full py-2 pl-9 pr-4 text-xs outline-none focus:ring-2 focus:ring-blue-500" />
+                            </div>
+                        </header>
+
+                        <div className="flex-1 overflow-y-auto p-6 custom-scroll">
+                            {currentView === 'list' ? (
+                                <div className="max-w-6xl mx-auto space-y-4">
+                                    <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                                        <table className="w-full text-left text-xs">
+                                            <thead className="bg-slate-50 text-slate-400 uppercase font-black text-[9px] border-b">
+                                                <tr>
+                                                    <th className="px-6 py-3">Item / Engie</th>
+                                                    <th className="px-6 py-3">Descripción</th>
+                                                    <th className="px-6 py-3">Marca</th>
+                                                    <th className="px-6 py-3">Estado</th>
+                                                    <th className="px-6 py-3 text-right">Acciones</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y">
+                                                {products.filter(p => p.item.toLowerCase().includes(searchTerm.toLowerCase())).map(p => (
+                                                    <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                                                        <td className="px-6 py-3 font-bold text-blue-600">{p.skuEngie || '---'} <span className="block text-slate-800 font-medium">{p.item}</span></td>
+                                                        <td className="px-6 py-3 text-slate-500 max-w-[200px] truncate">{p.description}</td>
+                                                        <td className="px-6 py-3 font-semibold">{p.marca}</td>
+                                                        <td className="px-6 py-3">{p.fichaTecnica ? <span className="text-green-600 font-bold flex items-center gap-1"><Icon name="check" size={12}/> Ficha OK</span> : <span className="text-slate-300 italic">Sin adjunto</span>}</td>
+                                                        <td className="px-6 py-3 text-right">
+                                                            <button onClick={() => { setSelectedProduct(p); setCurrentView('details'); }} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg"><Icon name="eye" /></button>
+                                                            <button onClick={() => { setSelectedProduct(p); setCurrentView('form'); }} className="p-2 text-amber-500 hover:bg-amber-50 rounded-lg"><Icon name="edit" /></button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            ) : currentView === 'form' ? (
+                                <ProductForm initialData={selectedProduct} onSave={handleSave} onCancel={() => setCurrentView('list')} />
+                            ) : (
+                                <ProductDetailsModal product={selectedProduct} onClose={() => setCurrentView('list')} onDownload={() => {}} />
+                            )}
+                        </div>
+                    </main>
+                </div>
+            );
         }
 
-        window.onload = () => { lucide.createIcons(); cargar(); };
+        // --- FORMULARIO DE ALTA DENSIDAD ---
+        function ProductForm({ initialData, onSave, onCancel }) {
+            const [form, setForm] = useState(initialData || { item: '', skuEngie: '', description: '', marca: '', eett: '', razonSocial: 'DEL SOLAR TRUCK & CARS SPA' });
+            return (
+                <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl shadow-xl border">
+                    <h2 className="text-lg font-black uppercase tracking-widest text-slate-800 mb-6 border-b pb-2 flex items-center gap-2"><Icon name="package" size={20} className="text-blue-600"/> Datos del Insumo</h2>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase">Nombre Item *</label>
+                            <input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} placeholder="FUSIBLE HIGH SPEED..." />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase">SKU Engie</label>
+                            <input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} placeholder="CL52" />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase">Descripción (40 carac.)</label>
+                            <input className="input-dense" maxLength="40" value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
+                        </div>
+                        <div className="col-span-2 space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase">Especificaciones Técnicas (EETT)</label>
+                            <textarea className="input-dense h-24" value={form.eett} onChange={e => setForm({...form, eett: e.target.value})}></textarea>
+                        </div>
+                    </div>
+                    <div className="mt-8 flex gap-4 border-t pt-6">
+                        <button onClick={onCancel} className="flex-1 py-3 bg-slate-100 text-slate-500 rounded-xl font-bold uppercase text-[10px] tracking-widest transition">Cancelar</button>
+                        <button onClick={() => onSave(form)} className="flex-1 py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-lg shadow-blue-200 transition">Guardar Producto</button>
+                    </div>
+                </div>
+            );
+        }
+
+        // --- VISTA PREVIA Y PDF ---
+        function ProductDetailsModal({ product, onClose }) {
+            const download = () => {
+                const el = document.getElementById('pdf-card');
+                el.classList.add('pdf-export-active');
+                html2pdf().set({
+                    margin: 0, filename: `Ficha_${product.item}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3 },
+                    jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
+                }).from(el).save().then(() => el.classList.remove('pdf-export-active'));
+            };
+            return (
+                <div className="max-w-4xl mx-auto flex flex-col items-center">
+                    <div id="pdf-card" className="w-[816px] min-h-[1056px] bg-white p-12 shadow-2xl relative border rounded-xl">
+                        <div className="border-b-4 border-blue-600 pb-6 mb-8 flex justify-between items-center">
+                            <div>
+                                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none">{product.item}</h1>
+                                <p className="text-blue-600 font-bold text-sm mt-1 uppercase italic tracking-widest">SKU ENGIE: {product.skuEngie}</p>
+                            </div>
+                            <div className="text-right text-[10px] font-black text-slate-400 uppercase tracking-widest">Ficha Técnica Oficial</div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-10">
+                            <div>
+                                <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center text-slate-300 font-black uppercase text-[10px]">Imagen No Disponible</div>
+                                <div className="mt-8 bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl shadow-md">Propiedades</div>
+                                <p className="mt-4 text-xs text-slate-600 italic">Insumo gestionado por {product.razonSocial}</p>
+                            </div>
+                            <div className="space-y-6">
+                                <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl shadow-md">Descripción</div>
+                                <p className="text-sm text-slate-800 font-medium">{product.description}</p>
+                                <div className="bg-slate-900 text-white text-[10px] font-black px-4 py-2 self-start tracking-widest uppercase rounded-tr-xl shadow-md">Especificaciones</div>
+                                <pre className="text-[11px] font-mono text-slate-700 bg-slate-50 p-4 rounded-xl border whitespace-pre-wrap">{product.eett}</pre>
+                            </div>
+                        </div>
+                        <div className="mt-auto pt-10 text-center text-[8px] text-slate-400 font-black uppercase tracking-[0.2em] border-t">Documento Generado por misdocumentosapp.com | Soporte: microempresasaunclick@gmail.com</div>
+                    </div>
+                    <div className="flex gap-4 mt-8 no-print pb-10">
+                        <button onClick={onClose} className="px-8 py-3 bg-white border border-slate-200 text-slate-500 rounded-xl font-bold uppercase text-[10px] tracking-widest">Volver</button>
+                        <button onClick={download} className="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-xl">Descargar Ficha (Oficio)</button>
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
