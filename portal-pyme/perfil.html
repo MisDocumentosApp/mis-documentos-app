@@ -8,55 +8,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; }
         
-        /* SIDEBAR ADAPTATIVO */
+        /* SIDEBAR PROFESIONAL */
         #sidebar { transition: transform 0.3s ease-in-out; }
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; color: #94a3b8; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; text-decoration: none; color: #94a3b8; transition: 0.3s; }
         .nav-item:hover { background-color: #1e293b; color: white; }
         .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
 
-        /* CONTENEDOR DE ALTA DENSIDAD */
-        #main-workspace { 
+        /* CONTENEDOR TIPO DASHBOARD (OCUPA LA PANTALLA) */
+        #main-form-card { 
             width: 100%; 
-            max-width: 1050px; /* Expandido para llenar la pantalla en PC */
+            max-width: 1200px; /* Expansión para look de software industrial */
             background: white; 
             margin: 0 auto; 
             box-sizing: border-box; 
         }
 
-        /* DISEÑO DE BLOQUES COMPACTOS */
-        .card { border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 12px; overflow: hidden; background: white; }
-        .card-header { background: #f8fafc; padding: 8px 20px; font-weight: 800; font-size: 0.68rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 8px; }
+        /* AJUSTE DE DENSIDAD VISUAL (BLOQUES Y LETRAS) */
+        .card { border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 12px; overflow: hidden; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-header { background: #f8fafc; padding: 10px 24px; font-weight: 800; font-size: 0.65rem; text-transform: uppercase; color: #1e293b; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px; letter-spacing: 0.05em; }
         .card-header::before { content: ""; width: 3px; height: 14px; background: #2563eb; border-radius: 2px; }
 
-        .grid-row { display: grid; grid-template-columns: 200px 1fr; gap: 8px; padding: 6px 20px; align-items: center; border-bottom: 1px solid #f1f5f9; }
+        .grid-row { display: grid; grid-template-columns: 240px 1fr; gap: 10px; padding: 8px 24px; align-items: center; border-bottom: 1px solid #f1f5f9; }
         .grid-row:last-child { border-bottom: none; }
         
-        /* TIPOGRAFÍA NÍTIDA Y PEQUEÑA */
-        .label { font-weight: 700; font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+        .label { font-weight: 700; font-size: 0.62rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
         input.pro-field { 
             width: 100%; 
-            padding: 7px 12px; 
+            padding: 8px 14px; 
             border: 1px solid #cbd5e1; 
-            border-radius: 6px; 
+            border-radius: 8px; 
             font-size: 0.82rem; 
             outline: none; 
             transition: all 0.2s; 
             color: #0f172a; 
+            background-color: #fff;
         }
-        input.pro-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+        input.pro-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); background-color: #fcfdfe; }
 
-        /* MÓVIL */
+        /* RESPONSIVE MÓVIL */
         @media (max-width: 1024px) {
-            .grid-row { grid-template-columns: 1fr; gap: 2px; padding: 12px 15px; }
-            #main-workspace { padding: 20px !important; box-shadow: none; border: none; }
+            .grid-row { grid-template-columns: 1fr; gap: 4px; padding: 12px 20px; }
+            #main-form-card { padding: 20px !important; box-shadow: none; border: none; }
         }
 
-        /* MODO PDF (BLINDAJE OFICIO) */
-        .pdf-export-mode { width: 816px !important; padding: 45px !important; margin: 0 !important; }
-        .pdf-export-mode .grid-row { grid-template-columns: 190px 1fr !important; padding: 6px 18px !important; }
+        /* CONFIGURACIÓN EXCLUSIVA PARA PDF (FUERZA FORMATO OFICIO) */
+        .pdf-export-active { width: 816px !important; padding: 50px !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
+        .pdf-export-active .grid-row { grid-template-columns: 200px 1fr !important; padding: 6px 20px !important; }
+        .pdf-export-active .card { border-radius: 8px !important; margin-bottom: 10px !important; }
         
         @media print { .no-print { display: none !important; } }
     </style>
@@ -65,7 +66,7 @@
 
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-50 w-64 bg-[#0f172a] p-6 flex flex-col transform -translate-x-full lg:translate-x-0 lg:static transition-transform shadow-2xl shrink-0">
         <div class="mb-10 text-white">
-            <h2 class="font-extrabold text-xl leading-none tracking-tighter uppercase">MIS DOCUMENTOS</h2>
+            <h2 class="font-extrabold text-xl leading-none uppercase tracking-tighter">MIS DOCUMENTOS</h2>
             <p class="text-blue-500 text-[10px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
         </div>
         <nav class="flex-1 space-y-1">
@@ -85,35 +86,35 @@
         
         <header class="h-14 bg-white border-b px-4 flex items-center justify-between lg:hidden shrink-0">
             <button onclick="toggleMenu()" class="p-2 text-slate-600"><i data-lucide="menu"></i></button>
-            <span class="font-bold text-[10px] uppercase tracking-widest text-blue-600">Ficha Comercial</span>
+            <span class="font-bold text-[10px] uppercase tracking-widest text-blue-600">Editor de Ficha</span>
             <div class="w-8"></div>
         </header>
 
         <div class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-10 flex justify-center no-scrollbar bg-slate-50">
             
-            <div id="main-workspace" class="shadow-2xl sm:rounded-2xl p-10 lg:p-14 transition-all duration-300">
+            <div id="main-form-card" class="shadow-xl sm:rounded-2xl p-8 lg:p-16 transition-all duration-300 border border-slate-200">
                 
-                <div class="border-b-2 border-slate-900 pb-4 mb-6 flex flex-col sm:flex-row justify-between items-end gap-4">
+                <div class="border-b-2 border-slate-900 pb-4 mb-8 flex flex-col sm:flex-row justify-between items-end gap-6">
                     <div class="w-24 h-24 border-2 border-dashed border-slate-200 flex items-center justify-center bg-slate-50 rounded-xl relative cursor-pointer group" onclick="document.getElementById('logo-file').click()">
                         <img id="pdf-logo" class="hidden max-w-full max-h-full object-contain p-1">
                         <div id="pdf-logo-txt" class="flex flex-col items-center text-slate-300">
                             <i data-lucide="image-plus" size="20"></i>
-                            <span class="text-[7px] font-black uppercase">Subir Logo</span>
+                            <span class="text-[7px] font-black uppercase">Logo</span>
                         </div>
                     </div>
                     <input type="file" id="logo-file" class="hidden" accept="image/*" onchange="loadLogo(event)">
                     <div class="text-center sm:text-right">
                         <h1 id="header-rs" class="text-3xl font-black text-slate-900 uppercase tracking-tighter leading-none mb-1">Ficha Comercial</h1>
-                        <p class="text-slate-400 font-bold text-[10px] uppercase tracking-wide">Información Bancaria y de Contacto</p>
+                        <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest">Información Bancaria y de Contacto</p>
                     </div>
                 </div>
 
                 <div class="card">
-                    <div class="card-header"><i data-lucide="building-2" size="12"></i> Antecedentes de la Empresa</div>
+                    <div class="card-header"><i data-lucide="building-2" size="12"></i> Antecedentes Legales</div>
                     <div class="grid-row"><span class="label">Razón Social:</span> <input type="text" class="pro-field" oninput="document.getElementById('header-rs').innerText = this.value || 'Ficha Comercial'"></div>
                     <div class="grid-row"><span class="label">RUT Empresa:</span> <input type="text" class="pro-field" placeholder="76.XXX.XXX-X"></div>
                     <div class="grid-row"><span class="label">Giro / Actividad:</span> <input type="text" class="pro-field" placeholder="Giro Comercial"></div>
-                    <div class="grid-row"><span class="label">Dirección:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Dirección Matriz:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Sitio Web:</span> <input type="text" class="pro-field" placeholder="www.tuempresa.cl"></div>
                 </div>
 
@@ -121,16 +122,16 @@
                     <div class="card-header"><i data-lucide="contact-2" size="12"></i> Información de Contacto</div>
                     <div class="grid-row"><span class="label">Nombre Contacto:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">RUT Contacto:</span> <input type="text" class="pro-field"></div>
-                    <div class="grid-row"><span class="label">Teléfono:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
+                    <div class="grid-row"><span class="label">Teléfono Directo:</span> <input type="text" class="pro-field" placeholder="+56 9 XXXX XXXX"></div>
                     <div class="grid-row"><span class="label">Email Corporativo:</span> <input type="text" class="pro-field"></div>
                 </div>
 
-                <div class="card border-l-[4px] border-blue-600 shadow-sm">
+                <div class="card border-l-[4px] border-blue-600">
                     <div class="card-header text-blue-600 font-black"><i data-lucide="banknote" size="12"></i> Instrucciones para Pago</div>
                     <div class="grid-row"><span class="label">Banco:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Tipo de Cuenta:</span> <input type="text" class="pro-field" placeholder="Corriente / Vista / Ahorro"></div>
                     <div class="grid-row"><span class="label">N° de Cuenta:</span> <input type="text" class="pro-field"></div>
-                    <div class="grid-row"><span class="label">Titular:</span> <input type="text" class="pro-field"></div>
+                    <div class="grid-row"><span class="label">Titular de Cuenta:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">RUT Titular:</span> <input type="text" class="pro-field"></div>
                     <div class="grid-row"><span class="label">Email Comprobante:</span> <input type="text" class="pro-field" placeholder="pagos@tuempresa.cl"></div>
                 </div>
@@ -140,13 +141,13 @@
                         Limpiar Formulario
                     </button>
                     <button onclick="descargarPDF()" class="flex-1 py-3.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg uppercase text-[10px] tracking-widest flex items-center justify-center gap-2 hover:bg-blue-700 transition active:scale-95">
-                        <i data-lucide="download" size="16"></i> Generar PDF Oficial (Oficio)
+                        <i data-lucide="download" size="16"></i> Generar Ficha PDF (Oficio)
                     </button>
                 </div>
 
-                <div class="mt-10 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-2 text-[7px] text-slate-400 font-black uppercase tracking-[0.3em]">
-                    <span>Generado por misdocumentosapp.com</span>
-                    <span class="italic text-slate-300">Soporte: microempresasaunclick@gmail.com</span>
+                <div class="mt-10 pt-4 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-2 text-[7px] text-slate-400 font-bold uppercase tracking-[0.3em]">
+                    <span>Documento de Gestión por misdocumentosapp.com</span>
+                    <span class="italic text-slate-300 font-medium lowercase">soporte: microempresasaunclick@gmail.com</span>
                 </div>
             </div>
         </div>
@@ -161,11 +162,11 @@
             r.readAsDataURL(e.target.files[0]);
         }
         function descargarPDF() {
-            const el = document.getElementById('main-workspace');
+            const el = document.getElementById('main-form-card');
             const btns = document.querySelector('.no-print');
             
-            // Entramos en modo "Papel Oficio" de alta densidad
-            el.classList.add('pdf-export-mode');
+            // Activamos el modo "Papel Oficio" para la captura
+            el.classList.add('pdf-export-active');
             btns.style.display = 'none';
 
             const opt = { 
@@ -177,7 +178,7 @@
             };
 
             html2pdf().set(opt).from(el).save().then(() => {
-                el.classList.remove('pdf-export-mode');
+                el.classList.remove('pdf-export-active');
                 btns.style.display = 'flex';
             });
         }
