@@ -3,31 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Catálogo Pro - misdocumentosapp.com</title>
+    <title>Gestión de Inventario - misdocumentosapp.com</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; height: 100vh; overflow: hidden; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* SIDEBAR PROFESIONAL */
-        .nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.78rem; text-decoration: none; color: #94a3b8; transition: 0.2s; }
-        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
-        
-        /* DENSIDAD VISUAL (ZOOM 100%) */
-        .input-dense { width: 100%; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.8rem; outline: none; transition: 0.1s; color: #0f172a; }
-        .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; }
-        .section-title { font-weight: 800; font-size: 0.65rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 10px; display: block; }
-        
-        /* MODO EXPORTACIÓN PDF */
-        .pdf-export-active { width: 816px !important; padding: 45px !important; margin: 0 !important; border: none !important; box-shadow: none !important; }
-        .pdf-export-active .grid-cols-12 { display: block !important; }
+        .nav-item { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 0.75rem; text-decoration: none; color: #94a3b8; transition: 0.2s; }
+        .nav-item.active { background-color: #2563eb; color: white !important; }
+        .input-dense { width: 100%; padding: 6px 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.8rem; outline: none; transition: 0.1s; }
+        .input-dense:focus { border-color: #2563eb; background-color: #fcfdfe; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); }
+        .section-tag { font-weight: 800; font-size: 0.6rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px; margin-bottom: 12px; display: block; }
     </style>
 </head>
 <body>
@@ -36,69 +28,107 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        const Icon = ({ name, size = 14, className = "" }) => {
+        const Icon = ({ name, size = 16, className = "" }) => {
             useEffect(() => { lucide.createIcons(); }, []);
             return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
         };
 
         function App() {
-            const [companies] = useState(['Empresa Principal', 'DEL SOLAR TRUCK & CARS SPA']);
-            const [activeCompany, setActiveCompany] = useState(companies[0]);
-            const [products, setProducts] = useState([]);
-            const [currentView, setCurrentView] = useState('form'); // Iniciamos en Form por tu solicitud
-            const [selectedProduct, setSelectedProduct] = useState(null);
-            const [searchTerm, setSearchTerm] = useState('');
+            // --- CONFIGURACIÓN SUPABASE ---
+            const supabaseUrl = localStorage.getItem('supabase_url') || '';
+            const supabaseKey = localStorage.getItem('supabase_key') || '';
+            const supabase = (supabaseUrl && supabaseKey) ? supabase.createClient(supabaseUrl, supabaseKey) : null;
 
+            const [activeCompany, setActiveCompany] = useState(localStorage.getItem('catalog_active_company') || 'Empresa Principal');
+            const [products, setProducts] = useState([]);
+            const [currentView, setCurrentView] = useState('list');
+            const [selectedProduct, setSelectedProduct] = useState(null);
+            const [isSaving, setIsSaving] = useState(false);
+
+            // Cargar datos al iniciar
             useEffect(() => {
-                const saved = localStorage.getItem(`catalog_products_${activeCompany}`);
-                setProducts(saved ? JSON.parse(saved) : []);
+                const loadData = async () => {
+                    if (supabase) {
+                        const { data } = await supabase.from('catalogo_productos').select('*').eq('company_name', activeCompany);
+                        if (data) setProducts(data.map(r => r.product_data));
+                    } else {
+                        const saved = localStorage.getItem(`catalog_products_${activeCompany}`);
+                        setProducts(saved ? JSON.parse(saved) : []);
+                    }
+                };
+                loadData();
             }, [activeCompany]);
 
-            const handleSave = (productData) => {
-                const updated = productData.id ? products.map(p => p.id === productData.id ? productData : p) : [ { ...productData, id: Date.now() }, ...products ];
-                setProducts(updated);
-                localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updated));
-                alert("Producto guardado con éxito");
+            const handleSave = async (productData) => {
+                setIsSaving(true);
+                // Usamos setTimeout para liberar el hilo y evitar el error INP
+                setTimeout(async () => {
+                    const id = productData.id || Date.now();
+                    const finalData = { ...productData, id };
+                    
+                    try {
+                        if (supabase) {
+                            await supabase.from('catalogo_productos').upsert({ id, company_name: activeCompany, product_data: finalData });
+                        }
+                        const updatedProducts = productData.id ? products.map(p => p.id === id ? finalData : p) : [finalData, ...products];
+                        setProducts(updatedProducts);
+                        localStorage.setItem(`catalog_products_${activeCompany}`, JSON.stringify(updatedProducts));
+                        
+                        alert("✅ Información guardada correctamente en el sistema.");
+                        setCurrentView('list');
+                    } catch (e) {
+                        alert("❌ Error al guardar. Verifique su conexión.");
+                    } finally {
+                        setIsSaving(false);
+                    }
+                }, 100);
             };
 
             return (
                 <div className="flex h-screen overflow-hidden">
-                    {/* 1. SIDEBAR GLOBAL */}
+                    {/* SIDEBAR */}
                     <aside className="w-60 bg-[#0f172a] p-5 flex flex-col shrink-0 shadow-2xl">
                         <div className="mb-8 text-white px-2">
-                            <h2 className="font-extrabold text-lg uppercase italic leading-none tracking-tighter">MIS DOCUMENTOS</h2>
-                            <p className="text-blue-500 text-[9px] font-bold uppercase mt-1">Ecosistema AI</p>
-                        </div>
-                        <div className="p-3 bg-slate-800/50 rounded-xl mb-4 border border-white/5">
-                            <span className="text-[9px] text-slate-400 font-black uppercase block mb-2">Empresa Actual</span>
-                            <select value={activeCompany} onChange={(e) => setActiveCompany(e.target.value)} className="w-full bg-slate-900 text-white text-xs border-0 rounded-lg p-2 outline-none cursor-pointer">
-                                {companies.map(c => <option key={c} value={c}>{c}</option>)}
-                            </select>
+                            <h2 className="font-extrabold text-lg uppercase italic tracking-tighter leading-none">MIS DOCUMENTOS</h2>
+                            <p className="text-blue-500 text-[9px] font-bold tracking-widest uppercase mt-1">Ecosistema AI</p>
                         </div>
                         <nav className="flex-1 space-y-1">
                             <button onClick={() => setCurrentView('list')} className={`w-full nav-item ${currentView === 'list' ? 'active' : ''}`}><Icon name="list" /> Inventario</button>
-                            <button onClick={() => setCurrentView('form')} className={`w-full nav-item ${currentView === 'form' ? 'active' : ''}`}><Icon name="plus" /> Nuevo Producto</button>
+                            <button onClick={() => { setSelectedProduct(null); setCurrentView('form'); }} className={`w-full nav-item ${currentView === 'form' ? 'active' : ''}`}><Icon name="plus" /> Nuevo Producto</button>
                             <a href="perfil.html" className="nav-item"><Icon name="user" /> Ficha Comercial</a>
                         </nav>
-                        <div className="mt-auto p-4 bg-black/20 rounded-xl text-[7px] text-slate-500 font-black uppercase">
-                            <p>Gestionado por <span className="text-blue-500 font-black">misdocumentosapp.com</span></p>
+                        <div className="mt-auto p-4 bg-black/20 rounded-xl text-[7px] text-slate-500 font-bold uppercase border border-white/5">
+                            <p>Gestión por <span className="text-blue-500">misdocumentosapp.com</span></p>
                         </div>
                     </aside>
 
-                    {/* 2. ÁREA DE TRABAJO (DASHBOARD) */}
-                    <main className="flex-1 flex flex-col bg-slate-50 min-w-0 overflow-hidden">
-                        <header className="h-14 bg-white border-b flex items-center justify-between px-8 shrink-0">
-                            <div className="flex items-center gap-2">
-                                <Icon name="chevron-right" size={14} className="text-slate-400" />
-                                <h1 className="text-sm font-bold text-slate-800 uppercase tracking-widest">Agregar Nuevo Producto</h1>
-                            </div>
+                    {/* ÁREA DE TRABAJO */}
+                    <main className="flex-1 flex flex-col bg-slate-50 overflow-hidden">
+                        <header className="h-14 bg-white border-b px-8 flex items-center justify-between shrink-0">
+                            <h1 className="text-sm font-bold text-slate-800 uppercase tracking-widest">
+                                {currentView === 'list' ? 'Panel de Inventario' : 'Editor de Producto Pro'}
+                            </h1>
+                            {isSaving && <span className="text-[10px] font-black text-blue-600 animate-pulse uppercase">Guardando en Nube...</span>}
                         </header>
 
-                        <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scroll bg-slate-50">
+                        <div className="flex-1 overflow-y-auto p-6 lg:p-10 custom-scroll">
                             {currentView === 'form' ? (
-                                <ProductForm initialData={selectedProduct} onSave={handleSave} onCancel={() => setCurrentView('list')} />
+                                <ProductForm initialData={selectedProduct} onSave={handleSave} isSaving={isSaving} onCancel={() => setCurrentView('list')} />
                             ) : (
-                                <div className="text-center p-10 text-slate-400 uppercase font-black text-xs">Módulo de Lista en Desarrollo...</div>
+                                <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {products.map(p => (
+                                        <div key={p.id} onClick={() => { setSelectedProduct(p); setCurrentView('form'); }} className="bg-white p-5 rounded-2xl border shadow-sm hover:border-blue-500 transition cursor-pointer group">
+                                            <div className="flex justify-between items-start mb-4">
+                                                <div className="w-14 h-14 bg-slate-50 rounded-xl border flex items-center justify-center overflow-hidden">
+                                                    {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <Icon name="package" size={24} className="text-slate-200" />}
+                                                </div>
+                                                <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded uppercase">{p.skuEngie || 'S/N'}</span>
+                                            </div>
+                                            <h3 className="font-bold text-slate-800 line-clamp-1 uppercase text-sm">{p.item}</h3>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">{p.marca || 'Genérico'}</p>
+                                        </div>
+                                    ))}
+                                </div>
                             )}
                         </div>
                     </main>
@@ -107,14 +137,11 @@
         }
 
         // --- FORMULARIO DE ALTA DENSIDAD ---
-        function ProductForm({ initialData, onSave, onCancel }) {
+        function ProductForm({ initialData, onSave, onCancel, isSaving }) {
             const [form, setForm] = useState(initialData || { 
-                item: '', sku: '', skuEngie: '', centro: '', codificacion: '', description: '', 
-                fabricante: '', marca: '', modelo: '', nParte: '', codigoDesignacion: '', unidadMedida: '',
-                eett: '', peso: '', volumen: '', requiereMx: '', contarTotal: '', contarCompleto: '',
-                proveedor: 'ELECTRICO', razonSocial: 'DEL SOLAR TRUCK & CARS SPA', rut: '76.779.159-3', 
-                direccion: 'AV. MANQUEHUE SUR # 520', telefono: '963355961', whatsapp: '+569-47436919',
-                contacto: 'ALEJANDRO DEL SOLAR', email: 'sadelsolar@gmail.com', comentarios: '', image: null 
+                item: '', skuEngie: '', description: '', fabricante: '', marca: '', modelo: '', nParte: '', 
+                eett: '', proveedor: 'ELECTRICO', razonSocial: 'DEL SOLAR TRUCK & CARS SPA', rut: '76.779.159-3', 
+                contacto: 'ALEJANDRO DEL SOLAR', email: 'sadelsolar@gmail.com', image: null 
             });
 
             const handleImg = (e) => {
@@ -123,93 +150,60 @@
             };
 
             return (
-                <div className="max-w-6xl mx-auto bg-white p-10 rounded-2xl shadow-xl border border-slate-200 transition-all">
-                    
+                <div className="max-w-5xl mx-auto bg-white p-8 lg:p-12 rounded-[2rem] shadow-2xl border border-slate-200">
                     <div className="grid grid-cols-12 gap-10">
-                        {/* COLUMNA IZQUIERDA: ARCHIVOS */}
+                        {/* ADJUNTOS */}
                         <div className="col-span-4 space-y-6">
-                            <span className="section-title">Archivos Adjuntos</span>
-                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
-                                {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={40} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase">Sin fotografía</p></div>}
+                            <span className="section-tag">Fotografía & Documentos</span>
+                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-3xl flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
+                                {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={48} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Cargar Imagen</p></div>}
                                 <input type="file" onChange={handleImg} className="absolute inset-0 opacity-0 cursor-pointer" />
                             </div>
-                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                                <label className="text-[10px] font-black text-blue-800 uppercase block mb-2">Ficha Técnica (PDF)</label>
-                                <label className="flex items-center gap-3 px-4 py-2.5 bg-white border border-blue-200 rounded-lg cursor-pointer hover:bg-blue-50 transition shadow-sm">
+                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-2xl">
+                                <label className="text-[10px] font-black text-blue-800 uppercase block mb-3">Ficha Técnica Oficial (PDF)</label>
+                                <label className="flex items-center gap-3 px-4 py-3 bg-white border border-blue-200 rounded-xl cursor-pointer hover:shadow-md transition shadow-sm">
                                     <Icon name="upload-cloud" className="text-blue-600" />
-                                    <span className="text-[10px] font-bold text-slate-500 uppercase">Seleccionar Archivo</span>
+                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Adjuntar PDF</span>
                                     <input type="file" className="hidden" accept="application/pdf" />
                                 </label>
                             </div>
                         </div>
 
-                        {/* COLUMNA DERECHA: INFO Y FABRICACIÓN */}
+                        {/* DATOS TÉCNICOS */}
                         <div className="col-span-8 space-y-6">
-                            <span className="section-title">Información General</span>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">ITEM *</label><input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">SKU</label><input className="input-dense" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">SKU ENGIE</label><input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">Centro</label><input className="input-dense" value={form.centro} onChange={e => setForm({...form, centro: e.target.value})} /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">Codificación</label><input className="input-dense" value={form.codificacion} onChange={e => setForm({...form, codificacion: e.target.value})} /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">Description (40c)</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
-                            </div>
-
-                            <span className="section-title pt-4">Detalles de Fabricación</span>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Fabricante</label><input className="input-dense" value={form.fabricante} onChange={e => setForm({...form, fabricante: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Marca</label><input className="input-dense" value={form.marca} onChange={e => setForm({...form, marca: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Modelo</label><input className="input-dense" value={form.modelo} onChange={e => setForm({...form, modelo: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">N° de Parte</label><input className="input-dense" value={form.nParte} onChange={e => setForm({...form, nParte: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Código Designación</label><input className="input-dense" value={form.codigoDesignacion} onChange={e => setForm({...form, codigoDesignacion: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Unidad de Medida</label><input className="input-dense" placeholder="Ej: C/U" value={form.unidadMedida} onChange={e => setForm({...form, unidadMedida: e.target.value})} /></div>
-                            </div>
-                        </div>
-
-                        {/* SECCIÓN EETT */}
-                        <div className="col-span-12 space-y-4 pt-6 border-t">
-                            <span className="section-title">Especificaciones Técnicas (EETT)</span>
-                            <textarea className="input-dense h-24 font-mono text-[11px]" placeholder="Ingrese especificaciones técnicas detalladas..." value={form.eett} onChange={e => setForm({...form, eett: e.target.value})}></textarea>
+                            <span className="section-tag">Información Técnica General</span>
                             <div className="grid grid-cols-2 gap-4">
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Peso</label><input className="input-dense" placeholder="Ej: 1.270 grs" value={form.peso} onChange={e => setForm({...form, peso: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Volumen / Dimensiones</label><input className="input-dense" placeholder="Ej: SIZE 3" value={form.volumen} onChange={e => setForm({...form, volumen: e.target.value})} /></div>
+                                <div className="col-span-2"><label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Nombre del Item *</label><input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">SKU ENGIE</label><input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Modelo</label><input className="input-dense" value={form.modelo} onChange={e => setForm({...form, modelo: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Marca</label><input className="input-dense" value={form.marca} onChange={e => setForm({...form, marca: e.target.value})} /></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">N° de Parte</label><input className="input-dense" value={form.nParte} onChange={e => setForm({...form, nParte: e.target.value})} /></div>
+                            </div>
+                            <div className="pt-2">
+                                <label className="text-[9px] font-black text-slate-400 uppercase mb-1 block">Descripción Breve (40c)</label>
+                                <input className="input-dense" maxLength="40" value={form.description} onChange={e => setForm({...form, description: e.target.value})} />
                             </div>
                         </div>
 
-                        {/* INFO PROVEEDOR */}
+                        {/* EETT Y PROVEEDOR */}
                         <div className="col-span-12 space-y-4 pt-6 border-t">
-                            <span className="section-title">Información del Proveedor</span>
-                            <div className="grid grid-cols-4 gap-4">
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Proveedor</label><input className="input-dense bg-slate-50" value={form.proveedor} readOnly /></div>
-                                <div className="col-span-1"><label className="text-[9px] font-black text-slate-400 uppercase">Razón Social</label><input className="input-dense bg-slate-50" value={form.razonSocial} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">RUT</label><input className="input-dense bg-slate-50" value={form.rut} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Dirección</label><input className="input-dense bg-slate-50" value={form.direccion} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Teléfono</label><input className="input-dense bg-slate-50" value={form.telefono} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">WhatsApp</label><input className="input-dense bg-slate-50" value={form.whatsapp} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contacto</label><input className="input-dense bg-slate-50" value={form.contacto} readOnly /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Email</label><input className="input-dense bg-slate-50" value={form.email} readOnly /></div>
+                            <span className="section-tag">Especificaciones Técnicas (EETT)</span>
+                            <textarea className="input-dense h-28 font-mono text-[11px]" placeholder="Detalle completo de voltajes, dimensiones, materiales..." value={form.eett} onChange={e => setForm({...form, eett: e.target.value})}></textarea>
+                            
+                            <span className="section-tag pt-4">Datos del Proveedor Sincronizados</span>
+                            <div className="grid grid-cols-4 gap-4 bg-slate-50 p-6 rounded-2xl border border-slate-100">
+                                <div className="col-span-2"><label className="text-[9px] font-black text-slate-400 uppercase">Razón Social</label><p className="text-[11px] font-bold text-slate-800 truncate">{form.razonSocial}</p></div>
+                                <div className="col-span-2"><label className="text-[9px] font-black text-slate-400 uppercase">Email Contacto</label><p className="text-[11px] font-bold text-slate-800">{form.email}</p></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">RUT</label><p className="text-[11px] font-bold text-slate-800">{form.rut}</p></div>
+                                <div><label className="text-[9px] font-black text-slate-400 uppercase">WhatsApp</label><p className="text-[11px] font-bold text-slate-800">+569 4743 6919</p></div>
                             </div>
                         </div>
 
-                        {/* LOGÍSTICA */}
-                        <div className="col-span-12 space-y-4 pt-6 border-t">
-                            <span className="section-title">Logística, Stock y Otros</span>
-                            <div className="grid grid-cols-3 gap-4">
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">¿Requiere Mx en Bodega?</label><input className="input-dense" value={form.requiereMx} onChange={e => setForm({...form, requiereMx: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Total</label><input className="input-dense" value={form.contarTotal} onChange={e => setForm({...form, contarTotal: e.target.value})} /></div>
-                                <div><label className="text-[9px] font-black text-slate-400 uppercase">Contar Completo</label><input className="input-dense" value={form.contarCompleto} onChange={e => setForm({...form, contarCompleto: e.target.value})} /></div>
-                            </div>
-                            <div className="mt-2">
-                                <label className="text-[9px] font-black text-slate-400 uppercase">Comentarios / Stock / Otros</label>
-                                <textarea className="input-dense h-16" value={form.comentarios} onChange={e => setForm({...form, comentarios: e.target.value})}></textarea>
-                            </div>
-                        </div>
-
-                        {/* BOTONES AZULES UNIFICADOS */}
+                        {/* BOTONES */}
                         <div className="col-span-12 flex justify-end gap-4 border-t pt-8">
-                            <button onClick={onCancel} className="px-8 py-3 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-[11px] tracking-widest hover:bg-slate-200 transition">Cancelar</button>
-                            <button onClick={() => onSave(form)} className="px-10 py-3 bg-blue-600 text-white rounded-xl font-black uppercase text-[11px] tracking-widest shadow-lg shadow-blue-200 transition active:scale-95 flex items-center gap-2">
-                                <Icon name="save" size={16} /> Guardar Producto
+                            <button onClick={onCancel} className="px-8 py-3 bg-slate-100 text-slate-500 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition">Cancelar</button>
+                            <button onClick={() => onSave(form)} disabled={isSaving} className="px-10 py-3 bg-blue-600 text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-blue-100 transition active:scale-95 flex items-center gap-3 disabled:opacity-50">
+                                {isSaving ? <><Icon name="refresh-cw" className="animate-spin" /> Sincronizando...</> : <><Icon name="save" /> Guardar Producto</>}
                             </button>
                         </div>
                     </div>
