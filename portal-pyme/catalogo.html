@@ -33,34 +33,37 @@
         }
         .card-main { border-radius: 50px; background: white; border: 1px solid #e2e8f0; }
         .sidebar { background-color: #0f172a; }
-        /* Estilo para que el PDF no salga cortado */
-        .pdf-mode { padding: 40px !important; border-radius: 0 !important; border: none !important; }
+
+        /* Ajuste específico para que el PDF se vea bien en Oficio */
+        @media print {
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body class="flex min-h-screen">
 
-    <aside class="w-72 sidebar text-white flex flex-col p-8 sticky top-0 h-screen hidden lg:flex">
+    <aside class="w-72 sidebar text-white flex flex-col p-8 sticky top-0 h-screen hidden lg:flex no-print">
         <div class="mb-12">
             <h1 class="text-2xl font-black tracking-tighter uppercase">Mis Documentos</h1>
             <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em]">Ecosistema AI</p>
         </div>
         <nav class="space-y-6">
-            <div class="flex items-center gap-4 text-sm text-slate-400 p-2 cursor-pointer hover:text-white transition">
+            <div class="flex items-center gap-4 text-sm text-slate-400 p-2 cursor-pointer">
                 <span>📋</span> Inventario Pro
             </div>
-            <div class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer">
-                <span class="text-lg">⊕</span> Nuevo Registro
+            <div class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl">
+                <span>⊕</span> Nuevo Registro
             </div>
         </nav>
     </aside>
 
     <main class="flex-1 overflow-y-auto">
-        <header class="h-16 bg-white border-b flex items-center px-10">
-            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión / Nuevo Insumo</h2>
+        <header class="h-16 bg-white border-b flex items-center px-10 no-print">
+            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión</h2>
         </header>
 
         <div class="p-8 lg:p-12 max-w-7xl mx-auto">
-            <div id="capture-area" class="card-main p-10 lg:p-16 shadow-2xl shadow-slate-200">
+            <div id="capture-area" class="card-main p-10 lg:p-16 shadow-2xl bg-white">
                 <form id="mainForm">
                     
                     <div class="grid grid-cols-12 gap-12">
@@ -69,9 +72,9 @@
                                 <label>Fotografía del Insumo</label>
                                 <input type="file" id="inputImage" name="foto" class="hidden" accept="image/*">
                                 <div onclick="document.getElementById('inputImage').click()" 
-                                     class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex flex-col items-center justify-center p-6 cursor-pointer hover:bg-blue-50 transition relative overflow-hidden group">
+                                     class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex flex-col items-center justify-center p-6 cursor-pointer overflow-hidden relative">
                                     <img id="previewImage" class="hidden absolute inset-0 w-full h-full object-contain p-4 bg-white">
-                                    <div id="uploadPrompt" class="text-center group-hover:scale-110 transition">
+                                    <div id="uploadPrompt" class="text-center">
                                         <span class="text-4xl block mb-4">📸</span>
                                         <p class="text-[10px] font-black text-slate-400 uppercase">Click para subir imagen</p>
                                     </div>
@@ -80,10 +83,8 @@
 
                             <div class="bg-blue-50/50 border border-blue-100 rounded-[30px] p-8 text-center">
                                 <p class="text-[10px] text-blue-600 font-black uppercase mb-4 tracking-widest">Ficha Técnica Proveedor</p>
-                                <input type="file" id="inputPdf" name="pdf" class="hidden" accept=".pdf">
-                                <button type="button" onclick="document.getElementById('inputPdf').click()" 
-                                        class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm flex items-center justify-center gap-3 hover:bg-blue-600 hover:text-white transition-all">
-                                    ☁️ <span id="pdfText">ADJUNTAR PDF</span>
+                                <button type="button" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm flex items-center justify-center gap-3">
+                                    ☁️ ADJUNTAR PDF
                                 </button>
                             </div>
                         </div>
@@ -113,10 +114,10 @@
                                     <span class="w-2 h-2 bg-blue-600 rounded-full"></span> Datos del Proveedor
                                 </h3>
                                 <div class="grid grid-cols-2 gap-6">
-                                    <div><label>Nombre / Razón Social</label><input type="text" name="prov_nombre" class="input-field" placeholder="Empresa SPA"></div>
-                                    <div><label>RUT / Tax ID</label><input type="text" name="prov_rut" class="input-field" placeholder="12.345.678-9"></div>
-                                    <div><label>Contacto Vendedor</label><input type="text" name="prov_cont" class="input-field" placeholder="Juan Pérez"></div>
-                                    <div><label>Email / Teléfono</label><input type="text" name="prov_mail" class="input-field" placeholder="vendedor@correo.com"></div>
+                                    <div><label>Nombre / Razón Social</label><input type="text" name="prov_nombre" class="input-field" value="coco lit"></div>
+                                    <div><label>RUT / Tax ID</label><input type="text" name="prov_rut" class="input-field" value="128244948"></div>
+                                    <div><label>Contacto Vendedor</label><input type="text" name="prov_cont" class="input-field" value="ale"></div>
+                                    <div><label>Email / Teléfono</label><input type="text" name="prov_mail" class="input-field" value="sadelsolar@gmail.com"></div>
                                 </div>
                             </div>
                         </div>
@@ -124,7 +125,7 @@
 
                     <div class="mt-12">
                         <label>Especificaciones Técnicas (EETT)</label>
-                        <textarea name="eett" rows="4" class="input-field mt-2 font-mono text-xs">KHGJKGHJ</textarea>
+                        <textarea name="eett" rows="3" class="input-field mt-2 font-mono text-xs">KHGJKGHJ</textarea>
                     </div>
 
                     <div class="grid grid-cols-4 gap-6 mt-10">
@@ -147,18 +148,18 @@
                             <div><label>Contar Total</label><input type="number" name="log_tot" class="input-field" value="20"></div>
                             <div><label>Contar Completo</label><input type="text" name="log_comp" class="input-field"></div>
                         </div>
-                        <textarea name="log_com" rows="3" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
+                        <textarea name="log_com" rows="2" class="input-field">prueba</textarea>
                     </div>
 
                     <div class="mt-16 flex justify-end items-center gap-6 no-print">
-                        <button type="button" class="text-xs font-bold text-slate-400 hover:text-slate-600">VOLVER</button>
+                        <button type="button" class="text-xs font-bold text-slate-400">VOLVER</button>
                         
-                        <button type="button" onclick="descargarFichaPDF()" 
-                                class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-2xl font-black text-[11px] hover:bg-blue-50 transition-all flex items-center gap-3">
+                        <button type="button" onclick="descargarFichaOficio()" 
+                                class="bg-white border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-2xl font-black text-[11px] shadow-lg hover:bg-blue-50 transition-all flex items-center gap-3">
                             📥 EXPORTAR PDF
                         </button>
 
-                        <button type="submit" class="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black text-[11px] shadow-2xl shadow-blue-200 flex items-center gap-4 hover:bg-blue-700 transition-all">
+                        <button type="submit" class="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black text-[11px] shadow-2xl shadow-blue-200 flex items-center gap-4">
                             📄 1. GUARDAR REGISTRO
                         </button>
                     </div>
@@ -168,7 +169,7 @@
     </main>
 
     <script>
-        // 1. LÓGICA DE IMAGEN
+        // Lógica de Imagen
         const inputImage = document.getElementById('inputImage');
         const previewImage = document.getElementById('previewImage');
         const uploadPrompt = document.getElementById('uploadPrompt');
@@ -186,45 +187,37 @@
             }
         });
 
-        // 2. LÓGICA DE PDF ADJUNTO
-        const inputPdf = document.getElementById('inputPdf');
-        const pdfText = document.getElementById('pdfText');
-
-        inputPdf.addEventListener('change', function() {
-            if (this.files[0]) {
-                pdfText.innerText = "PDF: " + this.files[0].name.substring(0, 12) + "...";
-                pdfText.parentElement.classList.add('bg-green-600', 'text-white', 'border-green-600');
-            }
-        });
-
-        // 3. GENERADOR DE PDF (FICHA TÉCNICA)
-        function descargarFichaPDF() {
+        // FUNCIÓN CLAVE: GENERAR PDF EN TAMAÑO OFICIO
+        function descargarFichaOficio() {
             const element = document.getElementById('capture-area');
-            const buttons = document.querySelector('.no-print');
             const itemName = document.getElementsByName('item')[0].value || 'Insumo';
 
-            // Ocultar botones temporalmente para el PDF
-            buttons.style.display = 'none';
-            
+            // Configuración para tamaño Oficio (Legal)
             const opt = {
-                margin:       [10, 10],
-                filename:     `Ficha_${itemName}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                margin:       [5, 5, 5, 5], // Márgenes mínimos para aprovechar la hoja
+                filename:     `Ficha_Oficio_${itemName}.pdf`,
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    logging: false,
+                    letterRendering: true
+                },
+                jsPDF:        { 
+                    unit: 'mm', 
+                    format: 'legal', // 'legal' es el estándar para Oficio (216mm x 356mm)
+                    orientation: 'portrait' 
+                },
+                pagebreak: { mode: 'avoid-all' } // Evita cortes bruscos
             };
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                buttons.style.display = 'flex'; // Volver a mostrar botones
-            });
+            // Ejecución
+            html2pdf().set(opt).from(element).save();
         }
 
-        // 4. GUARDAR REGISTRO (CONSOLA)
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const data = Object.fromEntries(new FormData(this).entries());
-            console.log("--- DATOS CAPTURADOS ---", data);
-            alert("Información de " + data.item + " guardada correctamente en el sistema.");
+            alert("Registro guardado con éxito.");
         });
     </script>
 </body>
