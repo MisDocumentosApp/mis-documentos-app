@@ -28,9 +28,9 @@
         .section-title::before { content: ""; width: 6px; height: 6px; background-color: #2563eb; border-radius: 50%; }
 
         /* --- CONFIGURACIÓN PARA EXPORTACIÓN PDF (HOJA OFICIO/LEGAL) --- */
-        /* Esta clase se activa solo durante la generación del PDF para forzar el ajuste */
+        /* Esta clase se activa solo durante la captura para llenar el ancho de la hoja */
         .pdf-printing-active { 
-            width: 850px !important; 
+            width: 816px !important; /* Ancho exacto hoja Oficio a 96dpi */
             padding: 40px !important; 
             border-radius: 0 !important; 
             border: none !important; 
@@ -42,6 +42,7 @@
             font-size: 1.05rem !important; 
             background-color: #fff !important; 
             color: #000 !important;
+            padding: 12px !important;
         }
         .pdf-printing-active label { color: #64748b !important; font-size: 11px !important; font-weight: 900 !important; }
         .pdf-printing-active .section-title { font-size: 14px !important; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
@@ -52,7 +53,7 @@
 <body class="flex min-h-screen">
 
     <aside class="sidebar text-white flex flex-col p-8 sticky top-0 h-screen hidden lg:flex no-print">
-        <div class="mb-12 text-center lg:text-left">
+        <div class="mb-12">
             <h1 class="text-2xl font-black tracking-tighter uppercase">Mis Documentos</h1>
             <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em]">Ecosistema AI</p>
         </div>
@@ -91,13 +92,13 @@
                         <div class="col-span-12 lg:col-span-4 space-y-8">
                             <div>
                                 <label>Fotografía del Insumo</label>
-                                <input type="file" id="inputImage" name="fotoInsumo" class="hidden" accept="image/*">
+                                <input type="file" id="inputImage" name="foto" class="hidden" accept="image/*">
                                 <div onclick="document.getElementById('inputImage').click()" 
                                      class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex flex-col items-center justify-center p-6 cursor-pointer overflow-hidden relative group transition hover:bg-blue-50">
                                     <img id="previewImage" class="hidden absolute inset-0 w-full h-full object-contain p-4 bg-white">
                                     <div id="uploadPrompt" class="text-center group-hover:scale-105 transition">
                                         <span class="text-3xl block mb-4">📸</span>
-                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Click para subir foto</p>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter text-center">Haga clic para subir foto</p>
                                     </div>
                                 </div>
                             </div>
@@ -190,7 +191,7 @@
     </main>
 
     <script>
-        // Actualizar fecha para el PDF
+        // Fecha actual para el PDF
         document.getElementById('pdf-date-now').innerText = new Date().toLocaleDateString();
 
         // 1. MANEJO DE IMAGEN (PREVIEW)
@@ -218,19 +219,17 @@
 
         // 3. LIMPIEZA ASÍNCRONA (SOLUCIÓN DEFINITIVA AL INP ISSUE)
         function limpiarFormularioAsync() {
-            // Usamos requestAnimationFrame y setTimeout para liberar el hilo principal del navegador
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    document.getElementById('mainForm').reset();
-                    const preview = document.getElementById('previewImage');
-                    preview.classList.add('hidden');
-                    preview.src = "";
-                    document.getElementById('uploadPrompt').classList.remove('hidden');
-                    document.getElementById('btnPdfLabel').innerText = "☁️ ADJUNTAR PDF";
-                    document.getElementById('pdfSuccess').classList.add('hidden');
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                }, 10);
-            });
+            // setTimeout libera el hilo principal permitiendo que el navegador termine de renderizar antes del reset
+            setTimeout(() => {
+                document.getElementById('mainForm').reset();
+                const preview = document.getElementById('previewImage');
+                preview.classList.add('hidden');
+                preview.src = "";
+                document.getElementById('uploadPrompt').classList.remove('hidden');
+                document.getElementById('btnPdfLabel').innerText = "☁️ ADJUNTAR PDF";
+                document.getElementById('pdfSuccess').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 10);
         }
 
         // 4. EXPORTACIÓN PDF (AJUSTE TOTAL A HOJA OFICIO/LEGAL)
@@ -244,39 +243,42 @@
             header.classList.replace('hidden', 'flex');
 
             const opt = {
-                margin:       [10, 10, 10, 10], // Márgenes en mm
+                margin:       [10, 10, 10, 10], // mm
                 filename:     `FICHA_${itemName.replace(/ /g,"_")}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2.5, 
                     useCORS: true, 
                     letterRendering: true,
-                    scrollY: -window.scrollY // Fix para corregir el desfase si hay scroll
+                    scrollY: -window.scrollY // Corrige desajuste por scroll
                 },
-                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' } // format: 'legal' es el tamaño Oficio
+                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' }
             };
 
-            // Ejecutar y restaurar UI tras descarga
             html2pdf().set(opt).from(element).save().then(() => {
+                // Restaurar vista web tras la generación
                 element.classList.remove('pdf-printing-active');
                 header.classList.replace('flex', 'hidden');
             });
         }
 
-        // 5. GUARDAR REGISTRO (SIN BLOQUEO DE INTERFAZ)
+        // 5. GUARDAR REGISTRO (SOLUCIÓN INP ISSUE)
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('saveBtn');
+            const originalText = btn.innerHTML;
+            
+            // UI Feedback inmediato
             btn.innerHTML = "PROCESANDO...";
             btn.disabled = true;
 
-            // Simulación de envío asíncrono para mantener la fluidez de la UI
+            // Diferir el proceso pesado
             setTimeout(() => {
-                alert("¡Insumo registrado exitosamente en Mis Documentos!");
-                btn.innerHTML = "📄 1. GUARDAR REGISTRO";
+                alert("¡Registro guardado con éxito en Mis Documentos!");
+                btn.innerHTML = originalText;
                 btn.disabled = false;
                 limpiarFormularioAsync();
-            }, 400);
+            }, 200);
         });
     </script>
 </body>
