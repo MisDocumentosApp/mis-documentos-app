@@ -3,46 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario Pro - Ecosistema AI</title>
+    <title>Ecosistema AI - Gestión Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; overflow-x: hidden; }
         
-        /* Estilos UI Web */
+        /* Estilos Web */
         .input-field {
-            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 10px 14px;
+            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 12px 14px;
             font-size: 0.85rem; border-radius: 12px; width: 100%; outline: none; transition: all 0.2s;
         }
-        .input-field:focus { border-color: #2563eb; background-color: #fff; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.05em; }
+        .input-field:focus { border-color: #2563eb; background-color: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
         
-        .sidebar { background-color: #0f172a; width: 280px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 40; }
+        .sidebar { background-color: #0f172a; width: 280px; min-height: 100vh; position: fixed; left: 0; top: 0; z-index: 50; }
         .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
         
         .section-title { font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
         .section-title::before { content: ""; width: 6px; height: 6px; background-color: #2563eb; border-radius: 50%; }
 
-        /* --- ARQUITECTURA PARA PDF (TAMAÑO OFICIO / LEGAL) --- */
+        /* ARQUITECTURA PDF OFICIO */
         #pdf-template {
-            width: 216mm; /* Ancho real Oficio */
-            min-height: 356mm; /* Largo real Oficio */
-            padding: 15mm;
-            background: white;
-            position: absolute;
-            left: -9999px;
-            top: 0;
+            width: 216mm; min-height: 356mm; padding: 15mm; background: white;
+            position: absolute; left: -9999px; top: 0;
         }
-        .pdf-box { border: 1.5px solid #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 13px; color: #1e293b; min-height: 38px; background: #fff; }
-        .pdf-label { font-size: 9px; font-weight: 900; color: #64748b; text-transform: uppercase; margin-bottom: 2px; }
+        .pdf-box { border: 1.5px solid #e2e8f0; padding: 10px; border-radius: 8px; font-size: 13px; color: #1e293b; min-height: 38px; }
 
-        @media (max-width: 1024px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; width: 100%; }
-        }
+        @media (max-width: 1024px) { .sidebar { display: none; } .main-content { margin-left: 0; width: 100%; } }
     </style>
 </head>
 <body class="flex">
@@ -53,47 +44,52 @@
             <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em] mt-2">Ecosistema AI</p>
         </div>
         <nav class="space-y-4">
-            <button onclick="changeView('form')" class="w-full flex items-center gap-4 text-sm font-bold p-4 rounded-2xl hover:bg-slate-800 transition">
-                <span>⊕</span> Nuevo Registro
-            </button>
-            <button onclick="changeView('history')" class="w-full flex items-center gap-4 text-sm font-bold p-4 rounded-2xl hover:bg-slate-800 transition">
-                <span>📋</span> Ver Historial
-            </button>
+            <button onclick="changeView('form')" class="w-full flex items-center gap-4 text-sm font-bold p-4 rounded-2xl hover:bg-slate-800 transition"><span>⊕</span> Nuevo Registro</button>
+            <button onclick="changeView('history')" class="w-full flex items-center gap-4 text-sm font-bold p-4 rounded-2xl hover:bg-slate-800 transition"><span>📋</span> Ver Historial</button>
         </nav>
     </aside>
 
     <main class="main-content">
         
         <div id="view-form">
-            <header class="flex justify-between items-center mb-8">
-                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Gestión de Insumos / Entrada</h2>
-                <button onclick="resetAll()" class="text-[10px] font-bold text-red-400 uppercase hover:text-red-600 transition">Limpiar Campos</button>
+            <header class="flex justify-between items-center mb-10">
+                <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Entrada de Insumos</h2>
+                <button onclick="resetEverything()" class="text-[10px] font-bold text-red-400 uppercase">Limpiar Todo</button>
             </header>
 
-            <div class="bg-white rounded-[50px] p-10 lg:p-14 shadow-2xl border border-slate-100">
-                <form id="mainForm" onsubmit="saveEntry(event)">
-                    <div class="grid grid-cols-12 gap-10">
-                        <div class="col-span-12 lg:col-span-4 space-y-6">
-                            <label>Imagen del Insumo</label>
-                            <div onclick="document.getElementById('fileIn').click()" class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex items-center justify-center cursor-pointer overflow-hidden relative group">
-                                <img id="imgPreview" class="hidden absolute inset-0 w-full h-full object-contain p-4">
-                                <div id="imgPlaceholder" class="text-center group-hover:scale-110 transition">
-                                    <span class="text-3xl block mb-2">📸</span>
-                                    <p class="text-[9px] font-black text-slate-400 uppercase">Click para subir</p>
+            <div class="bg-white rounded-[60px] p-10 lg:p-16 shadow-2xl border border-slate-100">
+                <form id="supplyForm" onsubmit="saveSupplies(event)">
+                    <div class="grid grid-cols-12 gap-12">
+                        
+                        <div class="col-span-12 lg:col-span-4 space-y-10">
+                            <div>
+                                <label>Imagen del Insumo</label>
+                                <div id="dropZone" onclick="document.getElementById('supplyImg').click()" 
+                                     class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[50px] flex items-center justify-center cursor-pointer overflow-hidden relative group transition hover:border-blue-300">
+                                    <img id="preview" class="hidden absolute inset-0 w-full h-full object-contain p-6">
+                                    <div id="labelPlaceholder" class="text-center group-hover:scale-110 transition">
+                                        <span class="text-4xl block mb-2">📸</span>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter">Haga clic para subir foto</p>
+                                    </div>
                                 </div>
+                                <input type="file" id="supplyImg" class="hidden" accept="image/*" onchange="handleImage(this)">
                             </div>
-                            <input type="file" id="fileIn" class="hidden" accept="image/*" onchange="previewFile(this)">
-                            
-                            <div class="bg-blue-50/50 p-6 rounded-3xl border border-blue-100 text-center">
-                                <p class="text-[9px] font-black text-blue-600 uppercase mb-2">Documento Adjunto</p>
-                                <button type="button" class="text-[10px] font-bold bg-white border border-blue-200 px-4 py-2 rounded-xl text-blue-600">📎 ADJUNTAR PDF</button>
+
+                            <div class="bg-blue-50/50 p-8 rounded-[40px] border border-blue-100 text-center">
+                                <p class="text-[10px] font-black text-blue-600 uppercase mb-4 tracking-widest">Ficha Técnica Proveedor</p>
+                                <input type="file" id="pdfFile" class="hidden" accept=".pdf" onchange="handlePdfLabel(this)">
+                                <button type="button" id="pdfBtn" onclick="document.getElementById('pdfFile').click()" 
+                                        class="w-full bg-white border border-blue-200 py-3 rounded-2xl text-blue-600 text-[11px] font-black shadow-sm transition hover:bg-blue-600 hover:text-white">
+                                    📎 ADJUNTAR PDF
+                                </button>
+                                <p id="pdfStatus" class="hidden mt-3 text-[10px] font-bold text-green-600 uppercase">✅ Archivo Cargado</p>
                             </div>
                         </div>
 
-                        <div class="col-span-12 lg:col-span-8 space-y-10">
+                        <div class="col-span-12 lg:col-span-8 space-y-12">
                             <div>
-                                <h3 class="section-title">Información Técnica</h3>
-                                <div class="grid grid-cols-3 gap-4">
+                                <h3 class="section-title">Información del Producto</h3>
+                                <div class="grid grid-cols-3 gap-5">
                                     <div class="col-span-3"><label>Item / Nombre *</label><input type="text" name="item" class="input-field" required></div>
                                     <div><label>SKU</label><input type="text" name="sku" class="input-field"></div>
                                     <div><label>SKU ENGE</label><input type="text" name="skuEnge" class="input-field"></div>
@@ -108,213 +104,229 @@
                                 </div>
                             </div>
 
-                            <div class="pt-8 border-t border-slate-100">
+                            <div class="pt-10 border-t border-slate-100">
                                 <h3 class="section-title">Datos del Proveedor</h3>
-                                <div class="grid grid-cols-2 gap-4">
-                                    <div><label>Razón Social</label><input type="text" name="pNom" class="input-field"></div>
-                                    <div><label>RUT / Tax ID</label><input type="text" name="pRut" class="input-field"></div>
-                                    <div><label>Contacto Vendedor</label><input type="text" name="pCont" class="input-field"></div>
-                                    <div><label>Email / Teléfono</label><input type="text" name="pMail" class="input-field"></div>
+                                <div class="grid grid-cols-2 gap-5">
+                                    <div><label>Nombre / Razón Social</label><input type="text" name="provN" class="input-field"></div>
+                                    <div><label>RUT / Tax ID</label><input type="text" name="provR" class="input-field"></div>
+                                    <div><label>Contacto Vendedor</label><input type="text" name="provC" class="input-field"></div>
+                                    <div><label>Email / Teléfono</label><input type="text" name="provM" class="input-field"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-10"><label>Especificaciones Técnicas (EETT)</label><textarea name="eett" rows="3" class="input-field font-mono text-xs"></textarea></div>
+                    <div class="mt-12"><label>Especificaciones Técnicas (EETT)</label><textarea name="eett" rows="4" class="input-field font-mono text-xs"></textarea></div>
 
-                    <div class="grid grid-cols-4 gap-4 mt-8">
+                    <div class="grid grid-cols-4 gap-5 mt-10">
                         <div><label>Peso</label><input type="text" name="peso" class="input-field"></div>
                         <div><label>Volumen</label><input type="text" name="vol" class="input-field"></div>
                         <div><label>U. Medida</label><input type="text" name="med" class="input-field"></div>
                         <div><label>Estado</label><select name="estado" class="input-field font-bold text-blue-600"><option value="ACTIVO">ACTIVO</option><option value="INACTIVO">INACTIVO</option></select></div>
                     </div>
 
-                    <div class="mt-10 pt-8 border-t border-slate-100">
-                        <h3 class="section-title">Logística & Stock</h3>
+                    <div class="mt-12 pt-10 border-t border-slate-100">
+                        <h3 class="section-title">Logística & Control de Stock</h3>
                         <div class="grid grid-cols-3 gap-6 mb-6">
                             <div><label>Requiere MX Bodega</label><input type="text" name="logB" class="input-field"></div>
                             <div><label>Contar Total</label><input type="number" name="logT" class="input-field"></div>
                             <div><label>Contar Completo</label><input type="text" name="logC" class="input-field"></div>
                         </div>
-                        <textarea name="logCom" rows="2" class="input-field" placeholder="Comentarios adicionales..."></textarea>
+                        <textarea name="logCom" rows="2" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
                     </div>
 
-                    <div class="mt-12 flex justify-end">
-                        <button type="submit" id="saveBtn" class="bg-blue-600 text-white px-16 py-5 rounded-[22px] font-black text-[11px] shadow-2xl hover:bg-blue-700 transition active:scale-95 uppercase tracking-widest">📄 Guardar Registro</button>
+                    <div class="mt-16 flex justify-end">
+                        <button type="submit" id="mainSaveBtn" class="bg-blue-600 text-white px-20 py-6 rounded-[25px] font-black text-[12px] shadow-2xl hover:bg-blue-700 transition active:scale-95 uppercase tracking-widest">
+                            📄 1. Guardar Registro
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
         <div id="view-history" class="hidden">
-            <h2 class="text-2xl font-black text-slate-800 mb-10 tracking-tighter uppercase">Historial de Insumos</h2>
+            <h2 class="text-3xl font-black text-slate-800 mb-10 tracking-tighter uppercase">Historial de Insumos</h2>
             <div class="bg-white rounded-[40px] shadow-xl overflow-hidden border border-slate-100">
-                <table class="w-full text-left">
-                    <thead class="bg-slate-50 border-b">
-                        <tr>
-                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase">Item / SKU</th>
-                            <th class="p-6 text-[10px] font-black text-slate-400 uppercase text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="history-body"></tbody>
+                <table class="w-full text-left border-collapse">
+                    <thead><tr class="bg-slate-50 border-b">
+                        <th class="p-6 text-[10px] font-black text-slate-400 uppercase">Item / Identificador</th>
+                        <th class="p-6 text-[10px] font-black text-slate-400 uppercase">Estado</th>
+                        <th class="p-6 text-right text-[10px] font-black text-slate-400 uppercase">Acciones</th>
+                    </tr></thead>
+                    <tbody id="historyBody"></tbody>
                 </table>
             </div>
         </div>
+
     </main>
 
     <div id="pdf-template">
-        <div style="border-bottom: 5px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div style="border-bottom: 5px solid #2563eb; padding-bottom: 20px; margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end;">
             <div>
-                <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: -1px;">Ficha Técnica</h1>
-                <p style="color: #2563eb; font-weight: 800; font-size: 12px; margin: 5px 0 0 0;">ECOSISTEMA AI - GESTIÓN PROFESIONAL DE ACTIVOS</p>
+                <h1 style="font-size: 32px; font-weight: 900; color: #0f172a; margin: 0; text-transform: uppercase;">Ficha Técnica</h1>
+                <p style="color: #2563eb; font-weight: 800; font-size: 12px; margin: 5px 0 0 0;">ECOSISTEMA AI - GESTIÓN PROFESIONAL</p>
             </div>
             <div style="text-align: right;">
-                <p style="font-size: 10px; color: #94a3b8; font-weight: 900; margin: 0;">FECHA REGISTRO</p>
-                <p id="pdf-date-val" style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;"></p>
+                <p style="font-size: 10px; color: #94a3b8; font-weight: 900; margin: 0;">FECHA EMISIÓN</p>
+                <p id="pdfDate" style="font-size: 16px; font-weight: 700; color: #1e293b; margin: 0;"></p>
             </div>
         </div>
-        <div id="pdf-container-dynamic"></div>
+        <div id="pdfContent"></div>
     </div>
 
     <script>
-        let currentImgBase64 = "";
+        let currentImageBase64 = "";
 
-        // Cambiar Vistas
+        // NAVEGACIÓN
         function changeView(view) {
             document.getElementById('view-form').classList.add('hidden');
             document.getElementById('view-history').classList.add('hidden');
             document.getElementById('view-' + view).classList.remove('hidden');
-            if(view === 'history') loadHistory();
+            if(view === 'history') loadRecords();
         }
 
-        // Previsualizar Imagen
-        function previewFile(input) {
+        // PROCESAR IMAGEN (ARREGLADO)
+        function handleImage(input) {
             const file = input.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    currentImgBase64 = e.target.result;
-                    document.getElementById('imgPrev').src = currentImgBase64;
-                    document.getElementById('imgPrev').classList.remove('hidden');
-                    document.getElementById('imgPlaceholder').classList.add('hidden');
+                    currentImageBase64 = e.target.result;
+                    const preview = document.getElementById('preview');
+                    preview.src = currentImageBase64;
+                    preview.classList.remove('hidden');
+                    document.getElementById('labelPlaceholder').classList.add('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         }
 
-        // Guardar (Fix INP Issue)
-        function saveEntry(e) {
+        // PROCESAR PDF LABEL
+        function handlePdfLabel(input) {
+            if(input.files[0]) {
+                document.getElementById('pdfStatus').classList.remove('hidden');
+                document.getElementById('pdfBtn').innerHTML = "✅ ARCHIVO LISTO";
+            }
+        }
+
+        // GUARDAR (FIX INP ISSUE)
+        function saveSupplies(e) {
             e.preventDefault();
-            const btn = document.getElementById('saveBtn');
+            const btn = document.getElementById('mainSaveBtn');
             btn.innerText = "PROCESANDO...";
             btn.disabled = true;
 
             setTimeout(() => {
                 const formData = new FormData(e.target);
                 const data = Object.fromEntries(formData.entries());
-                data.img = currentImgBase64;
+                data.img = currentImageBase64;
                 data.id = Date.now();
 
-                const db = JSON.parse(localStorage.getItem('eco_docs_db') || '[]');
+                const db = JSON.parse(localStorage.getItem('eco_pro_db') || '[]');
                 db.unshift(data);
-                localStorage.setItem('eco_docs_db', JSON.stringify(db));
+                localStorage.setItem('eco_pro_db', JSON.stringify(db));
 
-                alert("✅ Insumo guardado correctamente.");
-                btn.innerText = "📄 Guardar Registro";
+                alert("¡Insumo guardado correctamente!");
+                btn.innerText = "📄 1. Guardar Registro";
                 btn.disabled = false;
-                resetAll();
+                resetEverything();
                 changeView('history');
-            }, 150);
+            }, 100);
         }
 
-        // Cargar Historial
-        function loadHistory() {
-            const db = JSON.parse(localStorage.getItem('eco_docs_db') || '[]');
-            const tbody = document.getElementById('history-body');
-            tbody.innerHTML = db.length ? db.map(r => `
+        // CARGAR HISTORIAL
+        function loadRecords() {
+            const db = JSON.parse(localStorage.getItem('eco_pro_db') || '[]');
+            const container = document.getElementById('historyBody');
+            container.innerHTML = db.length ? db.map(r => `
                 <tr class="border-b hover:bg-slate-50 transition">
                     <td class="p-6">
                         <div class="font-bold text-slate-800">${r.item}</div>
-                        <div class="text-[10px] text-slate-400 font-mono">${r.sku || 'SIN SKU'}</div>
+                        <div class="text-[10px] text-slate-400 font-mono uppercase">${r.sku || 'Sin SKU'}</div>
                     </td>
+                    <td class="p-6"><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-[10px] font-black">${r.estado}</span></td>
                     <td class="p-6 text-right">
-                        <button onclick="downloadPDF(${r.id})" class="bg-blue-50 text-blue-600 px-5 py-2 rounded-xl font-black text-[10px] uppercase mr-3">PDF Oficio</button>
-                        <button onclick="deleteRow(${r.id})" class="text-red-300 font-bold text-[10px] uppercase hover:text-red-500">Eliminar</button>
+                        <button onclick="downloadPDF(${r.id})" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-black text-[10px] uppercase mr-2 shadow-lg shadow-blue-200">PDF Oficio</button>
+                        <button onclick="deleteRecord(${r.id})" class="text-red-300 font-bold text-[10px] uppercase hover:text-red-500">Eliminar</button>
                     </td>
                 </tr>
-            `).join('') : '<tr><td colspan="2" class="p-10 text-center text-slate-400 font-bold uppercase text-xs">No hay datos registrados</td></tr>';
+            `).join('') : '<tr><td colspan="3" class="p-10 text-center text-slate-400 font-bold uppercase text-xs">No hay datos</td></tr>';
         }
 
-        // Borrar
-        function deleteRow(id) {
-            if(confirm("¿Seguro de eliminar este activo?")) {
-                let db = JSON.parse(localStorage.getItem('eco_docs_db') || '[]');
+        function deleteRecord(id) {
+            if(confirm("¿Eliminar este insumo definitivamente?")) {
+                let db = JSON.parse(localStorage.getItem('eco_pro_db') || '[]');
                 db = db.filter(x => x.id !== id);
-                localStorage.setItem('eco_docs_db', JSON.stringify(db));
-                loadHistory();
+                localStorage.setItem('eco_pro_db', JSON.stringify(db));
+                loadRecords();
             }
         }
 
-        // GENERAR PDF OFICIO (RESTAURADO TOTAL)
+        // GENERAR PDF OFICIO (EL MÁS ROBUSTO)
         async function downloadPDF(id) {
-            const db = JSON.parse(localStorage.getItem('eco_docs_db') || '[]');
+            const db = JSON.parse(localStorage.getItem('eco_pro_db') || '[]');
             const r = db.find(x => x.id === id);
             
-            document.getElementById('pdf-date-val').innerText = new Date(r.id).toLocaleDateString();
-            const container = document.getElementById('pdf-container-dynamic');
+            document.getElementById('pdfDate').innerText = new Date(r.id).toLocaleDateString();
+            const container = document.getElementById('pdfContent');
 
             container.innerHTML = `
                 <div style="display: flex; gap: 30px; margin-bottom: 30px;">
-                    <div style="width: 240px; height: 240px; border: 2px solid #f1f5f9; border-radius: 25px; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden;">
+                    <div style="width: 240px; height: 240px; border: 2px solid #f1f5f9; border-radius: 30px; display: flex; align-items: center; justify-content: center; background: #fff; overflow: hidden;">
                         <img src="${r.img || ''}" style="max-width: 90%; max-height: 90%; object-fit: contain;">
                     </div>
                     <div style="flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                        <div style="grid-column: span 2;"><p class="pdf-label">Nombre del Insumo</p><div class="pdf-box" style="font-weight: 800; font-size: 18px; border-color: #2563eb;">${r.item}</div></div>
-                        <div><p class="pdf-label">SKU</p><div class="pdf-box">${r.sku}</div></div>
-                        <div><p class="pdf-label">SKU ENGE</p><div class="pdf-box">${r.skuEnge}</div></div>
-                        <div><p class="pdf-label">Fabricante</p><div class="pdf-box">${r.fab}</div></div>
-                        <div><p class="pdf-label">Marca</p><div class="pdf-box">${r.marca}</div></div>
+                        <div style="grid-column: span 2;"><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">ITEM</p><div class="pdf-box" style="font-weight: 800; font-size: 18px; border-color: #2563eb;">${r.item}</div></div>
+                        <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">SKU</p><div class="pdf-box">${r.sku}</div></div>
+                        <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">SKU ENGE</p><div class="pdf-box">${r.skuEnge}</div></div>
+                        <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">CENTRO</p><div class="pdf-box">${r.centro}</div></div>
+                        <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">FABRICANTE</p><div class="pdf-box">${r.fab}</div></div>
                     </div>
                 </div>
                 <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 30px;">
-                    <div><p class="pdf-label">Centro</p><div class="pdf-box">${r.centro}</div></div>
-                    <div><p class="pdf-label">Codificación</p><div class="pdf-box">${r.cod}</div></div>
-                    <div><p class="pdf-label">Modelo</p><div class="pdf-box">${r.modelo}</div></div>
-                    <div><p class="pdf-label">N° Parte</p><div class="pdf-box">${r.parte}</div></div>
+                    <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">MARCA</p><div class="pdf-box">${r.marca}</div></div>
+                    <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">MODELO</p><div class="pdf-box">${r.modelo}</div></div>
+                    <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">N° PARTE</p><div class="pdf-box">${r.parte}</div></div>
+                    <div><p style="font-size: 9px; font-weight: 900; color: #94a3b8; margin-bottom: 4px;">ESTADO</p><div class="pdf-box" style="font-weight: 900; color: #2563eb;">${r.estado}</div></div>
                 </div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
-                    <div><h4 style="font-size: 11px; color: #2563eb; text-transform: uppercase; margin-bottom: 10px;">Datos del Proveedor</h4>
-                        <p class="pdf-label">Razón Social</p><div class="pdf-box" style="margin-bottom: 10px;">${r.pNom}</div>
-                        <p class="pdf-label">RUT / Tax ID</p><div class="pdf-box">${r.pRut}</div>
+                    <div><h4 style="font-size: 11px; color: #2563eb; font-weight: 900; margin-bottom: 10px; border-bottom: 2px solid #f1f5f9;">PROVEEDOR</h4>
+                        <div style="margin-bottom: 10px;"><p style="font-size: 8px; font-weight: 900; color: #94a3b8;">RAZÓN SOCIAL</p><div class="pdf-box">${r.provN}</div></div>
+                        <div><p style="font-size: 8px; font-weight: 900; color: #94a3b8;">RUT</p><div class="pdf-box">${r.provR}</div></div>
                     </div>
-                    <div><h4 style="font-size: 11px; color: #2563eb; text-transform: uppercase; margin-bottom: 10px;">Dimensiones</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                            <div><p class="pdf-label">Peso</p><div class="pdf-box">${r.peso}</div></div>
-                            <div><p class="pdf-label">Estado</p><div class="pdf-box" style="font-weight: 900; color: #2563eb;">${r.estado}</div></div>
-                        </div>
+                    <div><h4 style="font-size: 11px; color: #2563eb; font-weight: 900; margin-bottom: 10px; border-bottom: 2px solid #f1f5f9;">ESPECIFICACIONES (EETT)</h4>
+                        <div class="pdf-box" style="min-height: 100px; font-size: 12px; line-height: 1.4;">${r.eett}</div>
                     </div>
                 </div>
-                <div style="margin-bottom: 30px;"><p class="pdf-label">Especificaciones Técnicas (EETT)</p><div class="pdf-box" style="min-height: 100px; font-size: 12px; line-height: 1.5; background: #fcfcfc;">${r.eett}</div></div>
-                <div style="background: #f8fafc; padding: 20px; border-radius: 20px; border: 1px solid #e2e8f0;">
-                    <h4 style="font-size: 11px; color: #64748b; text-transform: uppercase; margin-bottom: 15px;">Control Logístico</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                        <div><p class="pdf-label">Bodega</p><div class="pdf-box">${r.logB}</div></div>
-                        <div><p class="pdf-label">Contar Total</p><div class="pdf-box">${r.logT}</div></div>
-                        <div><p class="pdf-label">Contar Completo</p><div class="pdf-box">${r.logC}</div></div>
+                <div style="background: #f8fafc; padding: 25px; border-radius: 25px; border: 1.5px solid #e2e8f0;">
+                    <h4 style="font-size: 10px; color: #64748b; font-weight: 900; margin-bottom: 15px;">GESTIÓN LOGÍSTICA</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+                        <div><p style="font-size: 8px; font-weight: 900; color: #94a3b8;">BODEGA</p><div class="pdf-box">${r.logB}</div></div>
+                        <div><p style="font-size: 8px; font-weight: 900; color: #94a3b8;">TOTAL</p><div class="pdf-box">${r.logT}</div></div>
+                        <div><p style="font-size: 8px; font-weight: 900; color: #94a3b8;">COMPLETO</p><div class="pdf-box">${r.logC}</div></div>
                     </div>
                 </div>
             `;
 
-            const opt = { margin: 0, filename: `Ficha_${r.item}.pdf`, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2.5, useCORS: true }, jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' } };
+            const opt = { 
+                margin: 0, 
+                filename: `Ficha_${r.item.replace(/ /g,"_")}.pdf`, 
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { scale: 2.5, useCORS: true, letterRendering: true }, 
+                jsPDF: { unit: 'mm', format: 'legal', orientation: 'portrait' } 
+            };
+            
             await html2pdf().set(opt).from(document.getElementById('pdf-template')).save();
         }
 
-        // Reset
-        function resetAll() {
-            document.getElementById('mainForm').reset();
-            document.getElementById('imgPrev').classList.add('hidden');
-            document.getElementById('imgPlaceholder').classList.remove('hidden');
-            currentImgBase64 = "";
+        // RESET
+        function resetEverything() {
+            document.getElementById('supplyForm').reset();
+            document.getElementById('preview').classList.add('hidden');
+            document.getElementById('labelPlaceholder').classList.remove('hidden');
+            document.getElementById('pdfStatus').classList.add('hidden');
+            document.getElementById('pdfBtn').innerHTML = "📎 ADJUNTAR PDF";
+            currentImageBase64 = "";
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
