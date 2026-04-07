@@ -28,22 +28,24 @@
             display: block;
             letter-spacing: 0.05em;
         }
-        .card-main { border-radius: 45px; background: white; border: 1px solid #f1f5f9; }
+        .card-main { border-radius: 45px; background: white; border: 1px solid #f1f5f9; position: relative; }
+        #imagePreview { cursor: pointer; transition: opacity 0.3s; }
+        #imagePreview:hover { opacity: 0.8; }
     </style>
 </head>
 <body class="flex min-h-screen">
 
     <aside class="w-64 bg-[#0f172a] text-white flex flex-col p-6 sticky top-0 h-screen">
         <div class="mb-10">
-            <h1 class="text-xl font-black tracking-tighter">MIS DOCUMENTOS</h1>
+            <h1 class="text-xl font-black tracking-tighter uppercase">Mis Documentos</h1>
             <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Ecosistema AI</p>
         </div>
         <nav class="space-y-4">
             <div class="flex items-center gap-3 text-sm text-slate-400 p-2 cursor-pointer hover:text-white">
-                <span class="text-lg">📋</span> Inventario Pro
+                <span>📋</span> Inventario Pro
             </div>
-            <div class="flex items-center gap-3 text-sm bg-blue-600 p-3 rounded-xl font-bold shadow-lg shadow-blue-900/40">
-                <span class="text-lg">⊕</span> Nuevo Registro
+            <div class="flex items-center gap-3 text-sm bg-blue-600 p-3 rounded-xl font-bold shadow-lg shadow-blue-900/40 cursor-pointer">
+                <span>⊕</span> Nuevo Registro
             </div>
         </nav>
     </aside>
@@ -53,24 +55,29 @@
             <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Panel de Gestión</h2>
         </header>
 
-        <div class="p-10 max-w-6xl mx-auto relative">
-            <div class="absolute -right-2 top-1/2 bg-slate-800 text-white p-2 rounded-l-lg cursor-pointer shadow-xl">
-                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16a2 2 0 110 4 2 2 0 010-4zm0-6a2 2 0 110 4 2 2 0 010-4zm0-6a2 2 0 110 4 2 2 0 010-4z"/></svg>
-            </div>
-
+        <div class="p-10 max-w-6xl mx-auto">
             <div class="card-main shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-12">
                 <form id="formInventario">
+                    
                     <div class="grid grid-cols-12 gap-12">
-                        
                         <div class="col-span-12 lg:col-span-4 space-y-6">
-                            <label>Fotografía & Adjuntos</label>
-                            <div class="aspect-square bg-slate-50 border border-slate-100 rounded-[30px] flex items-center justify-center p-8">
-                                <img src="https://m.media-amazon.com/images/I/71YJ0M7-wSL._AC_SL1500_.jpg" class="max-h-full object-contain mix-blend-multiply">
+                            <label>Fotografía del Insumo</label>
+                            <input type="file" id="fileImage" name="fotoInsumo" accept="image/*" class="hidden">
+                            <div id="imagePreviewContainer" onclick="document.getElementById('fileImage').click()" 
+                                 class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[30px] flex items-center justify-center p-4 overflow-hidden relative group">
+                                <img id="imagePreview" src="" class="hidden max-h-full object-contain">
+                                <div id="placeholderText" class="text-center">
+                                    <span class="text-3xl block mb-2">📸</span>
+                                    <span class="text-[10px] font-bold text-slate-400 uppercase">Click para subir imagen</span>
+                                </div>
                             </div>
+
                             <div class="bg-blue-50/50 border border-blue-100 rounded-[25px] p-6 text-center">
-                                <p class="text-[9px] text-blue-600 font-black uppercase mb-3">Ficha Técnica Proveedor</p>
-                                <button type="button" class="w-full bg-white border border-blue-200 py-2.5 rounded-xl text-blue-600 text-[10px] font-bold shadow-sm flex items-center justify-center gap-2">
-                                    ☁️ ADJUNTAR PDF
+                                <p class="text-[9px] text-blue-600 font-black uppercase mb-3 tracking-wider">Ficha Técnica Proveedor</p>
+                                <input type="file" id="filePdf" name="pdfProveedor" accept=".pdf" class="hidden">
+                                <button type="button" onclick="document.getElementById('filePdf').click()" 
+                                        class="w-full bg-white border border-blue-200 py-2.5 rounded-xl text-blue-600 text-[10px] font-bold shadow-sm flex items-center justify-center gap-2 hover:bg-blue-50">
+                                    ☁️ <span id="pdfStatus">ADJUNTAR PDF</span>
                                 </button>
                             </div>
                         </div>
@@ -78,7 +85,7 @@
                         <div class="col-span-12 lg:col-span-8">
                             <label class="mb-6">Información Técnica del Insumo</label>
                             <div class="grid grid-cols-3 gap-x-4 gap-y-5">
-                                <div><label>Item *</label><input type="text" name="item" class="input-field" value="CHMAPION"></div>
+                                <div><label>Item *</label><input type="text" name="item" class="input-field" value="CHMAPIONfhfg"></div>
                                 <div><label>SKU</label><input type="text" name="sku" class="input-field" value="SAFD"></div>
                                 <div><label>SKU ENGE</label><input type="text" name="skuEnge" class="input-field" value="KJHKHG"></div>
                                 
@@ -93,12 +100,22 @@
                                 <div class="col-span-1"><label>Código Designación</label><input type="text" name="codDesignacion" class="input-field" value="KHG"></div>
                                 <div class="col-span-2"><label>Descripción Breve</label><input type="text" name="descBreve" class="input-field" value="GHKJH"></div>
                             </div>
+
+                            <div class="mt-8 pt-8 border-t border-slate-100">
+                                <label class="mb-4">Información del Proveedor</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div><label>Nombre Proveedor / Razón Social</label><input type="text" name="nombreProveedor" class="input-field" placeholder="Ej: Herramientas SPA"></div>
+                                    <div><label>RUT / ID Fiscal</label><input type="text" name="rutProveedor" class="input-field" placeholder="12.345.678-9"></div>
+                                    <div><label>Contacto / Vendedor</label><input type="text" name="contactoProveedor" class="input-field" placeholder="Nombre de contacto"></div>
+                                    <div><label>Email / Teléfono</label><input type="text" name="emailProveedor" class="input-field" placeholder="vendedor@empresa.com"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div class="mt-10 pt-6 border-t border-slate-50">
                         <label>Especificaciones Técnicas (EETT)</label>
-                        <textarea name="eett" rows="3" class="input-field mt-2">KHGJKGHJ</textarea>
+                        <textarea name="eett" rows="3" class="input-field mt-2" placeholder="Detalles técnicos avanzados...">KHGJKGHJ</textarea>
                     </div>
 
                     <div class="grid grid-cols-4 gap-4 mt-6">
@@ -107,7 +124,10 @@
                         <div><label>U. Medida</label><input type="text" name="uMedida" class="input-field" value="GHKJH"></div>
                         <div>
                             <label>Estado</label>
-                            <div class="input-field font-black text-slate-800 bg-slate-100/50">ACTIVO</div>
+                            <select name="estado" class="input-field font-black text-slate-800">
+                                <option value="ACTIVO" selected>ACTIVO</option>
+                                <option value="INACTIVO">INACTIVO</option>
+                            </select>
                         </div>
                     </div>
 
@@ -125,7 +145,7 @@
 
                     <div class="mt-12 flex justify-end items-center gap-8">
                         <button type="button" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition">VOLVER</button>
-                        <button type="submit" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-[11px] shadow-xl shadow-blue-200 flex items-center gap-3 hover:bg-blue-700 transition-all active:scale-95">
+                        <button type="submit" class="bg-[#2563eb] text-white px-10 py-4 rounded-2xl font-black text-[11px] shadow-xl shadow-blue-200 flex items-center gap-3 hover:bg-blue-700 transition-all active:scale-95">
                             📄 1. GUARDAR REGISTRO
                         </button>
                     </div>
@@ -135,12 +155,41 @@
     </main>
 
     <script>
-        // Lógica para capturar los datos sin errores de INP
+        // LÓGICA PARA LA IMAGEN
+        const fileImage = document.getElementById('fileImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const placeholderText = document.getElementById('placeholderText');
+
+        fileImage.addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.classList.remove('hidden');
+                    placeholderText.classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // LÓGICA PARA EL PDF
+        const filePdf = document.getElementById('filePdf');
+        const pdfStatus = document.getElementById('pdfStatus');
+
+        filePdf.addEventListener('change', function() {
+            if (this.files[0]) {
+                pdfStatus.innerText = "PDF CARGADO: " + this.files[0].name.substring(0, 15) + "...";
+                pdfStatus.parentElement.classList.replace('text-blue-600', 'text-green-600');
+            }
+        });
+
+        // ENVÍO DE FORMULARIO
         document.getElementById('formInventario').addEventListener('submit', function(e) {
             e.preventDefault();
-            const data = Object.fromEntries(new FormData(this).entries());
-            console.log("Datos enviados a Ecosistema AI:", data);
-            alert("¡Registro Guardado! Revisa la consola.");
+            const formData = new FormData(this);
+            console.log("Datos capturados:", Object.fromEntries(formData.entries()));
+            alert("¡Información del Insumo y Proveedor guardada con éxito!");
         });
     </script>
 </body>
