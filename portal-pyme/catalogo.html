@@ -1,192 +1,147 @@
-import React, { useState, useCallback } from 'react';
-import { Save, CloudUpload, ArrowLeft, MoreVertical } from 'lucide-react';
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Gestión - Ecosistema AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .input-field {
+            background-color: #fcfcfc;
+            border: 1px solid #e2e8f0;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            border-radius: 8px;
+            width: 100%;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .input-field:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1); }
+        label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #94a3b8;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+            letter-spacing: 0.05em;
+        }
+        .card-main { border-radius: 45px; background: white; border: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body class="flex min-h-screen">
 
-const PanelGestionInventario = () => {
-  // Estado inicial con todos los campos de la imagen
-  const [formData, setFormData] = useState({
-    item: 'CHMAPION',
-    sku: 'SAFD',
-    skuEnge: 'KJHKHG',
-    centro: 'HKGHJGHJK',
-    codificacion: 'KGHJKJH',
-    fabricante: 'KJGHJ',
-    marca: 'KGH',
-    modelo: 'HJKGHKJ',
-    nParte: 'KHGKHJGH',
-    codDesignacion: 'KHG',
-    descBreve: 'GHKJH',
-    eett: 'KHGJKGHJ',
-    peso: 'HKGH',
-    volumen: 'GHKK',
-    uMedida: 'GHKJH',
-    estado: 'ACTIVO',
-    requiereBodega: 'FGDSG',
-    contarTotal: '20',
-    contarCompleto: '',
-    comentarios: 'Ubicación física / Comentarios adicionales...'
-  });
-
-  // Optimización para evitar el error de INP (Interaction to Next Paint)
-  const handleChange = useCallback((e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  }, []);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Enviando a Ecosistema AI:", formData);
-    // Aquí iría tu fetch('/api/inventario', { method: 'POST', body: JSON.stringify(formData) })
-    alert("Registro guardado exitosamente");
-  };
-
-  return (
-    <div className="flex min-h-screen bg-[#f8fafc] font-sans">
-      
-      {/* SIDEBAR */}
-      <aside className="w-64 bg-[#0f172a] text-white p-6 flex flex-col">
-        <div className="mb-8">
-          <h1 className="text-xl font-black tracking-tighter">MIS DOCUMENTOS</h1>
-          <p className="text-[10px] text-blue-400 font-bold tracking-[0.2em]">ECOSISTEMA AI</p>
+    <aside class="w-64 bg-[#0f172a] text-white flex flex-col p-6 sticky top-0 h-screen">
+        <div class="mb-10">
+            <h1 class="text-xl font-black tracking-tighter">MIS DOCUMENTOS</h1>
+            <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.2em]">Ecosistema AI</p>
         </div>
-        <nav className="space-y-2">
-          <div className="flex items-center gap-3 p-3 text-gray-400 text-sm hover:bg-slate-800 rounded-lg cursor-pointer">
-            <span>📋</span> Inventario Pro
-          </div>
-          <div className="flex items-center gap-3 p-3 bg-blue-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-900/20">
-            <span className="text-lg">⊕</span> Nuevo Registro
-          </div>
+        <nav class="space-y-4">
+            <div class="flex items-center gap-3 text-sm text-slate-400 p-2 cursor-pointer hover:text-white">
+                <span class="text-lg">📋</span> Inventario Pro
+            </div>
+            <div class="flex items-center gap-3 text-sm bg-blue-600 p-3 rounded-xl font-bold shadow-lg shadow-blue-900/40">
+                <span class="text-lg">⊕</span> Nuevo Registro
+            </div>
         </nav>
-      </aside>
+    </aside>
 
-      {/* CONTENIDO PRINCIPAL */}
-      <main className="flex-1">
-        <header className="h-16 bg-white border-b flex items-center px-8 justify-between">
-          <h2 className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Panel de Gestión</h2>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-slate-200 rounded-full border-2 border-white shadow-sm"></div>
-          </div>
+    <main class="flex-1">
+        <header class="h-14 bg-white border-b flex items-center px-8">
+            <h2 class="text-[10px] font-black text-slate-500 uppercase tracking-widest">Panel de Gestión</h2>
         </header>
 
-        <section className="p-12 max-w-6xl mx-auto relative">
-          
-          {/* BOTÓN FLOTANTE (Presente en tu imagen) */}
-          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#2d3748] text-white rounded-full flex items-center justify-center shadow-xl z-10 hover:scale-110 transition">
-            <MoreVertical size={20} />
-          </button>
+        <div class="p-10 max-w-6xl mx-auto relative">
+            <div class="absolute -right-2 top-1/2 bg-slate-800 text-white p-2 rounded-l-lg cursor-pointer shadow-xl">
+                <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 16a2 2 0 110 4 2 2 0 010-4zm0-6a2 2 0 110 4 2 2 0 010-4zm0-6a2 2 0 110 4 2 2 0 010-4z"/></svg>
+            </div>
 
-          <div className="bg-white rounded-[45px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 p-12">
-            <form onSubmit={handleSubmit} className="space-y-10">
-              
-              <div className="grid grid-cols-12 gap-12">
-                {/* COLUMNA IZQUIERDA */}
-                <div className="col-span-4 space-y-6">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fotografía & Adjuntos</h3>
-                  <div className="aspect-square bg-[#fcfcfc] border border-gray-100 rounded-3xl flex items-center justify-center p-8 shadow-inner">
-                    <img 
-                      src="https://m.media-amazon.com/images/I/71YJ0M7-wSL._AC_SL1500_.jpg" 
-                      alt="Preview" 
-                      className="max-h-full object-contain mix-blend-multiply" 
-                    />
-                  </div>
-                  <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-6">
-                    <p className="text-[9px] text-blue-600 font-black text-center uppercase mb-3">Ficha Técnica Proveedor</p>
-                    <button type="button" className="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-bold flex items-center justify-center gap-2 hover:shadow-sm">
-                      <CloudUpload size={14} /> ADJUNTAR PDF
-                    </button>
-                  </div>
-                </div>
+            <div class="card-main shadow-[0_20px_50px_rgba(0,0,0,0.04)] p-12">
+                <form id="formInventario">
+                    <div class="grid grid-cols-12 gap-12">
+                        
+                        <div class="col-span-12 lg:col-span-4 space-y-6">
+                            <label>Fotografía & Adjuntos</label>
+                            <div class="aspect-square bg-slate-50 border border-slate-100 rounded-[30px] flex items-center justify-center p-8">
+                                <img src="https://m.media-amazon.com/images/I/71YJ0M7-wSL._AC_SL1500_.jpg" class="max-h-full object-contain mix-blend-multiply">
+                            </div>
+                            <div class="bg-blue-50/50 border border-blue-100 rounded-[25px] p-6 text-center">
+                                <p class="text-[9px] text-blue-600 font-black uppercase mb-3">Ficha Técnica Proveedor</p>
+                                <button type="button" class="w-full bg-white border border-blue-200 py-2.5 rounded-xl text-blue-600 text-[10px] font-bold shadow-sm flex items-center justify-center gap-2">
+                                    ☁️ ADJUNTAR PDF
+                                </button>
+                            </div>
+                        </div>
 
-                {/* COLUMNA DERECHA */}
-                <div className="col-span-8">
-                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Información Técnica del Insumo</h3>
-                  <div className="grid grid-cols-3 gap-4">
-                    <Field label="Item *" name="item" value={formData.item} onChange={handleChange} />
-                    <Field label="SKU" name="sku" value={formData.sku} onChange={handleChange} />
-                    <Field label="SKU ENGE" name="skuEnge" value={formData.skuEnge} onChange={handleChange} />
-                    
-                    <Field label="Centro" name="centro" value={formData.centro} onChange={handleChange} />
-                    <Field label="Codificación" name="codificacion" value={formData.codificacion} onChange={handleChange} />
-                    <Field label="Fabricante" name="fabricante" value={formData.fabricante} onChange={handleChange} />
-                    
-                    <Field label="Marca" name="marca" value={formData.marca} onChange={handleChange} />
-                    <Field label="Modelo" name="modelo" value={formData.modelo} onChange={handleChange} />
-                    <Field label="N° de Parte" name="nParte" value={formData.nParte} onChange={handleChange} />
-                    
-                    <div className="col-span-1">
-                      <Field label="Código Designación" name="codDesignacion" value={formData.codDesignacion} onChange={handleChange} />
+                        <div class="col-span-12 lg:col-span-8">
+                            <label class="mb-6">Información Técnica del Insumo</label>
+                            <div class="grid grid-cols-3 gap-x-4 gap-y-5">
+                                <div><label>Item *</label><input type="text" name="item" class="input-field" value="CHMAPION"></div>
+                                <div><label>SKU</label><input type="text" name="sku" class="input-field" value="SAFD"></div>
+                                <div><label>SKU ENGE</label><input type="text" name="skuEnge" class="input-field" value="KJHKHG"></div>
+                                
+                                <div><label>Centro</label><input type="text" name="centro" class="input-field" value="HKGHJGHJK"></div>
+                                <div><label>Codificación</label><input type="text" name="codificacion" class="input-field" value="KGHJKJH"></div>
+                                <div><label>Fabricante</label><input type="text" name="fabricante" class="input-field" value="KJGHJ"></div>
+                                
+                                <div><label>Marca</label><input type="text" name="marca" class="input-field" value="KGH"></div>
+                                <div><label>Modelo</label><input type="text" name="modelo" class="input-field" value="HJKGHKJ"></div>
+                                <div><label>N° de Parte</label><input type="text" name="nParte" class="input-field" value="KHGKHJGH"></div>
+                                
+                                <div class="col-span-1"><label>Código Designación</label><input type="text" name="codDesignacion" class="input-field" value="KHG"></div>
+                                <div class="col-span-2"><label>Descripción Breve</label><input type="text" name="descBreve" class="input-field" value="GHKJH"></div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="col-span-2">
-                      <Field label="Descripción Breve" name="descBreve" value={formData.descBreve} onChange={handleChange} />
+
+                    <div class="mt-10 pt-6 border-t border-slate-50">
+                        <label>Especificaciones Técnicas (EETT)</label>
+                        <textarea name="eett" rows="3" class="input-field mt-2">KHGJKGHJ</textarea>
                     </div>
-                  </div>
-                </div>
-              </div>
 
-              {/* EETT */}
-              <div>
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Especificaciones Técnicas (EETT)</h3>
-                <textarea 
-                  name="eett"
-                  value={formData.eett}
-                  onChange={handleChange}
-                  className="w-full bg-slate-50 border border-gray-200 rounded-xl p-4 text-xs h-24 outline-none focus:border-blue-500"
-                />
-              </div>
+                    <div class="grid grid-cols-4 gap-4 mt-6">
+                        <div><label>Peso</label><input type="text" name="peso" class="input-field" value="HKGH"></div>
+                        <div><label>Volumen</label><input type="text" name="volumen" class="input-field" value="GHKK"></div>
+                        <div><label>U. Medida</label><input type="text" name="uMedida" class="input-field" value="GHKJH"></div>
+                        <div>
+                            <label>Estado</label>
+                            <div class="input-field font-black text-slate-800 bg-slate-100/50">ACTIVO</div>
+                        </div>
+                    </div>
 
-              {/* LOGISTICA Y ESTADO */}
-              <div className="grid grid-cols-4 gap-4">
-                <Field label="Peso" name="peso" value={formData.peso} onChange={handleChange} />
-                <Field label="Volumen" name="volumen" value={formData.volumen} onChange={handleChange} />
-                <Field label="U. Medida" name="uMedida" value={formData.uMedida} onChange={handleChange} />
-                <div className="flex flex-col">
-                  <label className="text-[9px] font-black text-slate-400 uppercase mb-1">Estado</label>
-                  <div className="bg-slate-50 border border-gray-200 rounded-lg p-2 text-[10px] font-black text-slate-800">ACTIVO</div>
-                </div>
-              </div>
+                    <div class="mt-10 pt-6 border-t border-slate-50">
+                        <label>Logística & Control de Stock</label>
+                        <div class="grid grid-cols-3 gap-4 mt-4">
+                            <div><label>Requiere MX Bodega</label><input type="text" name="bodega" class="input-field" value="FGDSG"></div>
+                            <div><label>Contar Total</label><input type="number" name="total" class="input-field" value="20"></div>
+                            <div><label>Contar Completo</label><input type="text" name="completo" class="input-field"></div>
+                        </div>
+                        <div class="mt-4">
+                            <textarea name="comentarios" rows="2" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
+                        </div>
+                    </div>
 
-              {/* STOCK */}
-              <div className="pt-6 border-t border-gray-100">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Logística & Control de Stock</h3>
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <Field label="Requiere MX Bodega" name="requiereBodega" value={formData.requiereBodega} onChange={handleChange} />
-                  <Field label="Contar Total" name="contarTotal" value={formData.contarTotal} onChange={handleChange} type="number" />
-                  <Field label="Contar Completo" name="contarCompleto" value={formData.contarCompleto} onChange={handleChange} />
-                </div>
-                <textarea 
-                  name="comentarios"
-                  value={formData.comentarios}
-                  onChange={handleChange}
-                  className="w-full bg-slate-50 border border-gray-200 rounded-xl p-4 text-xs h-20 outline-none focus:border-blue-500"
-                />
-              </div>
+                    <div class="mt-12 flex justify-end items-center gap-8">
+                        <button type="button" class="text-xs font-bold text-slate-400 hover:text-slate-600 transition">VOLVER</button>
+                        <button type="submit" class="bg-blue-600 text-white px-10 py-4 rounded-2xl font-black text-[11px] shadow-xl shadow-blue-200 flex items-center gap-3 hover:bg-blue-700 transition-all active:scale-95">
+                            📄 1. GUARDAR REGISTRO
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
 
-              {/* BOTONES */}
-              <div className="flex justify-end items-center gap-8 pt-6">
-                <button type="button" className="text-xs font-bold text-slate-400 hover:text-slate-600 transition">VOLVER</button>
-                <button type="submit" className="bg-[#2563eb] text-white px-10 py-4 rounded-2xl font-black text-xs shadow-[0_10px_25px_rgba(37,99,235,0.3)] hover:bg-blue-700 transition flex items-center gap-3">
-                  <Save size={16} /> 1. GUARDAR REGISTRO
-                </button>
-              </div>
-            </form>
-          </div>
-        </section>
-      </main>
-    </div>
-  );
-};
-
-// Componente auxiliar para los campos (inputs)
-const Field = ({ label, name, value, onChange, type = "text" }) => (
-  <div className="flex flex-col">
-    <label className="text-[9px] font-black text-slate-400 uppercase mb-1">{label}</label>
-    <input 
-      type={type}
-      name={name}
-      value={value}
-      onChange={onChange}
-      className="bg-slate-50 border border-gray-200 rounded-lg p-2 text-[11px] text-slate-700 focus:bg-white focus:border-blue-500 outline-none transition"
-    />
-  </div>
-);
-
-export default PanelGestionInventario;
+    <script>
+        // Lógica para capturar los datos sin errores de INP
+        document.getElementById('formInventario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const data = Object.fromEntries(new FormData(this).entries());
+            console.log("Datos enviados a Ecosistema AI:", data);
+            alert("¡Registro Guardado! Revisa la consola.");
+        });
+    </script>
+</body>
+</html>
