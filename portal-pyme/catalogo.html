@@ -1,297 +1,192 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Catálogo Pro - misdocumentosapp.com</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+import React, { useState, useCallback } from 'react';
+import { Save, CloudUpload, ArrowLeft, MoreVertical } from 'lucide-react';
 
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; margin: 0; height: 100vh; overflow: hidden; }
-        .custom-scroll::-webkit-scrollbar { width: 5px; height: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        
-        /* ALTA DENSIDAD VISUAL (ZOOM 100%) */
-        .input-dense { width: 100%; padding: 7px 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 0.78rem; outline: none; transition: 0.1s; background: white; color: #0f172a; }
-        .input-dense:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.05); }
-        .section-tag { font-weight: 800; font-size: 0.58rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; border-bottom: 2px solid #f1f5f9; padding-bottom: 3px; margin-bottom: 12px; display: block; }
-        
-        /* SIDEBAR */
-        .nav-item { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; font-weight: 600; font-size: 0.8rem; color: #94a3b8; cursor: pointer; transition: 0.2s; }
-        .nav-item.active { background-color: #2563eb; color: white !important; box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2); }
+const PanelGestionInventario = () => {
+  // Estado inicial con todos los campos de la imagen
+  const [formData, setFormData] = useState({
+    item: 'CHMAPION',
+    sku: 'SAFD',
+    skuEnge: 'KJHKHG',
+    centro: 'HKGHJGHJK',
+    codificacion: 'KGHJKJH',
+    fabricante: 'KJGHJ',
+    marca: 'KGH',
+    modelo: 'HJKGHKJ',
+    nParte: 'KHGKHJGH',
+    codDesignacion: 'KHG',
+    descBreve: 'GHKJH',
+    eett: 'KHGJKGHJ',
+    peso: 'HKGH',
+    volumen: 'GHKK',
+    uMedida: 'GHKJH',
+    estado: 'ACTIVO',
+    requiereBodega: 'FGDSG',
+    contarTotal: '20',
+    contarCompleto: '',
+    comentarios: 'Ubicación física / Comentarios adicionales...'
+  });
 
-        /* AISLAMIENTO PDF: Evita el Crash removeChild */
-        #pdf-isolate-engine { position: fixed; left: -20000px; top: 0; width: 816px; background: white; z-index: -1; visibility: hidden; }
-    </style>
-</head>
-<body>
-    <div id="pdf-isolate-engine"></div>
-    <div id="root"></div>
+  // Optimización para evitar el error de INP (Interaction to Next Paint)
+  const handleChange = useCallback((e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  }, []);
 
-    <script type="text/babel">
-        const { useState, useEffect } = React;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    console.log("Enviando a Ecosistema AI:", formData);
+    // Aquí iría tu fetch('/api/inventario', { method: 'POST', body: JSON.stringify(formData) })
+    alert("Registro guardado exitosamente");
+  };
 
-        const Icon = ({ name, size = 16, className = "" }) => {
-            useEffect(() => { if(window.lucide) lucide.createIcons(); }, [name]);
-            return <i data-lucide={name} style={{ width: size, height: size }} className={className}></i>;
-        };
+  return (
+    <div className="flex min-h-screen bg-[#f8fafc] font-sans">
+      
+      {/* SIDEBAR */}
+      <aside className="w-64 bg-[#0f172a] text-white p-6 flex flex-col">
+        <div className="mb-8">
+          <h1 className="text-xl font-black tracking-tighter">MIS DOCUMENTOS</h1>
+          <p className="text-[10px] text-blue-400 font-bold tracking-[0.2em]">ECOSISTEMA AI</p>
+        </div>
+        <nav className="space-y-2">
+          <div className="flex items-center gap-3 p-3 text-gray-400 text-sm hover:bg-slate-800 rounded-lg cursor-pointer">
+            <span>📋</span> Inventario Pro
+          </div>
+          <div className="flex items-center gap-3 p-3 bg-blue-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-blue-900/20">
+            <span className="text-lg">⊕</span> Nuevo Registro
+          </div>
+        </nav>
+      </aside>
 
-        // ESTRUCTURA MAESTRA INTEGRAL (22 CAMPOS + 4 PROVEEDOR)
-        const emptyProduct = { 
-            id: null, item: '', sku: '', skuEngie: '', centro: '', codificacion: '', description: '', 
-            fabricante: '', marca: '', modelo: '', nParte: '', codigoDesignacion: '', unidadMedida: '',
-            eett: '', peso: '', volumen: '', requiereMx: '', contarTotal: '', contarCompleto: '',
-            proveedor: 'ELECTRICO', razonSocial: 'DEL SOLAR TRUCK & CARS SPA', rut: '76.779.159-3', 
-            whatsapp: '+569-47436919', email: 'sadelsolar@gmail.com', comentarios: '', image: null 
-        };
+      {/* CONTENIDO PRINCIPAL */}
+      <main className="flex-1">
+        <header className="h-16 bg-white border-b flex items-center px-8 justify-between">
+          <h2 className="text-[11px] font-black text-slate-500 uppercase tracking-widest">Panel de Gestión</h2>
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-slate-200 rounded-full border-2 border-white shadow-sm"></div>
+          </div>
+        </header>
 
-        function App() {
-            const [products, setProducts] = useState([]);
-            const [currentView, setCurrentView] = useState('list'); 
-            const [selectedProduct, setSelectedProduct] = useState(null);
-            const [isSaving, setIsSaving] = useState(false);
-            const [searchTerm, setSearchTerm] = useState('');
-            const [toast, setToast] = useState(null);
+        <section className="p-12 max-w-6xl mx-auto relative">
+          
+          {/* BOTÓN FLOTANTE (Presente en tu imagen) */}
+          <button className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#2d3748] text-white rounded-full flex items-center justify-center shadow-xl z-10 hover:scale-110 transition">
+            <MoreVertical size={20} />
+          </button>
 
-            useEffect(() => {
-                const saved = localStorage.getItem('catalog_v2026_final_data');
-                if (saved) setProducts(JSON.parse(saved));
-            }, []);
-
-            const handleSave = (productData) => {
-                setIsSaving(true);
-                // Retardo asíncrono para prevenir bloqueo de memoria
-                setTimeout(() => {
-                    const id = productData.id || Date.now();
-                    const finalData = { ...productData, id };
-                    const updated = productData.id ? products.map(p => p.id === id ? finalData : p) : [finalData, ...products];
-                    
-                    setProducts(updated);
-                    localStorage.setItem('catalog_v2026_final_data', JSON.stringify(updated));
-                    
-                    setIsSaving(false);
-                    setSelectedProduct(finalData);
-                    setToast("✅ Registro guardado con éxito.");
-                    setTimeout(() => setToast(null), 3000);
-                }, 150);
-            };
-
-            const triggerPDF = () => {
-                const data = selectedProduct;
-                const engine = document.getElementById('pdf-isolate-engine');
-                engine.style.visibility = 'visible';
-                
-                // Renderizado manual para proteger el DOM de React
-                engine.innerHTML = `
-                    <div style="padding: 60px; min-height: 1248px; font-family: sans-serif; position: relative;">
-                        <div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 4px solid #0f172a; padding-bottom: 20px; margin-bottom: 40px;">
-                            <div>
-                                <h1 style="font-size: 32px; margin: 0; text-transform: uppercase;">${data.item}</h1>
-                                <p style="color: #2563eb; font-weight: bold; margin-top: 5px;">Ficha Técnica Oficial de Gestión</p>
-                            </div>
-                            <p style="font-weight: bold; font-size: 18px;">SKU: ${data.skuEngie || 'S/N'}</p>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px;">
-                            <div>
-                                <div style="width: 100%; aspect-ratio: 1; background: #f8fafc; border-radius: 20px; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid #e2e8f0;">
-                                    ${data.image ? `<img src="${data.image}" style="width: 100%; height: 100%; object-fit: contain;">` : '<p style="color:#cbd5e1">Sin Imagen</p>'}
-                                </div>
-                                <div style="margin-top: 30px; background: #0f172a; color: white; padding: 10px 20px; border-radius: 0 15px 15px 0; font-size: 12px; font-weight: bold;">ORIGEN</div>
-                                <div style="font-size: 12px; line-height: 1.8; margin-top: 15px; color: #475569;">
-                                    <b>PROVEEDOR:</b> ${data.razonSocial}<br>
-                                    <b>RUT:</b> ${data.rut}<br>
-                                    <b>CONTACTO:</b> ${data.whatsapp}
-                                </div>
-                            </div>
-                            <div>
-                                <div style="background: #2563eb; color: white; padding: 10px 20px; border-radius: 0 15px 15px 0; font-size: 12px; font-weight: bold;">ESPECIFICACIONES TÉCNICAS</div>
-                                <pre style="font-size: 13px; white-space: pre-wrap; background: #f8fafc; padding: 20px; border-radius: 15px; margin-top: 15px; border: 1px solid #e2e8f0; min-height: 300px; font-family: monospace;">${data.eett || 'Sin información adicional.'}</pre>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 11px; margin-top: 20px; text-transform: uppercase;">
-                                    <div style="background: #f1f5f9; padding: 12px; border-radius: 10px;"><b>MARCA:</b> ${data.marca}</div>
-                                    <div style="background: #f1f5f9; padding: 12px; border-radius: 10px;"><b>MODELO:</b> ${data.modelo}</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div style="position: absolute; bottom: 40px; left: 60px; right: 60px; text-align: center; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 9px; color: #94a3b8; font-weight: bold;">
-                            managed by misdocumentosapp.com
-                        </div>
-                    </div>
-                `;
-
-                const opt = {
-                    margin: 0, filename: `Ficha_${data.item}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
-                    jsPDF: { unit: 'mm', format: [216, 330], orientation: 'portrait' }
-                };
-                html2pdf().set(opt).from(engine).save().then(() => { engine.style.visibility = 'hidden'; engine.innerHTML = ''; });
-            };
-
-            const handleDelete = (id) => {
-                if(window.confirm("¿Confirmas la eliminación definitiva del registro?")) {
-                    const updated = products.filter(p => p.id !== id);
-                    setProducts(updated);
-                    localStorage.setItem('catalog_v2026_final_data', JSON.stringify(updated));
-                }
-            };
-
-            return (
-                <div className="flex h-screen overflow-hidden">
-                    <aside className="w-64 bg-[#0f172a] p-6 flex flex-col shrink-0 shadow-2xl">
-                        <div className="mb-10 text-white px-2">
-                            <h2 className="font-extrabold text-xl uppercase italic tracking-tighter">MIS DOCUMENTOS</h2>
-                            <p className="text-blue-500 text-[10px] font-bold uppercase mt-1">Ecosistema AI</p>
-                        </div>
-                        <nav className="flex-1 space-y-2">
-                            <div onClick={() => setCurrentView('list')} className={`nav-item ${currentView === 'list' ? 'active' : ''}`}><Icon name="database" /> Inventario Pro</div>
-                            <div onClick={() => { setSelectedProduct(emptyProduct); setCurrentView('form'); }} className={`nav-item ${currentView === 'form' ? 'active' : ''}`}><Icon name="plus-circle" /> Nuevo Registro</div>
-                        </nav>
-                        <div className="mt-auto p-4 bg-black/20 rounded-xl text-[7px] text-slate-500 font-bold uppercase border border-white/5">
-                            <p>managed by <span className="text-blue-500 font-black">misdocumentosapp.com</span></p>
-                        </div>
-                    </aside>
-
-                    <main className="flex-1 flex flex-col bg-slate-50 overflow-hidden min-w-0">
-                        <header className="h-16 bg-white border-b px-8 flex items-center justify-between shrink-0 shadow-sm z-10">
-                            <h1 className="text-sm font-black text-slate-800 uppercase tracking-widest">Panel de Gestión</h1>
-                            <div className="flex items-center gap-4">
-                                {toast && <div className="text-[10px] font-black text-green-600 bg-green-50 px-4 py-2 rounded-full border border-green-100 animate-bounce">{toast}</div>}
-                                {isSaving && <span className="text-[10px] font-black text-blue-600 animate-pulse">SINCRO...</span>}
-                            </div>
-                        </header>
-
-                        <div className="flex-1 overflow-y-auto p-8 lg:p-10 custom-scroll">
-                            {currentView === 'list' ? (
-                                <div className="max-w-7xl mx-auto space-y-6">
-                                    <div className="flex justify-between items-center">
-                                        <button onClick={() => { setSelectedProduct(emptyProduct); setCurrentView('form'); }} className="px-6 py-2.5 bg-blue-600 text-white text-[11px] font-bold rounded-xl shadow-lg hover:bg-blue-700 uppercase transition">Nuevo Item</button>
-                                        <input type="text" placeholder="Filtrar por nombre o SKU..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-80 bg-white border rounded-full px-6 py-2 text-xs outline-none focus:ring-2 focus:ring-blue-500 shadow-sm" />
-                                    </div>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                        {products.filter(p => (p.item || "").toLowerCase().includes(searchTerm.toLowerCase())).map(p => (
-                                            <div key={p.id} className="bg-white p-6 rounded-[2rem] border shadow-sm hover:border-blue-500 transition-all cursor-pointer relative group">
-                                                {/* BOTÓN ELIMINAR */}
-                                                <button onClick={(e) => { e.stopPropagation(); handleDelete(p.id); }} className="absolute top-5 right-5 p-2 text-slate-300 hover:text-red-500 transition opacity-0 group-hover:opacity-100"><Icon name="trash-2" size={18} /></button>
-                                                <div onClick={() => { setSelectedProduct({...emptyProduct, ...p}); setCurrentView('form'); }}>
-                                                    <div className="flex justify-between items-start mb-4">
-                                                        <div className="w-16 h-16 bg-slate-50 rounded-2xl border flex items-center justify-center overflow-hidden shadow-inner">
-                                                            {p.image ? <img src={p.image} className="w-full h-full object-cover" /> : <Icon name="package" size={24} className="text-slate-200" />}
-                                                        </div>
-                                                        <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1.5 rounded-full uppercase">{p.skuEngie || 'CL-00'}</span>
-                                                    </div>
-                                                    <h3 className="font-bold text-slate-800 uppercase text-sm mb-1">{p.item || 'Sín Nombre'}</h3>
-                                                    <p className="text-[10px] text-slate-400 font-medium truncate uppercase">{p.razonSocial}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            ) : (
-                                <ProductForm initialData={selectedProduct} onSave={handleSave} onPDF={triggerPDF} isSaving={isSaving} onCancel={() => setCurrentView('list')} />
-                            )}
-                        </div>
-                    </main>
+          <div className="bg-white rounded-[45px] shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-gray-100 p-12">
+            <form onSubmit={handleSubmit} className="space-y-10">
+              
+              <div className="grid grid-cols-12 gap-12">
+                {/* COLUMNA IZQUIERDA */}
+                <div className="col-span-4 space-y-6">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Fotografía & Adjuntos</h3>
+                  <div className="aspect-square bg-[#fcfcfc] border border-gray-100 rounded-3xl flex items-center justify-center p-8 shadow-inner">
+                    <img 
+                      src="https://m.media-amazon.com/images/I/71YJ0M7-wSL._AC_SL1500_.jpg" 
+                      alt="Preview" 
+                      className="max-h-full object-contain mix-blend-multiply" 
+                    />
+                  </div>
+                  <div className="bg-blue-50/50 border border-blue-100 rounded-3xl p-6">
+                    <p className="text-[9px] text-blue-600 font-black text-center uppercase mb-3">Ficha Técnica Proveedor</p>
+                    <button type="button" className="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-bold flex items-center justify-center gap-2 hover:shadow-sm">
+                      <CloudUpload size={14} /> ADJUNTAR PDF
+                    </button>
+                  </div>
                 </div>
-            );
-        }
 
-        // FORMULARIO INTEGRAL (22 CAMPOS + SEPARACIÓN DE BOTONES)
-        function ProductForm({ initialData, onSave, onPDF, onCancel, isSaving }) {
-            const [form, setForm] = useState(initialData || emptyProduct);
-            const handleImg = (e) => {
-                const f = e.target.files[0];
-                if (f) { const r = new FileReader(); r.onload = (ev) => setForm({...form, image: ev.target.result}); r.readAsDataURL(f); }
-            };
-
-            return (
-                <div className="max-w-7xl mx-auto space-y-4 pb-16 transition-all duration-300">
-                    <div className="bg-white p-10 lg:p-14 rounded-[3.5rem] shadow-2xl border border-slate-200 grid grid-cols-12 gap-10">
-                        
-                        {/* 1. ADJUNTOS */}
-                        <div className="col-span-4 space-y-6">
-                            <span className="section-tag">Fotografía & Adjuntos</span>
-                            <div className="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[2.5rem] flex flex-col items-center justify-center p-6 relative overflow-hidden group hover:border-blue-400 transition cursor-pointer">
-                                {form.image ? <img src={form.image} className="w-full h-full object-contain" /> : <div className="text-center"><Icon name="image" size={48} className="text-slate-200 mx-auto mb-2"/><p className="text-[10px] text-slate-400 font-black uppercase tracking-widest">Subir Foto</p></div>}
-                                <input type="file" onChange={handleImg} className="absolute inset-0 opacity-0 cursor-pointer" />
-                            </div>
-                            <div className="p-4 bg-blue-50 border border-blue-100 rounded-3xl">
-                                <label className="text-[10px] font-black text-blue-800 uppercase block mb-3 text-center tracking-tighter">FICHA TÉCNICA PROVEEDOR</label>
-                                <label className="flex items-center justify-center gap-3 px-4 py-3 bg-white border border-blue-200 rounded-2xl cursor-pointer hover:shadow-md transition">
-                                    <Icon name="upload-cloud" className="text-blue-600" />
-                                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-tighter">Adjuntar PDF</span>
-                                    <input type="file" className="hidden" accept="application/pdf" />
-                                </label>
-                            </div>
-                        </div>
-
-                        {/* 2. INFO TÉCNICA INTEGRAL (12 CAMPOS) */}
-                        <div className="col-span-8 space-y-6">
-                            <span className="section-tag">Información Técnica del Insumo</span>
-                            <div className="grid grid-cols-3 gap-3">
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Item *</label><input className="input-dense" value={form.item} onChange={e => setForm({...form, item: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">sku</label><input className="input-dense" value={form.sku} onChange={e => setForm({...form, sku: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">sku engie</label><input className="input-dense" value={form.skuEngie} onChange={e => setForm({...form, skuEngie: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Centro</label><input className="input-dense" value={form.centro} onChange={e => setForm({...form, centro: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Codificación</label><input className="input-dense" value={form.codificacion} onChange={e => setForm({...form, codificacion: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Fabricante</label><input className="input-dense" value={form.fabricante} onChange={e => setForm({...form, fabricante: e.target.value})} /></div>
-                            </div>
-                            <div className="grid grid-cols-3 gap-3 pt-4 border-t">
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Marca</label><input className="input-dense" value={form.marca} onChange={e => setForm({...form, marca: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Modelo</label><input className="input-dense" value={form.modelo} onChange={e => setForm({...form, modelo: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">N° de Parte</label><input className="input-dense" value={form.nParte} onChange={e => setForm({...form, nParte: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Código Designación</label><input className="input-dense" value={form.codigoDesignacion} onChange={e => setForm({...form, codigoDesignacion: e.target.value})} /></div>
-                                <div className="col-span-2"><label className="text-[10px] font-black text-slate-400 uppercase">Descripción Breve</label><input className="input-dense" value={form.description} onChange={e => setForm({...form, description: e.target.value})} maxLength="40" /></div>
-                            </div>
-                        </div>
-
-                        {/* 3. EETT Y MEDIDAS (4 CAMPOS) */}
-                        <div className="col-span-12 space-y-4 pt-4 border-t">
-                            <span className="section-tag">Especificaciones Técnicas (EETT)</span>
-                            <textarea className="input-dense h-28 font-mono text-[11px]" value={form.eett} onChange={e => setForm({...form, eett: e.target.value})} placeholder="Detalle técnico completo..."></textarea>
-                            <div className="grid grid-cols-4 gap-4">
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Peso</label><input className="input-dense" value={form.peso} onChange={e => setForm({...form, peso: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Volumen</label><input className="input-dense" value={form.volumen} onChange={e => setForm({...form, volumen: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">U. Medida</label><input className="input-dense" placeholder="Ej: C/U" value={form.unidadMedida} onChange={e => setForm({...form, unidadMedida: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Estado</label><input className="input-dense bg-slate-50 font-bold" value="ACTIVO" readOnly /></div>
-                            </div>
-                        </div>
-
-                        {/* 4. LOGÍSTICA (4 CAMPOS) */}
-                        <div className="col-span-12 space-y-4 pt-6 border-t relative">
-                            <span className="section-tag">Logística & Control de Stock</span>
-                            <div className="grid grid-cols-3 gap-6 mb-2">
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Requiere Mx Bodega</label><input className="input-dense" value={form.requiereMx} onChange={e => setForm({...form, requiereMx: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Contar Total</label><input type="number" className="input-dense" value={form.contarTotal} onChange={e => setForm({...form, contarTotal: e.target.value})} /></div>
-                                <div><label className="text-[10px] font-black text-slate-400 uppercase">Contar Completo</label><input type="number" className="input-dense" value={form.contarCompleto} onChange={e => setForm({...form, contarCompleto: e.target.value})} /></div>
-                            </div>
-                            <textarea className="input-dense h-16 font-mono text-[11px]" placeholder="Ubicación física / Comentarios adicionales..." value={form.comentarios} onChange={e => setForm({...form, comentarios: e.target.value})}></textarea>
-                        </div>
-
-                        {/* BOTONES ACCIÓN */}
-                        <div className="col-span-12 flex justify-end gap-5 border-t pt-10 no-print">
-                            <button onClick={onCancel} className="px-10 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase text-[11px] tracking-widest transition">Volver</button>
-                            <button onClick={() => onSave(form)} disabled={isSaving} className="px-12 py-4 bg-blue-600 text-white rounded-2xl font-black uppercase text-[11px] shadow-xl shadow-blue-100 transition active:scale-95 disabled:opacity-50 flex items-center gap-4">
-                                <Icon name="save" /> {isSaving ? 'Guardando...' : '1. Guardar Registro'}
-                            </button>
-                            {form.id && (
-                                <button onClick={onPDF} className="px-12 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase text-[11px] shadow-xl shadow-slate-200 transition active:scale-95 flex items-center gap-4">
-                                    <Icon name="file-text" /> 2. Descargar PDF Oficio
-                                </button>
-                            )}
-                        </div>
+                {/* COLUMNA DERECHA */}
+                <div className="col-span-8">
+                  <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-6">Información Técnica del Insumo</h3>
+                  <div className="grid grid-cols-3 gap-4">
+                    <Field label="Item *" name="item" value={formData.item} onChange={handleChange} />
+                    <Field label="SKU" name="sku" value={formData.sku} onChange={handleChange} />
+                    <Field label="SKU ENGE" name="skuEnge" value={formData.skuEnge} onChange={handleChange} />
+                    
+                    <Field label="Centro" name="centro" value={formData.centro} onChange={handleChange} />
+                    <Field label="Codificación" name="codificacion" value={formData.codificacion} onChange={handleChange} />
+                    <Field label="Fabricante" name="fabricante" value={formData.fabricante} onChange={handleChange} />
+                    
+                    <Field label="Marca" name="marca" value={formData.marca} onChange={handleChange} />
+                    <Field label="Modelo" name="modelo" value={formData.modelo} onChange={handleChange} />
+                    <Field label="N° de Parte" name="nParte" value={formData.nParte} onChange={handleChange} />
+                    
+                    <div className="col-span-1">
+                      <Field label="Código Designación" name="codDesignacion" value={formData.codDesignacion} onChange={handleChange} />
                     </div>
+                    <div className="col-span-2">
+                      <Field label="Descripción Breve" name="descBreve" value={formData.descBreve} onChange={handleChange} />
+                    </div>
+                  </div>
                 </div>
-            );
-        }
+              </div>
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+              {/* EETT */}
+              <div>
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Especificaciones Técnicas (EETT)</h3>
+                <textarea 
+                  name="eett"
+                  value={formData.eett}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-gray-200 rounded-xl p-4 text-xs h-24 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* LOGISTICA Y ESTADO */}
+              <div className="grid grid-cols-4 gap-4">
+                <Field label="Peso" name="peso" value={formData.peso} onChange={handleChange} />
+                <Field label="Volumen" name="volumen" value={formData.volumen} onChange={handleChange} />
+                <Field label="U. Medida" name="uMedida" value={formData.uMedida} onChange={handleChange} />
+                <div className="flex flex-col">
+                  <label className="text-[9px] font-black text-slate-400 uppercase mb-1">Estado</label>
+                  <div className="bg-slate-50 border border-gray-200 rounded-lg p-2 text-[10px] font-black text-slate-800">ACTIVO</div>
+                </div>
+              </div>
+
+              {/* STOCK */}
+              <div className="pt-6 border-t border-gray-100">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4">Logística & Control de Stock</h3>
+                <div className="grid grid-cols-3 gap-4 mb-4">
+                  <Field label="Requiere MX Bodega" name="requiereBodega" value={formData.requiereBodega} onChange={handleChange} />
+                  <Field label="Contar Total" name="contarTotal" value={formData.contarTotal} onChange={handleChange} type="number" />
+                  <Field label="Contar Completo" name="contarCompleto" value={formData.contarCompleto} onChange={handleChange} />
+                </div>
+                <textarea 
+                  name="comentarios"
+                  value={formData.comentarios}
+                  onChange={handleChange}
+                  className="w-full bg-slate-50 border border-gray-200 rounded-xl p-4 text-xs h-20 outline-none focus:border-blue-500"
+                />
+              </div>
+
+              {/* BOTONES */}
+              <div className="flex justify-end items-center gap-8 pt-6">
+                <button type="button" className="text-xs font-bold text-slate-400 hover:text-slate-600 transition">VOLVER</button>
+                <button type="submit" className="bg-[#2563eb] text-white px-10 py-4 rounded-2xl font-black text-xs shadow-[0_10px_25px_rgba(37,99,235,0.3)] hover:bg-blue-700 transition flex items-center gap-3">
+                  <Save size={16} /> 1. GUARDAR REGISTRO
+                </button>
+              </div>
+            </form>
+          </div>
+        </section>
+      </main>
+    </div>
+  );
+};
+
+// Componente auxiliar para los campos (inputs)
+const Field = ({ label, name, value, onChange, type = "text" }) => (
+  <div className="flex flex-col">
+    <label className="text-[9px] font-black text-slate-400 uppercase mb-1">{label}</label>
+    <input 
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="bg-slate-50 border border-gray-200 rounded-lg p-2 text-[11px] text-slate-700 focus:bg-white focus:border-blue-500 outline-none transition"
+    />
+  </div>
+);
+
+export default PanelGestionInventario;
