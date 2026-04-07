@@ -3,149 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario Pro - Ecosistema AI</title>
+    <title>Ecosistema AI - Ficha Técnica Profesional</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; padding: 0; }
-        .input-field {
-            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 10px 14px;
-            font-size: 0.85rem; border-radius: 10px; width: 100%; outline: none; transition: all 0.2s;
-        }
-        .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
-        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
-        .card-main { border-radius: 50px; background: white; border: 1px solid #e2e8f0; }
-        .sidebar { background-color: #0f172a; width: 280px; min-height: 100vh; }
+        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
         
-        /* Estilos para evitar cortes en el PDF */
+        /* Estilos Web */
+        .input-field {
+            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 10px;
+            font-size: 0.85rem; border-radius: 8px; width: 100%; outline: none;
+        }
+        label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .section-title { font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 15px; }
+        .section-title::before { content: ""; width: 6px; height: 6px; background-color: #2563eb; border-radius: 50%; }
+
+        /* MODO PDF: Ajuste para que ocupe la hoja Oficio */
+        .pdf-document-style {
+            width: 100% !important;
+            max-width: none !important;
+            padding: 30px !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            background: white !important;
+        }
+
+        .pdf-document-style .input-field {
+            border: 1.5px solid #cbd5e1 !important;
+            font-size: 1rem !important; /* Fuente más grande en PDF */
+            padding: 12px !important;
+            color: #000 !important;
+        }
+
+        .pdf-document-style label {
+            font-size: 11px !important;
+            color: #475569 !important;
+        }
+
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
-<body class="flex">
+<body class="flex min-h-screen">
 
-    <aside class="sidebar text-white flex flex-col p-8 sticky top-0 h-screen hidden lg:flex no-print">
-        <div class="mb-12">
-            <h1 class="text-2xl font-black tracking-tighter uppercase">Mis Documentos</h1>
-            <p class="text-[10px] text-blue-400 font-bold uppercase tracking-[0.3em]">Ecosistema AI</p>
+    <aside class="w-64 bg-[#0f172a] text-white flex flex-col p-6 sticky top-0 h-screen hidden lg:flex no-print">
+        <div class="mb-10 text-center lg:text-left">
+            <h1 class="text-xl font-black tracking-tighter uppercase">Mis Documentos</h1>
+            <p class="text-[9px] text-blue-400 font-bold uppercase tracking-[0.3em]">Ecosistema AI</p>
         </div>
-        <nav class="space-y-6">
-            <div class="flex items-center gap-4 text-sm text-slate-400 p-2 cursor-pointer hover:text-white transition">
+        <nav class="space-y-4">
+            <div class="flex items-center gap-3 text-sm text-slate-400 p-2 cursor-pointer hover:text-white">
                 <span>📋</span> Inventario Pro
             </div>
-            <div class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer" onclick="limpiarFormulario()">
+            <div onclick="limpiarTodo()" class="flex items-center gap-3 text-sm bg-blue-600 p-3 rounded-xl font-bold shadow-lg cursor-pointer">
                 <span>⊕</span> Nuevo Registro
             </div>
         </nav>
     </aside>
 
     <main class="flex-1 overflow-y-auto">
-        <header class="h-16 bg-white border-b flex items-center px-10 no-print justify-between">
-            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión</h2>
-            <button onclick="limpiarFormulario()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase transition">Limpiar Todo</button>
+        <header class="h-14 bg-white border-b flex items-center px-10 no-print justify-between">
+            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión / Generador de Fichas</h2>
+            <button onclick="limpiarTodo()" class="text-[10px] font-bold text-red-400 hover:text-red-500 uppercase">Limpiar Formulario</button>
         </header>
 
-        <div class="p-8 lg:p-12 max-w-7xl mx-auto">
-            <div id="capture-area" class="card-main p-10 lg:p-14 shadow-2xl bg-white relative">
-                <form id="mainForm">
-                    
+        <div class="p-6 lg:p-10 flex justify-center">
+            <div id="capture-area" class="bg-white rounded-[40px] p-10 lg:p-14 shadow-2xl w-full max-w-5xl border border-slate-100">
+                <form id="insumoForm">
                     <div class="grid grid-cols-12 gap-10">
+                        
                         <div class="col-span-12 lg:col-span-4 space-y-8">
                             <div>
                                 <label>Fotografía del Insumo</label>
-                                <input type="file" id="inputImage" name="fotoInsumo" class="hidden" accept="image/*">
-                                <div onclick="document.getElementById('inputImage').click()" 
-                                     class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex flex-col items-center justify-center p-6 cursor-pointer overflow-hidden relative group">
-                                    <img id="previewImage" class="hidden absolute inset-0 w-full h-full object-contain p-4 bg-white">
-                                    <div id="uploadPrompt" class="text-center group-hover:scale-110 transition">
-                                        <span class="text-3xl block mb-4">📸</span>
-                                        <p class="text-[10px] font-black text-slate-400 uppercase">Haga clic para subir</p>
+                                <input type="file" id="imgInput" class="hidden" accept="image/*">
+                                <div onclick="document.getElementById('imgInput').click()" 
+                                     class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[35px] flex flex-col items-center justify-center p-4 cursor-pointer relative overflow-hidden group">
+                                    <img id="imgPreview" class="hidden absolute inset-0 w-full h-full object-contain p-2 bg-white">
+                                    <div id="imgPlaceholder" class="text-center group-hover:scale-105 transition">
+                                        <span class="text-3xl block mb-2">📸</span>
+                                        <p class="text-[9px] font-black text-slate-400 uppercase">Click para subir imagen</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-blue-50/50 border border-blue-100 rounded-[30px] p-8 text-center">
-                                <p class="text-[10px] text-blue-600 font-black uppercase mb-4 tracking-widest">Ficha Técnica Proveedor</p>
-                                <input type="file" id="inputPdf" name="pdfTecnico" class="hidden" accept=".pdf">
-                                <button type="button" onclick="document.getElementById('inputPdf').click()" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm hover:bg-blue-50 transition">
-                                    ☁️ <span id="pdfLabel">ADJUNTAR PDF</span>
+                            <div id="statusPdfBox" class="bg-blue-50 border border-blue-100 rounded-[25px] p-6 text-center">
+                                <p class="text-[9px] text-blue-600 font-black uppercase mb-3">Ficha Técnica Proveedor</p>
+                                <input type="file" id="pdfInput" class="hidden" accept=".pdf">
+                                <button type="button" onclick="document.getElementById('pdfInput').click()" class="w-full bg-white border border-blue-200 py-2 rounded-xl text-blue-600 text-[10px] font-black shadow-sm">
+                                    <span id="pdfLabel">📎 ADJUNTAR PDF</span>
                                 </button>
+                                <p id="pdfPresentText" class="hidden text-[10px] font-bold text-green-600 mt-2 uppercase tracking-tighter">✅ Archivo adjunto detectado</p>
                             </div>
                         </div>
 
                         <div class="col-span-12 lg:col-span-8 space-y-10">
                             <div>
-                                <h3 class="text-[11px] font-black text-blue-600 uppercase tracking-widest mb-6 border-b pb-2 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> Información Técnica
-                                </h3>
+                                <h3 class="section-title">Información Técnica</h3>
                                 <div class="grid grid-cols-3 gap-4">
-                                    <div><label>Item *</label><input type="text" name="item" class="input-field" required></div>
+                                    <div><label>Item *</label><input type="text" name="item" class="input-field" placeholder="Ej: SILLA" required></div>
                                     <div><label>SKU</label><input type="text" name="sku" class="input-field"></div>
                                     <div><label>SKU ENGE</label><input type="text" name="skuEnge" class="input-field"></div>
                                     <div><label>Centro</label><input type="text" name="centro" class="input-field"></div>
-                                    <div><label>Codificación</label><input type="text" name="codificacion" class="input-field"></div>
-                                    <div><label>Fabricante</label><input type="text" name="fabricante" class="input-field"></div>
+                                    <div><label>Codificación</label><input type="text" name="cod" class="input-field"></div>
+                                    <div><label>Fabricante</label><input type="text" name="fab" class="input-field"></div>
                                     <div><label>Marca</label><input type="text" name="marca" class="input-field"></div>
                                     <div><label>Modelo</label><input type="text" name="modelo" class="input-field"></div>
                                     <div><label>N° Parte</label><input type="text" name="nParte" class="input-field"></div>
-                                    <div class="col-span-1"><label>Cód. Designación</label><input type="text" name="codDesig" class="input-field"></div>
-                                    <div class="col-span-2"><label>Descripción Breve</label><input type="text" name="descBreve" class="input-field"></div>
+                                    <div class="col-span-1"><label>Cód. Designación</label><input type="text" name="codD" class="input-field"></div>
+                                    <div class="col-span-2"><label>Descripción Breve</label><input type="text" name="descB" class="input-field"></div>
                                 </div>
                             </div>
 
-                            <div>
-                                <h3 class="text-[11px] font-black text-blue-600 uppercase tracking-widest mb-6 border-b pb-2 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> Datos del Proveedor
-                                </h3>
+                            <div class="pt-6 border-t border-slate-100">
+                                <h3 class="section-title">Datos del Proveedor</h3>
                                 <div class="grid grid-cols-2 gap-4">
-                                    <div><label>Nombre / Razón Social</label><input type="text" name="provNombre" class="input-field"></div>
-                                    <div><label>RUT / Tax ID</label><input type="text" name="provRut" class="input-field"></div>
-                                    <div><label>Contacto Vendedor</label><input type="text" name="provContacto" class="input-field"></div>
-                                    <div><label>Email / Teléfono</label><input type="text" name="provEmail" class="input-field"></div>
+                                    <div><label>Nombre / Razón Social</label><input type="text" name="pNombre" class="input-field"></div>
+                                    <div><label>RUT / Tax ID</label><input type="text" name="pRut" class="input-field"></div>
+                                    <div><label>Contacto Vendedor</label><input type="text" name="pCont" class="input-field"></div>
+                                    <div><label>Email / Teléfono</label><input type="text" name="pMail" class="input-field"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-10">
+                    <div class="mt-8">
                         <label>Especificaciones Técnicas (EETT)</label>
-                        <textarea name="eett" rows="3" class="input-field font-mono text-xs placeholder-slate-300" placeholder="Ingrese detalles técnicos aquí..."></textarea>
+                        <textarea name="eett" rows="3" class="input-field font-mono text-xs"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-4 mt-8">
+                    <div class="grid grid-cols-4 gap-4 mt-6">
                         <div><label>Peso</label><input type="text" name="peso" class="input-field"></div>
-                        <div><label>Volumen</label><input type="text" name="volumen" class="input-field"></div>
-                        <div><label>U. Medida</label><input type="text" name="uMedida" class="input-field"></div>
+                        <div><label>Volumen</label><input type="text" name="vol" class="input-field"></div>
+                        <div><label>U. Medida</label><input type="text" name="med" class="input-field"></div>
                         <div>
                             <label>Estado</label>
-                            <select name="estado" class="input-field font-black text-blue-600 bg-slate-50">
-                                <option value="ACTIVO" selected>ACTIVO</option>
-                                <option value="INACTIVO">INACTIVO</option>
-                            </select>
+                            <div class="input-field font-black text-blue-600 bg-blue-50/30 text-center">ACTIVO</div>
                         </div>
                     </div>
 
-                    <div class="mt-10 pt-8 border-t border-slate-100">
-                        <label class="mb-4 text-blue-600">Logística & Control de Stock</label>
-                        <div class="grid grid-cols-3 gap-4 mb-4">
-                            <div><label>Requiere MX Bodega</label><input type="text" name="logBodega" class="input-field"></div>
-                            <div><label>Contar Total</label><input type="number" name="logTotal" class="input-field"></div>
-                            <div><label>Contar Completo</label><input type="text" name="logCompleto" class="input-field"></div>
-                        </div>
-                        <textarea name="logComentarios" rows="2" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
-                    </div>
-
-                    <div class="mt-16 flex justify-end items-center gap-6 no-print">
-                        <button type="button" class="text-xs font-bold text-slate-400 uppercase">Volver</button>
-                        
+                    <div class="mt-12 flex justify-end items-center gap-6 no-print">
                         <button type="button" onclick="exportarFichaOficio()" 
-                                class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-2xl font-black text-[11px] hover:bg-blue-50 transition-all flex items-center gap-3">
-                            📥 EXPORTAR PDF
+                                class="bg-white border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-2xl font-black text-[11px] shadow-lg hover:bg-blue-50 transition-all flex items-center gap-3">
+                            📥 EXPORTAR PDF (OFICIO)
                         </button>
 
-                        <button type="submit" class="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black text-[11px] shadow-xl hover:bg-blue-700 transition-all active:scale-95">
+                        <button type="submit" class="bg-blue-600 text-white px-12 py-4 rounded-2xl font-black text-[11px] shadow-2xl shadow-blue-200 flex items-center gap-4 hover:bg-blue-700 transition-all">
                             📄 1. GUARDAR REGISTRO
                         </button>
                     </div>
@@ -155,71 +159,63 @@
     </main>
 
     <script>
-        // 1. MANEJO DE IMAGEN
-        document.getElementById('inputImage').addEventListener('change', function() {
+        // Previsualización de Imagen
+        document.getElementById('imgInput').addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const preview = document.getElementById('previewImage');
-                    const prompt = document.getElementById('uploadPrompt');
+                    const preview = document.getElementById('imgPreview');
                     preview.src = e.target.result;
                     preview.classList.remove('hidden');
-                    prompt.classList.add('hidden');
+                    document.getElementById('imgPlaceholder').classList.add('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // 2. MANEJO DE PDF LABEL
-        document.getElementById('inputPdf').addEventListener('change', function() {
+        // Etiqueta de PDF y cambio de estado para el exportable
+        document.getElementById('pdfInput').addEventListener('change', function() {
             if (this.files[0]) {
-                document.getElementById('pdfLabel').innerText = "CARGADO: " + this.files[0].name.substring(0, 10) + "...";
+                document.getElementById('pdfLabel').innerText = "✅ CARGADO: " + this.files[0].name.substring(0, 10) + "...";
+                document.getElementById('pdfPresentText').classList.remove('hidden'); // Mostrar aviso en PDF
             }
         });
 
-        // 3. FUNCIÓN LIMPIAR FORMULARIO
-        function limpiarFormulario() {
-            document.getElementById('mainForm').reset();
-            const preview = document.getElementById('previewImage');
-            const prompt = document.getElementById('uploadPrompt');
-            preview.classList.add('hidden');
-            preview.src = "";
-            prompt.classList.remove('hidden');
-            document.getElementById('pdfLabel').innerText = "ADJUNTAR PDF";
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function limpiarTodo() {
+            document.getElementById('insumoForm').reset();
+            document.getElementById('imgPreview').classList.add('hidden');
+            document.getElementById('imgPlaceholder').classList.remove('hidden');
+            document.getElementById('pdfLabel').innerText = "📎 ADJUNTAR PDF";
+            document.getElementById('pdfPresentText').classList.add('hidden');
         }
 
-        // 4. GENERAR PDF TAMAÑO OFICIO (LEGAL)
+        // FUNCIÓN DE EXPORTACIÓN DEFINITIVA
         function exportarFichaOficio() {
-            const element = document.getElementById('capture-area');
+            const area = document.getElementById('capture-area');
             const itemName = document.getElementsByName('item')[0].value || 'Insumo';
 
-            // Escalar un poco hacia abajo para asegurar que entre en la hoja
-            element.style.transform = "scale(0.96)";
-            element.style.transformOrigin = "top center";
+            // Activar Modo Documento (PDF)
+            area.classList.add('pdf-document-style');
 
-            const opt = {
+            const opciones = {
                 margin:       [5, 5, 5, 5],
-                filename:     `Ficha_${itemName}.pdf`,
+                filename:     `FICHA_${itemName}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2, useCORS: true, letterRendering: true },
-                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' },
-                pagebreak:    { mode: 'avoid-all' }
+                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                element.style.transform = "scale(1)";
+            html2pdf().set(opciones).from(area).save().then(() => {
+                // Desactivar Modo Documento al terminar
+                area.classList.remove('pdf-document-style');
             });
         }
 
-        // 5. GUARDAR Y REINICIAR
-        document.getElementById('mainForm').addEventListener('submit', function(e) {
+        document.getElementById('insumoForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const data = Object.fromEntries(new FormData(this).entries());
-            console.log("Datos Guardados:", data);
-            alert("¡Registro de " + data.item + " guardado con éxito! El formulario se limpiará.");
-            limpiarFormulario();
+            alert("Información guardada. Limpiando para nuevo registro...");
+            limpiarTodo();
         });
     </script>
 </body>
