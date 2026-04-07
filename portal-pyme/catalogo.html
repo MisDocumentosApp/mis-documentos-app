@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ecosistema AI - Gestión Pro</title>
+    <title>Ecosistema AI - Gestión de Inventario Pro</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -12,6 +12,7 @@
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; overflow-x: hidden; }
         
+        /* Estilos de Interfaz Web */
         .input-field {
             background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 10px 14px;
             font-size: 0.85rem; border-radius: 12px; width: 100%; outline: none; transition: all 0.2s;
@@ -26,10 +27,10 @@
         .section-title { font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
         .section-title::before { content: ""; width: 6px; height: 6px; background-color: #2563eb; border-radius: 50%; }
 
-        /* --- MODO DOCUMENTO PDF (AJUSTE TOTAL A HOJA OFICIO) --- */
+        /* --- ARQUITECTURA PARA PDF (AJUSTE TOTAL A HOJA OFICIO) --- */
         /* Esta clase fuerza al navegador a renderizar en tamaño papel antes de la captura */
         .pdf-strict-print { 
-            width: 800px !important; 
+            width: 816px !important; /* Ancho exacto hoja Oficio a 96dpi */
             padding: 40px !important; 
             border-radius: 0 !important; 
             border: none !important; 
@@ -38,7 +39,7 @@
             background-color: white !important;
         }
         .pdf-strict-print .input-field { border: 1.5px solid #cbd5e1 !important; font-size: 1rem !important; color: #000 !important; background-color: white !important; }
-        .pdf-strict-print label { color: #64748b !important; font-size: 11px !important; }
+        .pdf-strict-print label { color: #64748b !important; font-size: 11px !important; font-weight: 900 !important; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -54,7 +55,7 @@
             <div class="flex items-center gap-4 text-sm text-slate-400 p-2 cursor-pointer hover:text-white transition">
                 <span>📋</span> Inventario Pro
             </div>
-            <div onclick="limpiarFormularioAsync()" class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer hover:bg-blue-700 transition">
+            <div onclick="limpiarTodoAsync()" class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer hover:bg-blue-700 transition">
                 <span>⊕</span> Nuevo Registro
             </div>
         </nav>
@@ -63,7 +64,7 @@
     <main class="flex-1 overflow-y-auto">
         <header class="h-16 bg-white border-b flex items-center px-10 no-print justify-between sticky top-0 z-10">
             <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión</h2>
-            <button onclick="limpiarFormularioAsync()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase transition tracking-tighter">Limpiar Campos</button>
+            <button onclick="limpiarTodoAsync()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase transition tracking-tighter">Limpiar Campos</button>
         </header>
 
         <div class="p-8 lg:p-12 flex justify-center">
@@ -72,9 +73,9 @@
                 <div id="pdf-header" class="hidden border-b-4 border-blue-600 pb-6 mb-10 justify-between items-end">
                     <div>
                         <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Ficha Técnica de Insumo</h1>
-                        <p class="text-blue-600 font-bold text-xs uppercase tracking-widest">Ecosistema AI - Sistema Profesional</p>
+                        <p class="text-blue-600 font-bold text-xs uppercase tracking-widest">Ecosistema AI - Sistema de Gestión</p>
                     </div>
-                    <p class="text-lg font-bold text-slate-800" id="current-date"></p>
+                    <p class="text-lg font-bold text-slate-800" id="current-date-pdf"></p>
                 </div>
 
                 <form id="mainForm">
@@ -82,13 +83,13 @@
                         <div class="col-span-12 lg:col-span-4 space-y-8">
                             <div>
                                 <label>Fotografía del Insumo</label>
-                                <input type="file" id="imageInput" class="hidden" accept="image/*">
+                                <input type="file" id="imageInput" name="foto" class="hidden" accept="image/*">
                                 <div onclick="document.getElementById('imageInput').click()" 
                                      class="aspect-square bg-slate-50 border-2 border-dashed border-slate-200 rounded-[40px] flex flex-col items-center justify-center p-6 cursor-pointer overflow-hidden relative group transition hover:bg-blue-50">
                                     <img id="imagePreview" class="hidden absolute inset-0 w-full h-full object-contain p-4 bg-white">
                                     <div id="imagePlaceholder" class="text-center group-hover:scale-105 transition">
                                         <span class="text-3xl block mb-4">📸</span>
-                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter text-center">Click para subir foto</p>
+                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-tighter text-center">Haga clic para subir foto</p>
                                     </div>
                                 </div>
                             </div>
@@ -96,11 +97,11 @@
                             <div class="bg-blue-50/50 border border-blue-100 rounded-[30px] p-8 text-center relative">
                                 <p class="text-[10px] text-blue-600 font-black uppercase mb-4 tracking-widest text-center">Ficha Técnica Proveedor</p>
                                 <input type="file" id="pdfInput" class="hidden" accept=".pdf">
-                                <button type="button" onclick="document.getElementById('pdfInput').click()" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm hover:shadow-md transition">
+                                <button type="button" onclick="document.getElementById('pdfInput').click()" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm">
                                     <span id="labelPdf">☁️ ADJUNTAR PDF</span>
                                 </button>
                                 <div id="pdfCheck" class="hidden mt-4 text-[10px] font-bold text-green-600 uppercase tracking-tighter">
-                                    ✅ Archivo Adjunto Detectado
+                                    ✅ Documento Adjunto Detectado
                                 </div>
                             </div>
                         </div>
@@ -137,7 +138,7 @@
 
                     <div class="mt-8">
                         <label>Especificaciones Técnicas (EETT)</label>
-                        <textarea name="eett" rows="3" class="input-field font-mono text-xs leading-relaxed"></textarea>
+                        <textarea name="eett" rows="4" class="input-field font-mono text-xs leading-relaxed"></textarea>
                     </div>
 
                     <div class="grid grid-cols-4 gap-4 mt-8">
@@ -150,22 +151,22 @@
                         </div>
                     </div>
 
-                    <div class="mt-12 pt-10 border-t border-slate-100">
-                        <label class="mb-4 text-blue-600 font-bold uppercase text-[9px]">Logística & Stock</label>
+                    <div class="mt-10 pt-10 border-t border-slate-100">
+                        <label class="mb-4 text-blue-600 font-black text-[10px] uppercase">Logística & Control de Stock</label>
                         <div class="grid grid-cols-3 gap-6 mb-6">
                             <div><label>Requiere MX Bodega</label><input type="text" name="logB" class="input-field"></div>
                             <div><label>Contar Total</label><input type="number" name="logT" class="input-field"></div>
                             <div><label>Contar Completo</label><input type="text" name="logC" class="input-field"></div>
                         </div>
-                        <textarea name="logCom" rows="2" class="input-field" placeholder="Comentarios adicionales..."></textarea>
+                        <textarea name="logCom" rows="2" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
                     </div>
 
                     <div class="mt-16 flex justify-end items-center gap-6 no-print">
-                        <button type="button" onclick="limpiarFormularioAsync()" class="text-xs font-bold text-slate-400 uppercase tracking-widest">Limpiar</button>
+                        <button type="button" onclick="limpiarTodoAsync()" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition">Descartar</button>
                         
                         <button type="button" id="btnExport" onclick="exportarFichaOficio()" 
                                 class="bg-white border-2 border-blue-600 text-blue-600 px-10 py-5 rounded-[22px] font-black text-[11px] shadow-lg hover:bg-blue-50 transition-all flex items-center gap-3">
-                            📥 EXPORTAR PDF
+                            📥 EXPORTAR PDF (OFICIO)
                         </button>
 
                         <button id="btnSave" type="submit" class="bg-blue-600 text-white px-14 py-5 rounded-[22px] font-black text-[11px] shadow-2xl shadow-blue-300 flex items-center gap-4 hover:bg-blue-700 transition active:scale-95">
@@ -178,9 +179,10 @@
     </main>
 
     <script>
-        document.getElementById('current-date').innerText = new Date().toLocaleDateString();
+        // Fecha actual para el PDF
+        document.getElementById('current-date-pdf').innerText = new Date().toLocaleDateString();
 
-        // 1. Manejo de Imagen
+        // 1. Manejo de Imagen (Subida y Preview)
         document.getElementById('imageInput').addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
@@ -195,53 +197,54 @@
             }
         });
 
-        // 2. Manejo PDF Adjunto
+        // 2. Manejo de PDF Adjunto
         document.getElementById('pdfInput').addEventListener('change', function() {
             if (this.files[0]) {
-                document.getElementById('pdfLabel').innerText = "✅ CARGADO";
+                document.getElementById('labelPdf').innerText = "✅ CARGADO";
                 document.getElementById('pdfCheck').classList.remove('hidden');
             }
         });
 
-        // 3. LIMPIEZA ASÍNCRONA (SOLUCIÓN INP ISSUE)
-        function limpiarFormularioAsync() {
+        // 3. LIMPIEZA ASÍNCRONA (FIN AL INP ISSUE)
+        function limpiarTodoAsync() {
+            // setTimeout(0) libera el hilo principal permitiendo que el navegador actualice la UI antes del reset pesado
             setTimeout(() => {
                 document.getElementById('mainForm').reset();
                 const preview = document.getElementById('imagePreview');
                 preview.classList.add('hidden');
                 preview.src = "";
                 document.getElementById('imagePlaceholder').classList.remove('hidden');
-                document.getElementById('pdfLabel').innerText = "☁️ ADJUNTAR PDF";
+                document.getElementById('labelPdf').innerText = "☁️ ADJUNTAR PDF";
                 document.getElementById('pdfCheck').classList.add('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 50);
+            }, 10);
         }
 
-        // 4. GENERAR PDF (AJUSTE TOTAL A OFICIO)
+        // 4. EXPORTACIÓN PDF (AJUSTE TOTAL A HOJA OFICIO/LEGAL)
         async function exportarFichaOficio() {
             const element = document.getElementById('capture-area');
             const header = document.getElementById('pdf-header');
             const btn = document.getElementById('btnExport');
             const itemName = document.getElementsByName('item')[0].value || 'Ficha';
 
-            // Bloqueo preventivo
+            // UI Feedback preventivo
             btn.innerHTML = "GENERANDO...";
             btn.disabled = true;
 
-            // FORZAR MODO PDF (Ancho exacto hoja Oficio 8.5in ~ 816px)
+            // Activar Modo Impresión (Forzar ancho a 816px para hoja Oficio)
             element.classList.add('pdf-strict-print');
             header.classList.replace('hidden', 'flex');
 
             const opt = {
-                margin:       [10, 10, 10, 10],
+                margin:       [10, 10, 10, 10], // mm
                 filename:     `FICHA_${itemName.replace(/ /g,"_")}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2.5, 
                     useCORS: true, 
                     letterRendering: true,
-                    scrollY: -window.scrollY,
-                    windowWidth: 850 // Obligamos al motor a "ver" 850px de ancho
+                    scrollY: -window.scrollY, // Fix desajuste por scroll
+                    windowWidth: 850 // Obliga al motor a renderizar como si la pantalla midiera 850px
                 },
                 jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' }
             };
@@ -250,18 +253,17 @@
                 // Ejecutamos la promesa de descarga
                 await html2pdf().set(opt).from(element).save();
             } catch (err) {
-                console.error("Error al generar PDF:", err);
-                alert("Ocurrió un error. Revisa la consola.");
+                console.error("PDF Error:", err);
             } finally {
                 // Restaurar la vista web después de la captura
                 element.classList.remove('pdf-strict-print');
                 header.classList.replace('flex', 'hidden');
-                btn.innerHTML = "📥 EXPORTAR PDF";
+                btn.innerHTML = "📥 EXPORTAR PDF (OFICIO)";
                 btn.disabled = false;
             }
         }
 
-        // 5. GUARDAR REGISTRO (SIN BLOQUEO)
+        // 5. GUARDAR REGISTRO (SIN BLOQUEO DE INTERFAZ)
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSave');
@@ -269,11 +271,12 @@
             btn.innerHTML = "GUARDANDO...";
             btn.disabled = true;
 
+            // Diferir el proceso de guardado para que el navegador rinda el cambio del botón primero
             setTimeout(() => {
-                alert("¡Información guardada con éxito!");
+                alert("¡Insumo registrado exitosamente en Mis Documentos!");
                 btn.innerHTML = originalText;
                 btn.disabled = false;
-                limpiarFormularioAsync();
+                limpiarTodoAsync();
             }, 150);
         });
     </script>
