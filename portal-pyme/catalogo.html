@@ -3,48 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inventario Pro - Ecosistema AI</title>
+    <title>Ecosistema AI - Gestión de Inventario</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; margin: 0; overflow-x: hidden; }
         
-        /* Estilos Web de Interfaz */
+        /* Estilos Web (Interfaz de usuario) */
         .input-field {
-            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 10px 14px;
+            background-color: #fcfcfc; border: 1px solid #e2e8f0; padding: 12px 14px;
             font-size: 0.85rem; border-radius: 12px; width: 100%; outline: none; transition: all 0.2s;
         }
-        .input-field:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); background-color: #fff; }
-        
+        .input-field:focus { border-color: #2563eb; background-color: #fff; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
         label { font-size: 10px; font-weight: 800; color: #94a3b8; text-transform: uppercase; margin-bottom: 6px; display: block; letter-spacing: 0.05em; }
         
-        .card-main { border-radius: 50px; background: white; border: 1px solid #e2e8f0; width: 100%; max-width: 1100px; }
+        .card-main { border-radius: 50px; background: white; border: 1px solid #e2e8f0; width: 100%; max-width: 1050px; }
         .sidebar { background-color: #0f172a; width: 280px; min-height: 100vh; }
         
         .section-title { font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; display: flex; align-items: center; gap: 8px; margin-bottom: 20px; }
         .section-title::before { content: ""; width: 6px; height: 6px; background-color: #2563eb; border-radius: 50%; }
 
-        /* --- MODO DOCUMENTO PDF (AJUSTE TOTAL A HOJA OFICIO) --- */
-        /* Esta clase se inyecta por JavaScript para forzar el ajuste perfecto */
-        .pdf-render-mode { 
-            width: 820px !important; /* Ancho optimizado para Legal/Oficio */
+        /* --- MODO DOCUMENTO PDF (LA CLAVE DEL AJUSTE) --- */
+        /* Forzamos el ancho exacto para que llene la hoja Oficio/Legal */
+        .pdf-print-mode { 
+            width: 850px !important; 
             padding: 40px !important; 
             border-radius: 0 !important; 
-            border: none !important; 
             box-shadow: none !important; 
             margin: 0 !important;
+            border: none !important;
         }
-        .pdf-render-mode .input-field { 
-            border: 1.5px solid #cbd5e1 !important; 
-            font-size: 1.05rem !important; 
-            background-color: #fff !important; 
-            padding: 12px !important;
-            color: #000 !important;
+        .pdf-print-mode .input-field { 
+            border: 2px solid #cbd5e1 !important; 
+            font-size: 1.1rem !important; 
+            color: #000 !important; 
+            background-color: #fff !important;
+            padding: 14px !important;
         }
-        .pdf-render-mode label { color: #64748b !important; font-size: 11px !important; font-weight: 900 !important; }
+        .pdf-print-mode label { color: #64748b !important; font-size: 11px !important; font-weight: 900 !important; }
+        .pdf-print-mode .section-title { font-size: 14px !important; border-bottom: 3px solid #e2e8f0; padding-bottom: 10px; }
 
         @media print { .no-print { display: none !important; } }
     </style>
@@ -60,7 +60,7 @@
             <div class="flex items-center gap-4 text-sm text-slate-400 p-2 cursor-pointer hover:text-white transition">
                 <span>📋</span> Inventario Pro
             </div>
-            <div onclick="limpiarFormularioAsync()" class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer hover:bg-blue-700 transition">
+            <div onclick="limpiarTodoAsync()" class="flex items-center gap-4 text-sm bg-blue-600 p-4 rounded-2xl font-bold shadow-xl shadow-blue-900/40 cursor-pointer hover:bg-blue-700 transition">
                 <span>⊕</span> Nuevo Registro
             </div>
         </nav>
@@ -68,22 +68,19 @@
 
     <main class="flex-1 overflow-y-auto">
         <header class="h-16 bg-white border-b flex items-center px-10 no-print justify-between sticky top-0 z-10">
-            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión / Registro de Insumos</h2>
-            <button onclick="limpiarFormularioAsync()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase transition tracking-tighter">Limpiar Campos</button>
+            <h2 class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Panel de Gestión</h2>
+            <button onclick="limpiarTodoAsync()" class="text-[10px] font-bold text-red-400 hover:text-red-600 uppercase transition tracking-tighter">Limpiar Campos</button>
         </header>
 
         <div class="p-8 lg:p-12 flex justify-center">
-            <div id="capture-area" class="card-main p-10 lg:p-16 shadow-2xl bg-white relative transition-all duration-300">
+            <div id="capture-area" class="card-main p-10 lg:p-16 shadow-2xl bg-white relative">
                 
                 <div id="pdf-header" class="hidden border-b-4 border-blue-600 pb-6 mb-10 justify-between items-end">
                     <div>
                         <h1 class="text-3xl font-black text-slate-900 uppercase tracking-tighter">Ficha Técnica de Insumo</h1>
-                        <p class="text-blue-600 font-bold text-xs uppercase tracking-widest">Mis Documentos - Ecosistema AI</p>
+                        <p class="text-blue-600 font-bold text-xs uppercase">Ecosistema AI - Sistema de Gestión Profesional</p>
                     </div>
-                    <div class="text-right">
-                        <p class="text-[10px] font-black text-slate-400 uppercase">Fecha Registro</p>
-                        <p class="text-lg font-bold text-slate-800" id="pdf-current-date"></p>
-                    </div>
+                    <p class="text-lg font-bold text-slate-800" id="pdf-date"></p>
                 </div>
 
                 <form id="mainForm">
@@ -103,13 +100,13 @@
                             </div>
                             
                             <div class="bg-blue-50/50 border border-blue-100 rounded-[30px] p-8 text-center relative">
-                                <p class="text-[10px] text-blue-600 font-black uppercase mb-4 tracking-widest text-center">Ficha Proveedor</p>
+                                <p class="text-[10px] text-blue-600 font-black uppercase mb-4 tracking-widest text-center">Ficha Técnica Proveedor</p>
                                 <input type="file" id="inputManual" class="hidden" accept=".pdf">
-                                <button type="button" onclick="document.getElementById('inputManual').click()" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm">
-                                    <span id="btnPdfLabel">☁️ ADJUNTAR PDF</span>
+                                <button type="button" onclick="document.getElementById('inputManual').click()" class="w-full bg-white border border-blue-200 py-3 rounded-xl text-blue-600 text-[10px] font-black shadow-sm hover:shadow-md transition">
+                                    <span id="labelPdf">☁️ ADJUNTAR PDF</span>
                                 </button>
-                                <div id="pdfSuccessBox" class="hidden mt-4 text-[10px] font-bold text-green-600 bg-green-50 p-2 rounded-lg border border-green-200 uppercase text-center">
-                                    ✅ Archivo del Proveedor Adjunto
+                                <div id="pdfIndicador" class="hidden mt-4 text-[11px] font-bold text-green-600 bg-green-50 p-2 rounded-lg border border-green-200 uppercase tracking-tighter text-center">
+                                    ✅ Documento Adjunto Detectado
                                 </div>
                             </div>
                         </div>
@@ -123,10 +120,10 @@
                                     <div><label>SKU ENGE</label><input type="text" name="skuEnge" class="input-field"></div>
                                     <div><label>Centro</label><input type="text" name="centro" class="input-field"></div>
                                     <div><label>Codificación</label><input type="text" name="cod" class="input-field"></div>
-                                    <div><label>Fabricante</label><input type="text" name="fab" class="input-field"></div>
+                                    <div><label>Fabricante</label><input type="text" name="fabricante" class="input-field"></div>
                                     <div><label>Marca</label><input type="text" name="marca" class="input-field"></div>
                                     <div><label>Modelo</label><input type="text" name="modelo" class="input-field"></div>
-                                    <div><label>N° Parte</label><input type="text" name="parte" class="input-field"></div>
+                                    <div><label>N° Parte</label><input type="text" name="nParte" class="input-field"></div>
                                     <div class="col-span-1"><label>Cód. Designación</label><input type="text" name="codD" class="input-field"></div>
                                     <div class="col-span-2"><label>Descripción Breve</label><input type="text" name="descB" class="input-field"></div>
                                 </div>
@@ -144,12 +141,12 @@
                         </div>
                     </div>
 
-                    <div class="mt-10">
+                    <div class="mt-8">
                         <label>Especificaciones Técnicas (EETT)</label>
                         <textarea name="eett" rows="4" class="input-field font-mono text-xs leading-relaxed"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-4 gap-4 mt-8">
+                    <div class="grid grid-cols-4 gap-6 mt-8">
                         <div><label>Peso</label><input type="text" name="peso" class="input-field"></div>
                         <div><label>Volumen</label><input type="text" name="vol" class="input-field"></div>
                         <div><label>U. Medida</label><input type="text" name="med" class="input-field"></div>
@@ -162,25 +159,25 @@
                         </div>
                     </div>
 
-                    <div class="mt-12 pt-10 border-t border-slate-100">
+                    <div class="mt-10 pt-10 border-t border-slate-100">
                         <label class="mb-4 text-blue-600 font-black text-[10px] uppercase">Logística & Control de Stock</label>
                         <div class="grid grid-cols-3 gap-6 mb-6">
-                            <div><label>Requiere MX Bodega</label><input type="text" name="logB" class="input-field"></div>
-                            <div><label>Contar Total</label><input type="number" name="logT" class="input-field"></div>
-                            <div><label>Contar Completo</label><input type="text" name="logC" class="input-field"></div>
+                            <div><label>Requiere MX Bodega</label><input type="text" name="logBodega" class="input-field"></div>
+                            <div><label>Contar Total</label><input type="number" name="logTotal" class="input-field"></div>
+                            <div><label>Contar Completo</label><input type="text" name="logCompleto" class="input-field"></div>
                         </div>
-                        <textarea name="logCom" rows="2" class="input-field" placeholder="Comentarios adicionales..."></textarea>
+                        <textarea name="logCom" rows="2" class="input-field" placeholder="Ubicación física / Comentarios adicionales..."></textarea>
                     </div>
 
-                    <div class="mt-16 flex justify-end items-center gap-6 no-print">
-                        <button type="button" onclick="limpiarFormularioAsync()" class="text-xs font-bold text-slate-400 uppercase tracking-widest hover:text-slate-600 transition">Descartar</button>
+                    <div class="mt-16 flex justify-end items-center gap-8 no-print">
+                        <button type="button" onclick="limpiarTodoAsync()" class="text-xs font-bold text-slate-400 uppercase">Limpiar</button>
                         
-                        <button type="button" onclick="exportarFichaOficio()" 
+                        <button type="button" id="btnExport" onclick="descargarFicha()" 
                                 class="bg-white border-2 border-blue-600 text-blue-600 px-10 py-5 rounded-[22px] font-black text-[11px] shadow-lg hover:bg-blue-50 transition-all flex items-center gap-3">
                             📥 EXPORTAR PDF
                         </button>
 
-                        <button id="mainSaveBtn" type="submit" class="bg-blue-600 text-white px-14 py-5 rounded-[22px] font-black text-[11px] shadow-2xl shadow-blue-200 flex items-center gap-4 hover:bg-blue-700 transition active:scale-95">
+                        <button id="btnSave" type="submit" class="bg-blue-600 text-white px-14 py-5 rounded-[22px] font-black text-[11px] shadow-2xl shadow-blue-200 flex items-center gap-4 hover:bg-blue-700 transition active:scale-95">
                             📄 1. GUARDAR REGISTRO
                         </button>
                     </div>
@@ -190,98 +187,96 @@
     </main>
 
     <script>
-        // Actualizar Fecha en PDF
-        document.getElementById('pdf-current-date').innerText = new Date().toLocaleDateString();
+        document.getElementById('pdf-date').innerText = new Date().toLocaleDateString();
 
-        // 1. GESTIÓN DE IMAGEN
+        // 1. MANEJO DE IMAGEN
         document.getElementById('inputImage').addEventListener('change', function() {
             const file = this.files[0];
             if (file) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    const preview = document.getElementById('previewImage');
-                    preview.src = e.target.result;
-                    preview.classList.remove('hidden');
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('previewImage').classList.remove('hidden');
                     document.getElementById('uploadPrompt').classList.add('hidden');
                 };
                 reader.readAsDataURL(file);
             }
         });
 
-        // 2. GESTIÓN DE PDF ADJUNTO
+        // 2. INDICADOR DE PDF
         document.getElementById('inputManual').addEventListener('change', function() {
             if (this.files[0]) {
-                document.getElementById('btnPdfLabel').innerText = "✅ CARGADO";
-                document.getElementById('pdfSuccessBox').classList.remove('hidden');
+                document.getElementById('labelPdf').innerText = "✅ CARGADO";
+                document.getElementById('pdfIndicador').classList.remove('hidden');
             }
         });
 
-        // 3. LIMPIEZA ASÍNCRONA (SOLUCIÓN AL INP ISSUE)
-        function limpiarFormularioAsync() {
-            // setTimeout(0) permite que el navegador termine la respuesta visual del clic antes del proceso de reset
+        // 3. LIMPIEZA ASÍNCRONA (SOLUCIÓN INP ISSUE)
+        function limpiarTodoAsync() {
+            // setTimeout(0) libera el procesador para que el navegador "respire" y procese el clic antes del reset
             setTimeout(() => {
                 document.getElementById('mainForm').reset();
-                const preview = document.getElementById('previewImage');
-                preview.classList.add('hidden');
-                preview.src = "";
+                document.getElementById('previewImage').classList.add('hidden');
+                document.getElementById('previewImage').src = "";
                 document.getElementById('uploadPrompt').classList.remove('hidden');
-                document.getElementById('btnPdfLabel').innerText = "☁️ ADJUNTAR PDF";
-                document.getElementById('pdfSuccessBox').classList.add('hidden');
+                document.getElementById('labelPdf').innerText = "☁️ ADJUNTAR PDF";
+                document.getElementById('pdfIndicador').classList.add('hidden');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-            }, 10);
+            }, 50);
         }
 
-        // 4. EXPORTACIÓN PDF (AJUSTE TOTAL A HOJA OFICIO/LEGAL)
-        async function exportarFichaOficio() {
-            const element = document.getElementById('capture-area');
+        // 4. GENERAR PDF (AJUSTE TOTAL A HOJA OFICIO)
+        async function descargarFicha() {
+            const area = document.getElementById('capture-area');
             const header = document.getElementById('pdf-header');
+            const btn = document.getElementById('btnExport');
             const itemName = document.getElementsByName('item')[0].value || 'Ficha';
 
-            // Activar Modo Captura (Aumentar fuentes y cuadros)
-            element.classList.add('pdf-render-mode');
+            // UI Feedback
+            btn.innerHTML = "GENERANDO...";
+            btn.disabled = true;
+
+            // Activar Modo Impresión: Forzamos el ancho a 850px para llenar la hoja
+            area.classList.add('pdf-print-mode');
             header.classList.replace('hidden', 'flex');
 
-            const opt = {
-                margin:       [10, 10, 10, 10], // mm
+            const opciones = {
+                margin:       [8, 8, 8, 8],
                 filename:     `FICHA_${itemName.replace(/ /g,"_")}.pdf`,
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { 
                     scale: 2.5, 
                     useCORS: true, 
                     letterRendering: true,
-                    scrollY: -window.scrollY // Corrige desajuste por scroll en Vercel
+                    scrollY: -window.scrollY // Corrige desajuste por scroll
                 },
-                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' }
+                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'portrait' } // format: 'legal' es Oficio
             };
 
             try {
-                await html2pdf().set(opt).from(element).save();
-            } catch (error) {
-                console.error("Error en PDF:", error);
+                await html2pdf().set(opciones).from(area).save();
             } finally {
                 // Restaurar UI Web
-                element.classList.remove('pdf-render-mode');
+                area.classList.remove('pdf-print-mode');
                 header.classList.replace('flex', 'hidden');
+                btn.innerHTML = "📥 EXPORTAR PDF";
+                btn.disabled = false;
             }
         }
 
-        // 5. GUARDAR REGISTRO (SIN BLOQUEO DE UI)
+        // 5. GUARDAR REGISTRO
         document.getElementById('mainForm').addEventListener('submit', function(e) {
             e.preventDefault();
-            const btn = document.getElementById('mainSaveBtn');
-            const originalText = btn.innerHTML;
-            
-            // UI Feedback instantáneo
-            btn.innerHTML = "PROCESANDO...";
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = "GUARDANDO...";
             btn.disabled = true;
 
-            // Diferir el proceso de guardado y limpieza (Adiós INP Issue)
             setTimeout(() => {
-                alert("¡Información guardada exitosamente en Ecosistema AI!");
-                btn.innerHTML = originalText;
+                alert("¡Información registrada exitosamente!");
+                btn.innerHTML = "📄 1. GUARDAR REGISTRO";
                 btn.disabled = false;
-                limpiarFormularioAsync();
-            }, 150);
+                limpiarTodoAsync();
+            }, 300);
         });
     </script>
 </body>
